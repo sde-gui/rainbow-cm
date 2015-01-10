@@ -1067,30 +1067,30 @@ void  history_item_right_click (struct history_info *h, GdkEventKey *e, gint ind
 /* Called when Clear is selected from history menu */
 static void clear_selected(GtkMenuItem *menu_item, gpointer user_data)
 {
-	int clear=1;
-  /* Check for confirm clear option */
-  if (get_pref_int32("confirm_clear"))  {
-    GtkWidget* confirm_dialog = gtk_message_dialog_new(NULL,
-                                                       GTK_DIALOG_MODAL,
-                                                       GTK_MESSAGE_OTHER,
-                                                       GTK_BUTTONS_OK_CANCEL,
-                                                       _("Clear the history?"));
-    
-    if (gtk_dialog_run((GtkDialog*)confirm_dialog) != GTK_RESPONSE_OK)    {
-			clear=0;
-		}
-		gtk_widget_destroy(confirm_dialog);
-	}	
-	if(clear){
-		struct history_info *h=(struct history_info *)user_data;
+	int do_clear = 1;
+	GtkWidget * confirm_dialog = gtk_message_dialog_new(
+		NULL,
+		GTK_DIALOG_MODAL,
+		GTK_MESSAGE_QUESTION,
+		GTK_BUTTONS_OK_CANCEL,
+		_("Clear the history?"));
+
+	gtk_window_set_title((GtkWindow *) confirm_dialog, "Parcellite");
+
+    if (gtk_dialog_run((GtkDialog *) confirm_dialog) != GTK_RESPONSE_OK) {
+		do_clear = 0;
+	}
+	gtk_widget_destroy(confirm_dialog);
+
+	if (do_clear) {
+		struct history_info * h = (struct history_info *) user_data;
 		/* Clear history and free history-related variables */
 		remove_deleted_items(h); /**fix bug 92, Shift/ctrl right-click followed by clear segfaults/double free.  */	
 		clear_history();
 		/*g_printf("Clear hist done, h=%p, h->delete_list=%p\n",h, h->delete_list); */
 		update_clipboard(primary, "", H_MODE_INIT);
-    update_clipboard(clipboard, "", H_MODE_INIT);
+		update_clipboard(clipboard, "", H_MODE_INIT);
 	}
-      
 }
 
 /* Called when About is selected from right-click menu */
