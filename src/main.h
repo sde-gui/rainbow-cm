@@ -57,7 +57,7 @@ struct history_info{
 	GList *delete_list; /**struct s_item_info - for the delete list  */
 	GList *persist_list; /**struct s_item_info - for the persistent list  */
 	struct widget_info wi;  /**temp  for usage in popups  */
-	gint histno;           /**which history?  HIST_DISPLAY_NORMAL/HIST_DISPLAY_PERSISTENT*/
+	guint histno;           /**which history?  HIST_DISPLAY_NORMAL/HIST_DISPLAY_PERSISTENT*/
 	gint change_flag;	/**bit wise flags for history state  */
 };
 

@@ -127,6 +127,16 @@ static int cmd_mode=CMODE_ALL; /**both clipboards  */
                                     If this is set, it will edit the entry, and replace it in the history.  */
 #define EDIT_MODE_RC_EDIT_SET 2 /**used to   */                                    
 
+/***************************************************************************/
+
+typedef struct {
+	guint   histno;
+	guint   mouse_button;
+	guint32 activate_time;
+} history_menu_query_t;
+
+/***************************************************************************/
+
 /**speed up pref to int lookup.  */
 int hyperlinks_only,ignore_whiteonly,trim_newline,trim_wspace_begend,use_primary,use_copy,current_on_top,restore_empty,synchronize;
 static struct pref2int pref2int_map[]={
@@ -1798,13 +1808,17 @@ void destroy_history_menu(GtkMenuShell *menu, gpointer u)
 \n\b Returns:
 ****************************************************************************/
 
-static gboolean show_history_menu(gpointer data)
+static gboolean do_show_history_menu(gpointer data)
 {
+	history_menu_query_t * query = (history_menu_query_t *) data;
+	if (!query)
+		goto end;
+
   /* Declare some variables */
   GtkWidget *menu,       *menu_item,
             *menu_image, *item_label;
   static struct history_info h;
-	h.histno=GPOINTER_TO_INT(data);/**persistent or normal history  */
+	h.histno=query->histno;
 	h.change_flag=0;
 	h.element_text=NULL;
 	h.wi.index=-1;
@@ -2026,12 +2040,16 @@ next_loop:
 	g_signal_connect(menu,"selection-done",(GCallback)destroy_history_menu,(gpointer)&h);
   /* Popup the menu... */
   gtk_widget_show_all(menu);
-  gtk_menu_popup((GtkMenu*)menu, NULL, NULL, get_pref_int32("history_pos")?postition_history:NULL, NULL, 1, gtk_get_current_event_time());
+  gtk_menu_popup((GtkMenu*)menu, NULL, NULL, get_pref_int32("history_pos")?postition_history:NULL, NULL, query->mouse_button, query->activate_time);
 	/**set last entry at first -fixes bug 2974614 */
 	if(get_pref_int32("reverse_history") && NULL != h.clip_item)
 		gtk_menu_shell_select_item((GtkMenuShell*)menu,h.clip_item);
 	else	
 		gtk_menu_shell_select_first((GtkMenuShell*)menu, TRUE);
+
+end:
+	g_free(query);
+
   /* Return FALSE so the g_timeout_add() function is called only once */
   return FALSE;
 }
@@ -2041,9 +2059,9 @@ next_loop:
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-gint figure_histories(void)
+static guint figure_histories(void)
 {
-	gint i;
+	guint i;
 	if(get_pref_int32("persistent_history")){ 
 		if(get_pref_int32("persistent_separate"))
 			i=HIST_DISPLAY_NORMAL;
@@ -2056,13 +2074,27 @@ gint figure_histories(void)
 }
 
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-void _show_history_menu (GtkMenuItem *m, gpointer data)
+
+static void show_history_menu(guint histno, guint mouse_button, guint32 activate_time)
 {
-	g_timeout_add(POPUP_DELAY, show_history_menu, GINT_TO_POINTER(figure_histories()));
+	if (activate_time == GDK_CURRENT_TIME)
+		activate_time = gtk_get_current_event_time();
+
+	history_menu_query_t * query = g_try_new(history_menu_query_t, 1);
+	if (!query)
+		return;
+
+	query->histno = histno;
+	query->mouse_button = mouse_button;
+	query->activate_time = activate_time;
+
+	g_timeout_add(POPUP_DELAY, do_show_history_menu, query);
+}
+
+/***************************************************************************/
+static void on_history_menu_activate(GtkMenuItem *m, gpointer data)
+{
+	show_history_menu(figure_histories(), 1, GDK_CURRENT_TIME);
 }
 /***************************************************************************/
 /** .
@@ -2096,7 +2128,7 @@ GtkWidget *create_parcellite_menu(guint button, guint activate_time)
 		GtkWidget *img=gtk_image_new_from_icon_name(PARCELLITE_ICON,GTK_ICON_SIZE_MENU); 
 	  menu_item = gtk_image_menu_item_new_with_mnemonic(_("_History"));
 		gtk_image_menu_item_set_image((GtkImageMenuItem *)menu_item,img);
-	  g_signal_connect((GObject*)menu_item, "activate", (GCallback)_show_history_menu, NULL);
+	  g_signal_connect((GObject*)menu_item, "activate", (GCallback)on_history_menu_activate, NULL);
 	  gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
 	}
 	
@@ -2137,7 +2169,7 @@ static void status_icon_clicked(GtkStatusIcon *status_icon, gpointer user_data)
   /* Normal click */
   else
   {
-    g_timeout_add(POPUP_DELAY, show_history_menu, GINT_TO_POINTER(figure_histories()));
+    show_history_menu(figure_histories(), 1, GDK_CURRENT_TIME);
   }
 }
 /***************************************************************************/
@@ -2191,13 +2223,13 @@ void create_app_indicator(void)
 /* Called when history global hotkey is pressed */
 void history_hotkey(char *keystring, gpointer user_data)
 {
-  g_timeout_add(POPUP_DELAY, show_history_menu, GINT_TO_POINTER(figure_histories()));
+  show_history_menu(figure_histories(), 0, GDK_CURRENT_TIME);
 }
 /* Called when persistent history global hotkey is pressed */
 void phistory_hotkey(char *keystring, gpointer user_data)
 {
 	if(get_pref_int32("persistent_history") && get_pref_int32("persistent_separate"))
-    g_timeout_add(POPUP_DELAY, show_history_menu, GINT_TO_POINTER(HIST_DISPLAY_PERSISTENT));
+		show_history_menu(HIST_DISPLAY_PERSISTENT, 0, GDK_CURRENT_TIME);
 }
 
 /* Called when actions global hotkey is pressed */
