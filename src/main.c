@@ -64,6 +64,9 @@ g_signal_connect(clipboard, "owner-change",  G_CALLBACK(handle_owner_change), NU
 
 #include "parcellite.h"
 
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <gdk/gdkx.h>
 #include <ctype.h>
 #include <pthread.h>
 
@@ -1366,44 +1369,31 @@ void set_widget_bg(gchar *color, GtkWidget *w)
 }
 
 /***************************************************************************/
-/**postition the history dialog  - should only be called if get_pref_int32("history_pos") is set.
-\n\b Arguments:
-if user_data is 1, just set x&y to max.
-\n\b Returns:
-****************************************************************************/
-void postition_history(GtkMenu *menu,gint *x,gint *y,gboolean *push_in, gpointer user_data)
+
+static void on_history_menu_position(GtkMenu * menu, gint * px, gint * py, gboolean * push_in, gpointer user_data)
 {
-	GdkScreen *s;
-	gint sx,sy;
-	s=gdk_screen_get_default();
-	sx= gdk_screen_get_width(s);
-	sy= gdk_screen_get_height(s);
-	if(NULL !=push_in)
-		*push_in=FALSE;
-	if(1 == GPOINTER_TO_INT(user_data)){
-		if(NULL !=x) *x=sx;
-		if(NULL !=y) *y=sy;	
-	}else{
-		if(get_pref_int32("history_pos")){
-			int xx,yy;
-			xx=get_pref_int32("history_x");
-			if(xx > sx )
-				xx=sx;
-			else if(xx <1 )
-				xx=1;
-			yy=get_pref_int32("history_y");
-			if(yy > sx )
-				yy=sx;
-			else if(yy <1 )
-				yy=1;
-			
-			if(NULL !=x) *x=xx;
-			if(NULL !=y) *y=yy;	
-			TRACE(g_fprintf(stderr,"x=%d, y=%d\n",xx,yy));
+	gint x = 0, y = 0;
+	Display * display = gdk_x11_get_default_xdisplay();
+	Window focus;
+	int revert_to;
+	XGetInputFocus(display, &focus, &revert_to);
+
+	if (focus != None && focus != PointerRoot) {
+		int dest_x, dest_y;
+		Window child_return;
+		if (XTranslateCoordinates(display,
+			focus, XDefaultRootWindow(display),
+			0, 0,
+			&dest_x, &dest_y,
+			&child_return))
+		{
+			x = dest_x;
+			y = dest_y;
 		}
-		
 	}
-	
+
+	*px = x;
+	*py = y;
 }
 
 /***************************************************************************/
@@ -2040,7 +2030,7 @@ next_loop:
 	g_signal_connect(menu,"selection-done",(GCallback)destroy_history_menu,(gpointer)&h);
   /* Popup the menu... */
   gtk_widget_show_all(menu);
-  gtk_menu_popup((GtkMenu*)menu, NULL, NULL, get_pref_int32("history_pos")?postition_history:NULL, NULL, query->mouse_button, query->activate_time);
+  gtk_menu_popup((GtkMenu*)menu, NULL, NULL, query->mouse_button ? NULL : on_history_menu_position, NULL, query->mouse_button, query->activate_time);
 	/**set last entry at first -fixes bug 2974614 */
 	if(get_pref_int32("reverse_history") && NULL != h.clip_item)
 		gtk_menu_shell_select_item((GtkMenuShell*)menu,h.clip_item);

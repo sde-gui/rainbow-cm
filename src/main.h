@@ -66,7 +66,6 @@ void phistory_hotkey(char *keystring, gpointer user_data);
 void history_hotkey(char *keystring, gpointer user_data);
 void actions_hotkey(char *keystring, gpointer user_data);
 void menu_hotkey(char *keystring, gpointer user_data);
-void postition_history(GtkMenu *menu,gint *x,gint *y,gboolean *push_in, gpointer user_data);
 
 G_END_DECLS
 
