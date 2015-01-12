@@ -67,6 +67,7 @@ g_signal_connect(clipboard, "owner-change",  G_CALLBACK(handle_owner_change), NU
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <gdk/gdkx.h>
+#include <gdk/gdkkeysyms.h>
 #include <ctype.h>
 #include <pthread.h>
 
@@ -109,6 +110,8 @@ static int ignore_clipboard=0; /**if set, don't process clip entries  */
 #ifdef HAVE_APPINDICATOR
 static gchar *appindicator_process="indicator-messages-service"; /**process name  */
 #endif
+
+static gchar * history_text_casefold_key = NULL;
 
 static int cmd_mode=CMODE_ALL; /**both clipboards  */
 /** static int cmd_state=ACT_RUN; running  */
@@ -1373,199 +1376,113 @@ static void on_history_menu_position(GtkMenu * menu, gint * px, gint * py, gbool
 }
 
 /***************************************************************************/
-/** This handles events for the history menu, which is the parent of each
-item.
-\n\b Arguments:	user is the struct history_info created in history menu.
-\n\b Returns: FALSE if key was not handled, TRUE if it was.
-You get two key presses if you return FALSE.
-****************************************************************************/
+
+static void apply_search_string_cb(GtkWidget * widget, gpointer user_data)
+{
+	struct history_info * h = (struct history_info *) user_data;
+	GtkMenuItem * menu_item = GTK_MENU_ITEM(widget);
+	if (!h || !menu_item)
+		return;
+
+	const gchar * history_text_casefold = (const gchar *) g_object_get_data(
+		(GObject *) menu_item, history_text_casefold_key);
+	if (!history_text_casefold)
+		return;
+
+	gboolean match = h->search_string_casefold[0] == 0 ||
+		g_strstr_len(history_text_casefold, -1, h->search_string_casefold) != NULL;
+
+	//gtk_widget_set_sensitive(widget, match);
+	gtk_widget_set_visible(widget, match);
+
+	if (match && !h->first_matched)
+	{
+		h->first_matched = widget;
+		gtk_menu_shell_select_item((GtkMenuShell *) h->menu, widget);
+	}
+}
+
+/***************************************************************************/
+
+static void apply_search_string(struct history_info * h)
+{
+	g_free(h->search_string_casefold);
+	h->search_string_casefold = g_utf8_casefold(h->search_string->str, -1);
+	h->first_matched = NULL;
+	gtk_container_foreach((GtkContainer *) h->menu, apply_search_string_cb, h);
+}
+
+/***************************************************************************/
+
+static void on_history_menu_im_context_commit(GtkIMContext * context, gchar * str, gpointer user_data)
+{
+	struct history_info * h = (struct history_info *) user_data;
+
+	if (!h || !h->search_string)
+		return;
+
+	if (str) {
+		g_string_append(h->search_string, str);
+	} else {
+		glong l = h->search_string->len;
+		glong truncate_at = 0;
+		if (l > 1) {
+			gchar * prev_char = g_utf8_find_prev_char(h->search_string->str, h->search_string->str + l);
+			if (!prev_char)
+				prev_char = h->search_string->str + l - 1;
+			truncate_at = prev_char - h->search_string->str;
+		}
+		g_string_truncate(h->search_string, truncate_at);
+	}
+
+	//g_fprintf(stderr, "%s\n", h->search_string->str);
+
+	apply_search_string(h);
+}
+
+/***************************************************************************/
+
 static gboolean key_release_cb (GtkWidget *w,GdkEventKey *e, gpointer user)
 {
-	static gchar *kstr=NULL;
-	static gint idx;
-  /*static GdkEvent *last_event=NULL; */
-	gint first, current,off;
-	static GtkWidget *item=NULL;
-	GList *children;
-  struct history_info *h;
+	struct history_info * h = (struct history_info *) user;
 
-  h=(struct history_info *)user;
-	
-	if(0&& NULL != e ){
-		if(GDK_MOTION_NOTIFY==e->type)
-			return FALSE;
-    printf("krc (%x) S%x T%x C%x,SE%x, G%x, W%p, wdg%p",
-		e->keyval,e->state,e->type,
-		e->hardware_keycode,e->send_event,e->group,e->window,w);
-		if(GDK_DRAG_ENTER == e->type || GDK_DRAG_LEAVE==e->type){
-			printf(" Drag %s\n",GDK_DRAG_ENTER == e->type?"ENTER":"LEAVE");
-		}
-		if(GDK_BUTTON_RELEASE==e->type || GDK_BUTTON_PRESS==e->type  ){
-			GdkEventButton *b=(GdkEventButton *)e;
-			printf(" button %d State 0x%x\n",b->button, b->state);
-			if(GDK_BUTTON_RELEASE==e->type && 3 == b->button){
-				/*toggle-size-request", */
-				/*allow item_selected to get called  */
-				/*return FALSE;   */
+	if (!e)
+		return FALSE;
+
+	if (e->type == GDK_KEY_PRESS || e->type == GDK_KEY_RELEASE) {
+		GdkEventKey * ke = (GdkEventKey *) e;
+		if (h->im_context && h->search_string && get_pref_int32("type_search")) {
+			gboolean filtered = gtk_im_context_filter_keypress(h->im_context, ke);
+			if (filtered)
+				return TRUE;
+			if (e->type == GDK_KEY_PRESS && ke->keyval == GDK_KEY_BackSpace && ke->state & GDK_CONTROL_MASK) {
+				g_string_truncate(h->search_string, 0);
+				apply_search_string(h);
+				return TRUE;
 			}
-			/*return TRUE; */
-		}
-		printf("\n");
-		fflush(NULL);
-  }
-	
-	/**serves as init for keysearch  */
-	if(NULL ==w && NULL==e && NULL == user){
-		if(NULL != kstr)
-			g_free(kstr);
-		kstr=g_strnfill(KBUF_SIZE+8,0);
-		idx=0;
-		return FALSE;
-	}else if(NULL == kstr){
-		g_print("kstr null. Not init\n");
-		return FALSE;
-	}
-  if(NULL == e){
-    g_print("No Event!\n");
-    return FALSE;
-  }
-		
-  if(0 == get_pref_int32("type_search"))/**searching is turned off  */
-    return FALSE;
-	/**ignore left-clicks  */
-	if(GDK_BUTTON_RELEASE==e->type && 3 == ((GdkEventButton *)e)->button)
-		return FALSE;
-		
-  if(GDK_KEY_PRESS == e->type && ' ' == e->keyval) /**ignore space presses  */
-    return TRUE;
-	if(GDK_KEY_PRESS == e->type)
-		return FALSE;
-    /**pass all other non-release events on  */
-  if(GDK_KEY_RELEASE != e->type && GDK_BUTTON_RELEASE != e->type) 
-    return FALSE;
-  /** if(GDK_SELECTION_NOTIFY == e->type){
-    g_print("last %x\n",last_event->type);
-    last_event=(GdkEvent *)e;
-    return TRUE;
-  }
-  last_event=(GdkEvent *)e;*/
-	/** if(user)
-	if(e->state & (GDK_SHIFT_MASK|GDK_LOCK_MASK) != e->state){
-		g_print("rfs to use mods\n");
-		TRACE(g_fprintf(stderr,"state is %X. Refusing to use mods\n",e->state));
-		return TRUE;
-	} have to use for _ and others*/
-	/**ignore Ctrl-Alt  */
-	if((GDK_CONTROL_MASK|GDK_MOD1_MASK)==(e->state & (GDK_CONTROL_MASK|GDK_MOD1_MASK)))
-		return FALSE;
-	if( e->state & GDK_MOD1_MASK){/**alt key pressed  */
-		if(e->keyval == 'e'){
-			TRACE(g_fprintf(stderr,"Alt-E\n"));
-			gtk_grab_remove(w);
-		  edit_selected((GtkMenuItem *)h, (gpointer)h);
-			return TRUE;
-		}
-			
-		else if(e->keyval == 'c'){
-			TRACE(g_fprintf(stderr,"Alt-C\n"));
-			clear_selected(NULL, (gpointer)h); 
-			return TRUE;
-		}	else{
-			TRACE(g_fprintf(stderr,"Ignoring Alt-%c (0x%02x) state 0x%x",e->keyval,e->keyval,e->state));
-		}
-		return FALSE;
-	}	/**end alt key pressed  */
-	if(e->state & (GDK_MODIFIER_MASK_MINE))	/**ignore all modifier keys  */
-		return FALSE;
-	if(e->state &GDK_SHIFT_MASK   && !get_pref_int32("case_search"))	/**ignore shift   */
-		return FALSE;
-	if( GDK_EXPOSE== e->type || GDK_BUTTON_RELEASE==e->type)	/**fix bug 3560995, item 1/2, red clipboard.  */
-		return FALSE;
-	if(e->keyval == 0xff08){/**backspace  */
-//		g_printf("0x%x bs %d ",e->type,idx);
-		if(idx)
-			--idx;
-    else if( NULL != h->clip_item){
-      gtk_menu_shell_select_item((GtkMenuShell *)h->menu,(GtkWidget *)h->clip_item);
-    }
-    set_widget_bg(NULL,h->menu);
-		kstr[idx]=0;
-	//	g_printf(" %d\n",idx);
-		return TRUE;
-	}	/**end backspace  */
-	if( e->keyval == 0xffe1 || e->keyval == 0xffe2){
-		/*fprintf(stderr,"Ignoring key '%c' 0x%02x\n",e->keyval,e->keyval); */
-		TRACE(g_fprintf(stderr,"Ignoring key '%c' 0x%02x\n",e->keyval,e->keyval));	
-		return FALSE;
-	}
-  if(e->keyval >= 0xff50 && e->keyval <= 0xff57) /**arrow keys, home,end,pgup,pgdwn  */
-  	return FALSE;
-  	
-	if(idx>=KBUF_SIZE){
-		TRACE(g_fprintf(stderr,"keys full\n"));
-		return TRUE;
-	}
-	kstr[idx++]=e->keyval;
-	kstr[idx]=0;
-	for ( off=0; off<50;++off){ /** this loop does a char search based on offset  */
-		children=gtk_container_get_children((GtkContainer *)h->menu);
-		item=NULL;
-		current=first=0; /**first is edit,   */
-		while(NULL != children->next){
-			gchar *l;
-			gint slen;
-			GtkWidget *child=gtk_bin_get_child((GtkBin*)children->data);
-			if(GTK_IS_LABEL(child)){
-				l=(gchar *)gtk_label_get_text((GtkLabel *)child);
-				slen=strlen(l);
-				if(slen>off){
-					gint c;
-					if(get_pref_int32("case_search"))
-						c=strncmp(kstr,&l[off],idx);
-					else
-						c=g_ascii_strncasecmp(kstr,&l[off],idx);
-					if(!c){
-						if(0 ==current){
-							first=1;
-						}	else{
-							first=0;
-						}
-						
-						if(!first ){
-							TRACE(g_fprintf(stderr,"Got cmp'%s'='%s'\n",kstr,l));
-							item=(GtkWidget *)children->data;
-							goto foundit;
-						}
-						
-					}		
-				}
+			else if (e->type == GDK_KEY_PRESS && ke->keyval == GDK_KEY_BackSpace) {
+				on_history_menu_im_context_commit(NULL, NULL, h);
+				return TRUE;
 			}
-			children=children->next;
-			++current;
-		}	
-  }
-  /**didn't find it. Set our title and return */
-  set_widget_bg("red",h->menu);
-  return TRUE;
-foundit:
-  set_widget_bg(NULL,h->menu);
-	/**user->children...
-	GList *children;  
-	gpointer data,next,prev
-	data should be a GtkMenuItem list, whose children are labels...
-	*/	 
-	/*str=(gchar *)gtk_label_get_text((GtkLabel *)gtk_bin_get_child((GtkBin*)children->data)); */
-	TRACE(g_fprintf(stderr,"Got '%c' 0x%02x, state 0x%02X",e->keyval,e->keyval,e->state));
-	if(NULL !=item){
-		if(first){TRACE(g_fprintf(stderr,"First:"));}
-		/*if(last)TRACE(g_fprintf(stderr,"Last:")); */
-		TRACE(g_fprintf(stderr,"At Item '%s'",gtk_label_get_text((GtkLabel *)gtk_bin_get_child((GtkBin*)item))));
-		gtk_menu_shell_select_item((GtkMenuShell *)h->menu,(GtkWidget *)item);
+		}
+
+		if (e->type == GDK_KEY_PRESS && e->state & GDK_MOD1_MASK){ /* alt key pressed  */
+			if(e->keyval == 'e'){
+				TRACE(g_fprintf(stderr,"Alt-E\n"));
+				gtk_grab_remove(w);
+				edit_selected((GtkMenuItem *)h, (gpointer)h);
+				return TRUE;
+			}
+			else if(e->keyval == 'c'){
+				TRACE(g_fprintf(stderr,"Alt-C\n"));
+				clear_selected(NULL, (gpointer)h);
+				return TRUE;
+			}
+		}
 	}
-		
-	TRACE(g_fprintf(stderr,"\n"));
-	return TRUE;
-}	
+
+	return FALSE;
+}
 
 /***************************************************************************/
 /** Set clipboard from history list.
@@ -1755,8 +1672,19 @@ static gboolean do_show_history_menu(gpointer data)
 	h.element_text = NULL;
 	h.wi.index = -1;
 
-	/**init our keystroke function  */
-	key_release_cb(NULL,NULL,NULL);
+	if (!h.search_string)
+		h.search_string = g_string_new("");
+	else
+		g_string_truncate(h.search_string, 0);
+
+	if (!h.im_context) {
+		h.im_context = gtk_im_multicontext_new();
+		gtk_im_context_set_use_preedit(h.im_context, FALSE);
+		g_signal_connect((GObject *) h.im_context, "commit",
+			(GCallback) on_history_menu_im_context_commit, (gpointer)&h);
+	}
+	gtk_im_context_reset(h.im_context);
+
 
 	GList * element, * persistent = NULL;
 	GList * lhist = NULL;
@@ -1778,10 +1706,7 @@ static gboolean do_show_history_menu(gpointer data)
 	g_signal_connect((GObject*)menu, "selection-done", (GCallback)selection_done, &h); 
 	/*g_signal_connect((GObject*)menu, "selection-done", (GCallback)gtk_widget_destroy, NULL); */
 	/**Trap key events  */
-	/*g_signal_connect((GObject*)menu, "key-release-event", (GCallback)key_release_cb, (gpointer)&h); */
 	g_signal_connect((GObject*)menu, "event", (GCallback)key_release_cb, (gpointer)&h);
-	/**trap mnemonic events  */
-	/*g_signal_connect((GObject*)menu, "mnemonic-activate", (GCallback)key_release_cb, (gpointer)menu);  */
 
 	/* -------------------- */
 	/*gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new()); */
@@ -1854,6 +1779,9 @@ static gboolean do_show_history_menu(gpointer data)
 				(GCallback)my_item_event, GINT_TO_POINTER(element_number));
 			g_signal_connect((GObject*)menu_item, "activate",
 				(GCallback)item_selected, GINT_TO_POINTER(element_number));
+
+			g_object_set_data_full((GObject *) menu_item, history_text_casefold_key,
+				g_utf8_casefold(hist_text, -1), g_free);
 
 			/* Modify menu item label properties */
 			item_label = gtk_bin_get_child((GtkBin*)menu_item);
@@ -1941,6 +1869,7 @@ next_loop:
 		g_signal_connect((GObject*)menu_item, "activate", (GCallback)clear_selected, (gpointer)&h);
 		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
 	}
+
 	g_list_free(lhist);
 	g_list_free(persistent);
 	/*g_signal_connect(menu,"deactivate",(GCallback)destroy_history_menu,(gpointer)&h); */
@@ -2253,12 +2182,16 @@ int main(int argc, char *argv[])
 	struct cmdline_opts *opts;
 	int mode;
 	
-  bindtextdomain(GETTEXT_PACKAGE, PARCELLITELOCALEDIR);
-  bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-  textdomain(GETTEXT_PACKAGE);
-  
-  /* Initiate GTK+ */
-  gtk_init(&argc, &argv);
+	bindtextdomain(GETTEXT_PACKAGE, PARCELLITELOCALEDIR);
+	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+	textdomain(GETTEXT_PACKAGE);
+
+	/* Initiate GTK+ */
+	gtk_init(&argc, &argv);
+
+	history_text_casefold_key = g_strdup_printf("Parcellite history_text_casefold_key %x%x",
+		(unsigned) g_random_int(), (unsigned) g_random_int());
+
 	/**this just maps to the static struct, prefs do not need to be loaded  */
 	pref_mapper(pref2int_map,PM_INIT); 
 	check_dirs(); /**make sure we set up default RC if it doesn't exist.  */

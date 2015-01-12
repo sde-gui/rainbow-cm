@@ -50,15 +50,19 @@ struct s_item_info {
 };
 
 struct history_info{
-  GtkWidget *menu;			/**top level history menu  */
-  GtkWidget *clip_item; /**currently selected history item (represents clipboard)  */
+	GtkWidget *menu;			/**top level history menu  */
+	GtkWidget *clip_item; /**currently selected history item (represents clipboard)  */
 	gchar *element_text;	/**texts of selected history clipboard item  */
-  GtkWidget *title_item;
+	GtkWidget *title_item;
 	GList *delete_list; /**struct s_item_info - for the delete list  */
 	GList *persist_list; /**struct s_item_info - for the persistent list  */
 	struct widget_info wi;  /**temp  for usage in popups  */
 	guint histno;           /**which history?  HIST_DISPLAY_NORMAL/HIST_DISPLAY_PERSISTENT*/
 	gint change_flag;	/**bit wise flags for history state  */
+	GtkIMContext * im_context;
+	GString * search_string;
+	gchar * search_string_casefold;
+	GtkWidget * first_matched;
 };
 
 int p_strcmp (const char *str1, const char *str2);

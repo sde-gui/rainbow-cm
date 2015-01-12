@@ -93,7 +93,6 @@ struct pref_item {
 };
 static struct pref_item dummy[2];
 static void check_toggled(GtkToggleButton *togglebutton, gpointer user_data);
-static void search_toggled(GtkToggleButton *b, gpointer user);
 static gint dbg=0;
 struct pref2int *pref2int_mapper=NULL;
 
@@ -124,8 +123,7 @@ struct pref_item myprefs[]={
   
   /**Miscellaneous  */  
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Miscellaneous</b>",.tip=NULL,.val=0},
-	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)search_toggled,.sec=PREF_SEC_MISC,.name="type_search",.type=PREF_TYPE_TOGGLE,.desc="Search As You Type",.tip="If checked, does a search-as-you-type. Turns red if not found. Goes to top (Alt-E) line when no chars are entered for search"},
-  {.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)search_toggled,.sec=PREF_SEC_MISC,.name="case_search",.type=PREF_TYPE_TOGGLE,.desc="Case Sensitive Search",.tip="If checked, does case sensitive search"},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name="type_search",.type=PREF_TYPE_TOGGLE,.desc="Search As You Type",.tip="Instant search in the history menu."},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc="Ignore Whitespace Only",.tip="If checked, will ignore any clipboard additions that contain only whitespace."},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="trim_wspace_begend",.type=PREF_TYPE_TOGGLE,.desc="Trim Whitespace",.tip="If checked, will trim whitespace from beginning and end of entry."},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="trim_newline",.type=PREF_TYPE_TOGGLE,.desc="Trim Newlines",.tip="If checked, will replace newlines with spaces."},
@@ -524,8 +522,6 @@ static void save_preferences()
   /* Create key */
   GKeyFile* rc_key = g_key_file_new();
 	g_key_file_set_integer(rc_key, "rc", RC_VERSION_NAME, RC_VERSION);
-  if(0 == get_pref_int32("type_search"))
-    set_pref_int32("case_search",0);
   /* Add values */
 	for (i=0;NULL != myprefs[i].desc; ++i){
 		if(NULL == myprefs[i].name)
@@ -608,12 +604,6 @@ void read_preferences(int mode)
 				g_printf("Unable to load pref '%s'\n",myprefs[i].name);
 			if(dbg)g_printf("rp:Set '%s' to %d (%s)\n",myprefs[i].name, myprefs[i].val, myprefs[i].cval);
 		}
-    p=get_pref("type_search");
-    if(0 == p->val){
-			p=get_pref("case_search");
-			p->val=0;
-		}
-      
     /* Check for errors and set default values if any */
     check_sanity(mode);
   }
@@ -736,24 +726,6 @@ static void check_toggled(GtkToggleButton *togglebutton, gpointer user_data)
     gtk_widget_set_sensitive((GtkWidget*)get_pref_widget("synchronize"), FALSE);
 
   }
-}
-
-static void search_toggled(GtkToggleButton *b, gpointer user)
-{
-	struct pref_item *u,*p;
-	u=get_pref_by_widget((GtkWidget *)user);
-	p=get_pref("case_search");
-	
-  if(u == p){
-    if(TRUE == gtk_toggle_button_get_active((GtkToggleButton*)p->w) && 
-      FALSE == gtk_toggle_button_get_active((GtkToggleButton*)get_pref_widget("type_search")) )
-      gtk_toggle_button_set_active((GtkToggleButton*)get_pref_widget("type_search"), TRUE);
-  }else if( u == get_pref("type_search")){
-    if(FALSE == gtk_toggle_button_get_active((GtkToggleButton*)get_pref_widget("type_search")) &&
-      TRUE == gtk_toggle_button_get_active((GtkToggleButton*)p->w) )
-      gtk_toggle_button_set_active((GtkToggleButton*)p->w, FALSE);    
-  }
-
 }
 
 /* Called when Add... button is clicked */
