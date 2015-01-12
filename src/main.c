@@ -1574,8 +1574,6 @@ foundit:
 ****************************************************************************/
 void set_clipboard_text(struct history_info *h, GList *element)
 {
-	int auto_whatever=0;
-	gchar *action=NULL;
 	gchar *txt=NULL;
 	gchar *cmd=NULL;
 	if(NULL == find_h_item(h->delete_list,NULL,element)){	/**not in our delete list  */
@@ -1586,42 +1584,11 @@ void set_clipboard_text(struct history_info *h, GList *element)
 			update_clipboard(clipboard, txt, H_MODE_LIST);
 		if(use_primary)
 	  	update_clipboard(primary, txt, H_MODE_LIST);	
-		
-		auto_whatever=1;
 	}
   g_signal_emit_by_name ((gpointer)h->menu,"selection-done");
-	if(0 == auto_whatever)
-		return;
-	/*g_printf("set_clip_text done\n");  */
 	
-	if (get_pref_int32("automatic_paste")) { /** mousedown 2 */
-		if(get_pref_int32("auto_mouse"))
-			action=g_strdup("mousedown 2 && xdotool mouseup 2'");
-		else if(get_pref_int32("auto_key"))
-			action=g_strdup("key ctrl+v'");
-	}
-	
-	if( get_pref_int32("key_input")) 
-		action=g_strconcat("type \"",txt,"\"'",NULL);
-		
-	if(NULL == action)
-			goto done;
-	/**from clipit 1.4.1 */
-  cmd = g_strconcat("/bin/sh -c 'xdotool ", action, NULL);
-	g_fprintf(stderr,"xdotool:'%s'\ntext:'%s'\n",cmd,txt);
-  GPid pid;
-  gchar **argv;
-  g_shell_parse_argv(cmd, NULL, &argv, NULL);
-  g_free(cmd);
-  g_spawn_async(NULL, argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL);
-  g_child_watch_add(pid, (GChildWatchFunc)action_exit, NULL);
-  g_strfreev(argv);
-  /**end from clipit 1.4.1 */
-done:
 	if(NULL != txt)
 		g_free(txt);
-	if(NULL != action)
-		g_free(action);
 }
 
 
@@ -2191,7 +2158,7 @@ static void parcellite_init()
   primary = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
   clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
 	/**check to see if optional helpers exist.  */
-  check_for_tools();
+
 	if(FALSE ==g_thread_supported()){
 		g_fprintf(stderr,"g_thread not init!\n");
 	}

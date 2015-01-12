@@ -46,11 +46,8 @@ struct tool_flag {
 #define PM_INIT 0
 #define PM_UPDATE 1
 
-#define TOOL_XDOTOOL 0x01
-extern struct tool_flag tool_flags[];
 extern struct keys keylist[];
 /*struct pref_item* get_pref(char *name); */
-void check_for_tools( void );
 int get_first_pref(int section);
 void pref_mapper (struct pref2int *m, int mode);
 int init_pref( void );
