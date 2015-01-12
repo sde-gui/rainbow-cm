@@ -141,7 +141,7 @@ typedef struct {
 /***************************************************************************/
 
 /**speed up pref to int lookup.  */
-int hyperlinks_only,ignore_whiteonly,trim_newline,trim_wspace_begend,use_primary,use_copy,current_on_top,restore_empty,synchronize;
+int hyperlinks_only,ignore_whiteonly,trim_newline,trim_wspace_begend,use_primary,use_copy,restore_empty,synchronize;
 static struct pref2int pref2int_map[]={
 	{.val=&hyperlinks_only,.name="hyperlinks_only"},
 	{.val=&ignore_whiteonly,.name="ignore_whiteonly"},
@@ -149,7 +149,6 @@ static struct pref2int pref2int_map[]={
 	{.val=&trim_wspace_begend,.name="trim_wspace_begend"},
 	{.val=&use_primary,.name="use_primary"},
 	{.val=&use_copy,.name="use_copy"},
-	{.val=&current_on_top,.name="current_on_top"},
 	{.val=&restore_empty,.name="restore_empty"},
 	{.val=&synchronize,.name="synchronize"},
 	{.val=NULL,.name=NULL},		
@@ -425,7 +424,7 @@ gchar *update_clipboard(GtkClipboard *clip,gchar *intext,  gint mode)
 		DTRACE(g_fprintf(stderr,"%sInList '%s' ex '%s'\n",clip==clipboard?"CLI":"PRI",intext,*existing)); 
 		last=_update_clipboard(clip,intext,existing,1,mode);
 		if( NULL != last){/**maintain persistence, if set  */
-			append_item(last,current_on_top?HIST_DEL|HIST_CHECKDUP|HIST_KEEP_FLAGS:0,0,CLIP_TYPE_TEXT);
+			append_item(last,HIST_DEL|HIST_CHECKDUP|HIST_KEEP_FLAGS,0,CLIP_TYPE_TEXT);
 		}
 		goto done;
 	}
@@ -485,7 +484,7 @@ gchar *update_clipboard(GtkClipboard *clip,gchar *intext,  gint mode)
 				
 		}
 		if(NULL != last)
-			append_item(last,current_on_top?HIST_DEL|HIST_CHECKDUP|HIST_KEEP_FLAGS:0,0,CLIP_TYPE_TEXT);
+			append_item(last,HIST_DEL|HIST_CHECKDUP|HIST_KEEP_FLAGS,0,CLIP_TYPE_TEXT);
 		g_free(changed);
 		changed=NULL;
 	}
@@ -506,7 +505,7 @@ gchar *update_clipboard(GtkClipboard *clip,gchar *intext,  gint mode)
 		if(NULL != processed){
 			last=_update_clipboard(clip,processed,existing,set,mode);
 			if(NULL != last)
-				append_item(last,current_on_top?HIST_DEL|HIST_CHECKDUP|HIST_KEEP_FLAGS:0,0,CLIP_TYPE_TEXT);
+				append_item(last,HIST_DEL|HIST_CHECKDUP|HIST_KEEP_FLAGS,0,CLIP_TYPE_TEXT);
 		}else 
 			return NULL;	
 	}
