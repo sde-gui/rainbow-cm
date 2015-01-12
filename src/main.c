@@ -1291,19 +1291,19 @@ static gboolean show_actions_menu(gpointer data)
 ****************************************************************************/
 static gboolean selection_done(GtkMenuShell *menushell, gpointer user_data) 
 {
-	struct history_info *h=(struct history_info *)user_data;
-	/*g_printf("%s: %p %p\n",__func__,h,NULL == h?0:h->delete_list); */
-	if(NULL != h && NULL != h->delete_list){/**have a list of items to delete.  */
+	struct history_info * h = (struct history_info *) user_data;
+	if (h && h->delete_list) {
 		remove_deleted_items(h);
 		goto done;
-	}	
+	}
+
 	/*g_print("selection_active=%d\n",selection_active); */
 	/*g_print("Got selection_done\n"); */
-	if(h->change_flag && get_pref_int32("save_history")){
+	if (h && h->change_flag && get_pref_int32("save_history")) {
 		save_history();
-		h->change_flag=0;
+		h->change_flag = 0;
 	}
-		  
+
 done:
 	/*gtk_widget_destroy((GtkWidget *)menushell); - fixes annoying GTK_IS_WIDGET/GTK_IS_WINDOW
 	  warnings from GTK when history dialog is destroyed. */
