@@ -1966,21 +1966,15 @@ next_loop:
 		persistent = g_list_reverse(persistent);
 	}	
 
-/**now actually add them from the list  */	
-	if(get_pref_int32("persistent_history")){
-		if(get_pref_int32("persistent_on_top")){
-			write_history_menu_items(persistent,menu);
-			gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new()); 
-			write_history_menu_items(lhist,menu);
-		}	else{
-			write_history_menu_items(lhist,menu);
-			gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new()); 
-			write_history_menu_items(persistent,menu);
-		}
-	}else {	/**normal old operation, forget about persistence.  */
+	/**now actually add them from the list  */
+	if (get_pref_int32("persistent_history")){
+		write_history_menu_items(lhist,menu);
+		gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new()); 
+		write_history_menu_items(persistent,menu);
+	} else {
 		write_history_menu_items(lhist,menu);
 	}
-	
+
 	/* -------------------- */
 	gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
 	
