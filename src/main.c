@@ -1816,7 +1816,6 @@ static gboolean do_show_history_menu(gpointer data)
 	key_release_cb(NULL,NULL,NULL);
 	GList *element, *persistent=NULL;
 	GList *lhist=NULL;
-	int single_line=get_pref_int32("single_line");
 	
   /* Create the menu */
   menu = gtk_menu_new();
@@ -1919,12 +1918,7 @@ static gboolean do_show_history_menu(gpointer data)
       
       /* Modify menu item label properties */
       item_label = gtk_bin_get_child((GtkBin*)menu_item);
-			if(single_line){
-				/*gtk_label_set_line_wrap  */
-				gtk_label_set_single_line_mode((GtkLabel*)item_label, TRUE);
-			}	else{
-				gtk_label_set_single_line_mode((GtkLabel*)item_label, FALSE);
-			}
+			gtk_label_set_single_line_mode((GtkLabel*)item_label, TRUE);
       
       /* Check if item is also clipboard text and make bold */
       if ((clipboard_temp) && (p_strcmp(hist_text, clipboard_temp) == 0))
