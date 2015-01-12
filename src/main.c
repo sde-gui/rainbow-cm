@@ -1854,11 +1854,7 @@ static gboolean do_show_history_menu(gpointer data)
     gint element_number = 0;
     gchar* primary_temp = gtk_clipboard_wait_for_text(primary);
     gchar* clipboard_temp = gtk_clipboard_wait_for_text(clipboard);
-    /* Reverse history if enabled */
-    if (0 && get_pref_int32("reverse_history")) {
-      /*history_list = g_list_reverse(history_list); */
-      element_number = g_list_length(history_list) - 1;
-    }
+
     /* Go through each element and adding each */
     for (element = history_list; element != NULL; element = element->next) {
 			struct history_item *c=(struct history_item *)(element->data);
@@ -1964,17 +1960,11 @@ static gboolean do_show_history_menu(gpointer data)
       /* Prepare for next item */
       g_string_free(string, TRUE);
 next_loop:
-      /** if (get_pref_int32("reverse_history"))
-        element_number--;
-      else*/
         element_number++;
     }	/**end of for loop for each history item  */
     /* Cleanup */
     g_free(primary_temp);
     g_free(clipboard_temp);
-    /* Return history to normal if reversed */
-    /** if (get_pref_int32("reverse_history"))
-      history_list = g_list_reverse(history_list);*/
   }
   else
   {
@@ -1983,10 +1973,12 @@ next_loop:
     gtk_widget_set_sensitive(menu_item, FALSE);
     gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
   }
-	if (!get_pref_int32("reverse_history")) {
+
+	{
 		lhist = g_list_reverse(lhist);
 		persistent = g_list_reverse(persistent);
 	}	
+
 /**now actually add them from the list  */	
 	if(get_pref_int32("persistent_history")){
 		if(get_pref_int32("persistent_on_top")){
@@ -2032,10 +2024,7 @@ next_loop:
   gtk_widget_show_all(menu);
   gtk_menu_popup((GtkMenu*)menu, NULL, NULL, query->mouse_button ? NULL : on_history_menu_position, NULL, query->mouse_button, query->activate_time);
 	/**set last entry at first -fixes bug 2974614 */
-	if(get_pref_int32("reverse_history") && NULL != h.clip_item)
-		gtk_menu_shell_select_item((GtkMenuShell*)menu,h.clip_item);
-	else	
-		gtk_menu_shell_select_first((GtkMenuShell*)menu, TRUE);
+	gtk_menu_shell_select_first((GtkMenuShell*)menu, TRUE);
 
 end:
 	g_free(query);
