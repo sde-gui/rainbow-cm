@@ -1031,49 +1031,43 @@ void  history_item_right_click (struct history_info *h, GdkEventKey *e, gint ind
 		return;
 	}
 	
+	menu = gtk_menu_new();
+	gtk_menu_attach_to_widget((GtkMenu *)h->menu,menu,destroy_right_click_history_cb); /**fix  */
+
+	menuitem = gtk_menu_item_new_with_label("Copy All to Clip");
+	g_signal_connect(menuitem, "activate", (GCallback) history_item_right_click_on_copy_all, (gpointer)h);
+
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+	/*g_printf("CreatehistR\n"); */
 	if(get_pref_int32("persistent_history")) {
-		menu = gtk_menu_new(); 
-		gtk_menu_attach_to_widget((GtkMenu *)h->menu,menu,destroy_right_click_history_cb); /**fix  */
-		
-		menuitem = gtk_menu_item_new_with_label("Copy All to Clip");
-	  g_signal_connect(menuitem, "activate", (GCallback) history_item_right_click_on_copy_all, (gpointer)h);
-		
-	  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-		/*g_printf("CreatehistR\n"); */
 		if(NULL != c){
 			if(c->flags & CLIP_TYPE_PERSISTENT)
 				menuitem = gtk_menu_item_new_with_label("Move To Normal");
 			else
 				menuitem = gtk_menu_item_new_with_label("Move To Persistent");
 		}	else
-	    menuitem = gtk_menu_item_new_with_label("Move To?");
-	
-	  g_signal_connect(menuitem, "activate",(GCallback) history_item_right_click_on_move, (gpointer)h);
-	  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-		if(get_pref_int32("rc_edit") ){
-			menuitem = gtk_menu_item_new_with_label("Edit");
-		  g_signal_connect(menuitem, "activate", (GCallback) history_item_right_click_on_edit, (gpointer)h);
-		  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);	
-		}	
-		
-		menuitem = gtk_menu_item_new_with_label("Cancel");
-	  g_signal_connect(menuitem, "activate", (GCallback) history_item_right_click_on_cancel, (gpointer)h);
-	  gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);	
-	
-	  gtk_widget_show_all(menu);
-	
-	  /* Note: event can be NULL here when called from view_onPopupMenu;
-	   *  gdk_event_get_time() accepts a NULL argument */
-	   gtk_menu_popup(GTK_MENU(menu), h->menu, NULL, NULL, NULL,
-										0,
-	                 /*(e != NULL) ? ((GdkEventButton *)e)->button : 0, */
-	                 gdk_event_get_time((GdkEvent*)e));
-		/*gtk_widget_grab_focus(menu);  */	
-	}else if(get_pref_int32("rc_edit") ){ /**just edit the selected text  */
-		h->wi.tmp1|=EDIT_MODE_USE_RIGHT_CLICK|EDIT_MODE_RC_EDIT_SET;
-		edit_selected((GtkMenuItem *)NULL,(gpointer)h);
+		menuitem = gtk_menu_item_new_with_label("Move To?");
+		g_signal_connect(menuitem, "activate",(GCallback) history_item_right_click_on_move, (gpointer)h);
+		gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 	}
+
+	menuitem = gtk_menu_item_new_with_label("Edit");
+	g_signal_connect(menuitem, "activate", (GCallback) history_item_right_click_on_edit, (gpointer)h);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+
+	menuitem = gtk_menu_item_new_with_label("Cancel");
+	g_signal_connect(menuitem, "activate", (GCallback) history_item_right_click_on_cancel, (gpointer)h);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 	
+	gtk_widget_show_all(menu);
+
+	/* Note: event can be NULL here when called from view_onPopupMenu;
+	 *  gdk_event_get_time() accepts a NULL argument */
+	gtk_menu_popup(GTK_MENU(menu), h->menu, NULL, NULL, NULL,
+		0,
+		/*(e != NULL) ? ((GdkEventButton *)e)->button : 0, */
+		gdk_event_get_time((GdkEvent*)e));
+	/*gtk_widget_grab_focus(menu);  */
 }
 
 /* Called when Clear is selected from history menu */
