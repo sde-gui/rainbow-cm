@@ -2032,14 +2032,10 @@ end:
 static guint figure_histories(void)
 {
 	guint i;
-	if(get_pref_int32("persistent_history")){ 
-		if(get_pref_int32("persistent_separate"))
-			i=HIST_DISPLAY_NORMAL;
-		else
-			i=HIST_DISPLAY_PERSISTENT|HIST_DISPLAY_NORMAL;
-	}else 
-		i=HIST_DISPLAY_NORMAL;
-	/*g_printf("Using history 0x%X\n",i); */
+	if(get_pref_int32("persistent_history"))
+		i = HIST_DISPLAY_PERSISTENT | HIST_DISPLAY_NORMAL;
+	else
+		i = HIST_DISPLAY_NORMAL;
 	return i;
 }
 
@@ -2194,12 +2190,6 @@ void create_app_indicator(void)
 void history_hotkey(char *keystring, gpointer user_data)
 {
   show_history_menu(figure_histories(), 0, GDK_CURRENT_TIME);
-}
-/* Called when persistent history global hotkey is pressed */
-void phistory_hotkey(char *keystring, gpointer user_data)
-{
-	if(get_pref_int32("persistent_history") && get_pref_int32("persistent_separate"))
-		show_history_menu(HIST_DISPLAY_PERSISTENT, 0, GDK_CURRENT_TIME);
 }
 
 /* Called when actions global hotkey is pressed */
@@ -2438,7 +2428,6 @@ int main(int argc, char *argv[])
 #endif
 	
   /* Unbind keys */
-	keybinder_unbind(get_pref_string("phistory_key"), phistory_hotkey);
   keybinder_unbind(get_pref_string("history_key"), history_hotkey);
   keybinder_unbind(get_pref_string("actions_key"), actions_hotkey);
   keybinder_unbind(get_pref_string("menu_key"), menu_hotkey);

@@ -36,7 +36,6 @@ void setup_icon( void ); /**in main.c  */
 #define DEF_ITEM_LENGTH       50
 #define DEF_ITEM_LENGTH_MAX   200
 #define DEF_ELLIPSIZE         2
-#define DEF_PHISTORY_KEY      "<Ctrl><Alt>X"
 #define DEF_HISTORY_KEY       "<Ctrl><Alt>H"
 #define DEF_ACTIONS_KEY       "<Ctrl><Alt>A"
 #define DEF_MENU_KEY          "<Ctrl><Alt>P"
@@ -108,12 +107,11 @@ struct tool_flag tool_flags[]={
 struct keys keylist[]={
 	{.name="menu_key",.keyval=DEF_MENU_KEY,.keyfunc=(void *)menu_hotkey},
 	{.name="history_key",.keyval=DEF_HISTORY_KEY,.keyfunc=(void *)history_hotkey},
-	{.name="phistory_key",.keyval=DEF_PHISTORY_KEY,.keyfunc=(void *)phistory_hotkey},
 	{.name="actions_key",.keyval=DEF_ACTIONS_KEY,.keyfunc=(void *)actions_hotkey},
 	{.name=NULL,.keyval=NULL,.keyfunc=(void *)0},
 };
 /**must be in same order as above struct array  */
-gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY,DEF_PHISTORY_KEY,DEF_ACTIONS_KEY};
+gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY,DEF_ACTIONS_KEY};
 struct pref_item myprefs[]={
 /**Behaviour  */	
 	/**Clipboards  */
@@ -151,7 +149,6 @@ struct pref_item myprefs[]={
 	{.adj=&align_line_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="item_length",.type=PREF_TYPE_SPIN,.desc="  Character length of items",.tip=NULL,.val=DEF_ITEM_LENGTH},  
   {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="persistent_history",.type=PREF_TYPE_TOGGLE,.desc="Persistent History",.tip="If checked, enables the persistent history.",.val=FALSE},
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="persistent_separate",.type=PREF_TYPE_TOGGLE,.desc="Persistent As Separate List",.tip="If checked, puts the persistent history in a new list.",.val=FALSE},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="persistent_on_top",.type=PREF_TYPE_TOGGLE,.desc="Persistent On Top",.tip="If checked, puts the persistent history at the top of the history list.",.val=FALSE},
 	{.adj=NULL,.cval="\\n",.sig=NULL,.sec=PREF_SEC_DISP,.name="persistent_delim",.type=PREF_TYPE_ENTRY,.desc="Paste All Entry Delimiter",.tip="This string will be inserted between each line of history for paste all."},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nonprint_disp",.type=PREF_TYPE_TOGGLE,.desc="Alternate Non-printing Display",.tip="If checked, will display tabs with Right arrow (utf8,\\2192), newlines with pharagrph(\\204b), and spaces with square-u(\\2423).", .val=FALSE},
@@ -169,7 +166,6 @@ struct pref_item myprefs[]={
 /**Action Keys  */
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc="Menu key combination",.tip=NULL},	
   {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="history_key",.type=PREF_TYPE_ENTRY,.desc="History key combination:",.tip=NULL},
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="phistory_key",.type=PREF_TYPE_ENTRY,.desc="Persistent history key:",.tip=NULL},
   {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="actions_key",.type=PREF_TYPE_ENTRY,.desc="Actions key combination:",.tip=NULL},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name="no_icon",.val=FALSE},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name=NULL,.desc=NULL},
@@ -533,10 +529,7 @@ void check_sanity(int mode)
 
 	
 	if(get_pref_int32("persistent_history")){
-	 	if(get_pref_int32("persistent_separate"))
-	 		set_pref_int32("persistent_on_top",0);
 	}else{
-		set_pref_int32("persistent_separate",0);
 	  set_pref_int32("persistent_on_top",0);
 	}
 	if(get_pref_int32("automatic_paste")){
