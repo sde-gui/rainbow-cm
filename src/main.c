@@ -157,22 +157,6 @@ static struct pref2int pref2int_map[]={
 /**protos in this file  */
 void create_app_indicator(void);
 
-/**Turns up in 2.16  */
-int p_strcmp (const char *str1, const char *str2)
-{
-#if (GTK_MAJOR_VERSION > 2 || ( GTK_MAJOR_VERSION == 2 && GTK_MAJOR_VERSION >= 16))
-  return g_strcmp0(str1,str2);
-#else
-  if(NULL ==str1 && NULL == str2)
-    return 0;
-  if(NULL ==str1 && str2)
-    return -1;
-  if(NULL ==str2 && str1)
-    return 1;
-  return strcmp(str1,str2);
-#endif
-}
-
 /***************************************************************************/
 /** Process the text based on our preferences.
 WARNING! This modifies ntext!
@@ -350,7 +334,7 @@ int do_we_set_clipboard(GtkClipboard *clip,gchar *intext,gchar **processed, int 
 	/**process_new_item  */
 	if(NULL != (*processed=process_new_item(clip,intext,mod)) ){
 		/**clipboard already has selection, no need to update if we did not change it via processing  */
-		if(0 == p_strcmp(*processed,unproc_clip))set=0;
+		if(0 == g_strcmp0(*processed,unproc_clip))set=0;
 		else set=1;
 	}	else
 		set=0;
@@ -420,7 +404,7 @@ gchar *update_clipboard(GtkClipboard *clip,gchar *intext,  gint mode)
 		/*gtk_clipboard_set_text(clip, intext, -1); */
 		return intext;
 	}
-	if(H_MODE_LIST == mode && 0 != p_strcmp(intext,*existing)){ /**just set clipboard contents. Already in list  */
+	if(H_MODE_LIST == mode && 0 != g_strcmp0(intext,*existing)){ /**just set clipboard contents. Already in list  */
 		DTRACE(g_fprintf(stderr,"%sInList '%s' ex '%s'\n",clip==clipboard?"CLI":"PRI",intext,*existing)); 
 		last=_update_clipboard(clip,intext,existing,1,mode);
 		if( NULL != last){/**maintain persistence, if set  */
@@ -453,7 +437,7 @@ gchar *update_clipboard(GtkClipboard *clip,gchar *intext,  gint mode)
 	
 	/**check for changed clipboard content - in all modes */
 	/*changed=gtk_clipboard_wait_for_text(clip); */
-	if(0 == p_strcmp(*existing, changed) ){
+	if(0 == g_strcmp0(*existing, changed) ){
 		g_free(changed);                    /**no change, do nothing  */
 		changed=NULL;
 	}	else {
@@ -534,27 +518,27 @@ void update_clipboards(gchar *intext, gint mode)
 void do_command(gchar *buf, gint len)
 {
   g_printf("Got '%s' cmd\n",buf);
-	if(!p_strcmp(buf,FIFCMD_RUN_ALL)) {
+	if(!g_strcmp0(buf,FIFCMD_RUN_ALL)) {
 		cmd_mode|=CMODE_ALL;
 		return;
 	}	
-	if(!p_strcmp(buf,FIFCMD_RUN_CLI)) {
+	if(!g_strcmp0(buf,FIFCMD_RUN_CLI)) {
 		cmd_mode|=CMODE_CLI;
 		return;
 	}	
-	if(!p_strcmp(buf,FIFCMD_RUN_PRI)) {
+	if(!g_strcmp0(buf,FIFCMD_RUN_PRI)) {
 		cmd_mode|=CMODE_PRI;
 		return;
 	}	
-	if(!p_strcmp(buf,FIFCMD_STOP_ALL)) {
+	if(!g_strcmp0(buf,FIFCMD_STOP_ALL)) {
 		cmd_mode&=~(CMODE_ALL);
 		return;
 	}
-		if(!p_strcmp(buf,FIFCMD_STOP_CLI)) {
+		if(!g_strcmp0(buf,FIFCMD_STOP_CLI)) {
 		cmd_mode&=~(CMODE_CLI);
 		return;
 	}
-		if(!p_strcmp(buf,FIFCMD_STOP_PRI)) {
+		if(!g_strcmp0(buf,FIFCMD_STOP_PRI)) {
 		cmd_mode&=~(CMODE_PRI);
 		return;
 	}
@@ -617,7 +601,7 @@ void check_clipboards(gint mode)
 			goto done;
 		last=update_clipboard(NULL, NULL, H_MODE_LAST);
 		/*g_printf("pt=%s,ct=%s, last=%s\n",ptext,ctext,last);  */
-		if( NULL != last && 0 != p_strcmp(ptext,ctext)){
+		if( NULL != last && 0 != g_strcmp0(ptext,ctext)){
 			/**last is a copy, of things that may be deallocated  */
 			last=strdup(last);
 			/*g_printf("Update clipb '%s' '%s' to '%s'\n",ptext,ctext,last);  */
@@ -861,7 +845,7 @@ static void edit_selected(GtkMenuItem *menu_item, gpointer user_data)
 	      	update_clipboards(ntext, H_MODE_LIST);
 			}else {/**Text is not blank  */
 				g_fprintf(stderr,"Try to add '%s'\n",new_clipboard_text); 
-				if(!p_strcmp(new_clipboard_text,current_clipboard_text)) /**same text, nothing to do  */
+				if(!g_strcmp0(new_clipboard_text,current_clipboard_text)) /**same text, nothing to do  */
 					goto finish; 
 				if( NULL != c){
 					itype=c->type;
@@ -1909,7 +1893,7 @@ static gboolean do_show_history_menu(gpointer data)
 			gtk_label_set_single_line_mode((GtkLabel*)item_label, TRUE);
 
 			/* Check if item is also clipboard text and make bold */
-			if ((clipboard_temp) && (p_strcmp(hist_text, clipboard_temp) == 0))
+			if ((clipboard_temp) && (g_strcmp0(hist_text, clipboard_temp) == 0))
 			{
 				gchar* bold_text = g_markup_printf_escaped("<b>%s</b>", string->str);
 				if( NULL == bold_text) g_fprintf(stderr,"NulBMKUp:'%s'\n",string->str);
@@ -1919,7 +1903,7 @@ static gboolean do_show_history_menu(gpointer data)
 				h.element_text=hist_text;
 				h.wi.index=element_number;
 			}
-			else if ((primary_temp) && (p_strcmp(hist_text, primary_temp) == 0))
+			else if ((primary_temp) && (g_strcmp0(hist_text, primary_temp) == 0))
 			{
 				gchar* italic_text = g_markup_printf_escaped("<i>%s</i>", string->str);
 				if( NULL == italic_text) g_fprintf(stderr,"NulIMKUp:'%s'\n",string->str);
