@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
-SUBDIRS = doc po data src 
+SUBDIRS = po data src 
 
 DISTCLEANFILES = *.bak *.log *~
 

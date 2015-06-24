@@ -70,7 +70,6 @@ AC_PATH_X()
 AC_TYPE_SIGNAL()
 
 AC_CONFIG_FILES([Makefile
-                 doc/Makefile
                  src/Makefile
                  data/Makefile])
 
