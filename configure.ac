@@ -87,20 +87,9 @@ AC_SUBST(X11_LIBS, -lX11)
 # Checks for libraries.
 # -------------------------------------------------------------------------------
 # AC_CHECK_LIB(pthread, pthread_create)
-pkg_modules="gtk+-2.0 >= 2.10.0"
+pkg_modules="gtk+-2.0 >= 2.24.0"
 PKG_CHECK_MODULES([GTK], [$pkg_modules])
-#keep pkg-config from being called
-GTK_LIBS=`$PKG_CONFIG --libs gtk+-2.0|sed 's/.* \(-lgtk-[[^ ]]*\) .*/\1/'`
-gtk_libs=`echo "$GTK_LIBS"|sed 's/-l//'`
-#gtk_libs=`$PKG_CONFIG --libs gtk+-2.0|sed 's/.* -l\(gtk-[[^ ]]*\) .*/\1/'`
-#echo "gtk_libs = '$gtk_libs'"
-AC_CHECK_LIB([$gtk_libs],gtk_status_icon_new,[],AC_MSG_ERROR(Requirement not met: gtk >= 2.10.0))
-#AM_PATH_GTK_2_0(2.10.0, [], AC_MSG_ERROR(Requirement not met: gtk >= 2.10.0))
-#AM_PATH_GLIB_2_0(2.14.0, [], AC_MSG_ERROR(Requirement not met: glib >= 2.14.0))
 
-
-#GTK_CFLAGS=`$PKG_CONFIG $pkg_config_args --cflags`
-#GTK_LIBS=`$PKG_CONFIG $pkg_config_args --libs|sed 's!.*\(-lgtk-[^ ]*\) .*!\1!'`
 # -------------------------------------------------------------------------------
 # Checks for header files.
 # -------------------------------------------------------------------------------

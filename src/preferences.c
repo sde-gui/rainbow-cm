@@ -999,11 +999,7 @@ void show_preferences(gint tab)
   
   /* Create notebook */
   GtkWidget* notebook = gtk_notebook_new();
-#if GTK_CHECK_VERSION (2,14,0)
   gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area (GTK_DIALOG(dialog))), notebook, TRUE, TRUE, 2);
-#else
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), notebook, TRUE, TRUE, 2);
-#endif
   
 /* Build the behavior page */  
   GtkWidget* page_behavior = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
