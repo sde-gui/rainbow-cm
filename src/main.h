@@ -23,7 +23,6 @@ G_BEGIN_DECLS
 
 extern GMutex *hist_lock;
 
-#define ACTIONS_TAB    2
 #define POPUP_DELAY    100
 #define CHECK_INTERVAL 500
 #define ID_PRIMARY   0
@@ -67,7 +66,6 @@ struct history_info{
 int p_strcmp (const char *str1, const char *str2);
 void phistory_hotkey(char *keystring, gpointer user_data);
 void history_hotkey(char *keystring, gpointer user_data);
-void actions_hotkey(char *keystring, gpointer user_data);
 void menu_hotkey(char *keystring, gpointer user_data);
 
 G_END_DECLS

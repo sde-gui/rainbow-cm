@@ -21,7 +21,6 @@
 
 G_BEGIN_DECLS
 
-#define ACTIONS_FILE          "rainbow-cm/actions"
 #define FIFO_FILE_C          "rainbow-cm/fifo_c"
 #define FIFO_FILE_P          "rainbow-cm/fifo_p"
 #define FIFO_FILE_CMD          "rainbow-cm/fifo_cmd"

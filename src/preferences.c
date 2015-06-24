@@ -22,7 +22,6 @@
 #define MAX_HISTORY 1000
 
 #define INIT_HISTORY_KEY      NULL
-#define INIT_ACTIONS_KEY      NULL
 #define INIT_MENU_KEY         NULL
 
 #define DEF_USE_COPY          TRUE
@@ -35,7 +34,6 @@
 #define DEF_ITEM_LENGTH_MAX   200
 #define DEF_ELLIPSIZE         2
 #define DEF_HISTORY_KEY       "<Ctrl><Alt>H"
-#define DEF_ACTIONS_KEY       "<Ctrl><Alt>A"
 #define DEF_MENU_KEY          "<Ctrl><Alt>P"
 #define DEF_NO_ICON           FALSE
 
@@ -97,11 +95,10 @@ struct pref2int *pref2int_mapper=NULL;
 struct keys keylist[]={
 	{.name="menu_key",.keyval=DEF_MENU_KEY,.keyfunc=(void *)menu_hotkey},
 	{.name="history_key",.keyval=DEF_HISTORY_KEY,.keyfunc=(void *)history_hotkey},
-	{.name="actions_key",.keyval=DEF_ACTIONS_KEY,.keyfunc=(void *)actions_hotkey},
 	{.name=NULL,.keyval=NULL,.keyfunc=(void *)0},
 };
 /**must be in same order as above struct array  */
-gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY,DEF_ACTIONS_KEY};
+gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY};
 struct pref_item myprefs[]={
 /**Behaviour  */	
 	/**Clipboards  */
@@ -145,16 +142,12 @@ struct pref_item myprefs[]={
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_XMISC,.name="debug_update",.type=PREF_TYPE_TOGGLE,.desc="DebugUpdate",.tip="If checked, enables debug prints on clipboard update logic. This only takes effect when enabled at start up, and may be disabled at compile time.",.val=FALSE},
 #endif
 	
-/**Action Keys  */
+/**hotkeys  */
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc="Menu key combination",.tip=NULL},	
   {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="history_key",.type=PREF_TYPE_ENTRY,.desc="History key combination:",.tip=NULL},
-  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="actions_key",.type=PREF_TYPE_ENTRY,.desc="Actions key combination:",.tip=NULL},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name="no_icon",.val=FALSE},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name=NULL,.desc=NULL},
 };
-
-GtkListStore* actions_list;
-GtkTreeSelection* actions_selection;
 
 /***************************************************************************/
 
@@ -608,98 +601,6 @@ void read_preferences(int mode)
   g_free(rc_file);
 }
 
-/* Read ~/.parcellite/actions into the treeview */
-static void read_actions()
-{
-  /* Open the file for reading */
-  gchar* path = g_build_filename(g_get_user_data_dir(), ACTIONS_FILE, NULL);
-  FILE* actions_file = fopen(path, "rb");
-  g_free(path);
-  /* Check that it opened and begin read */
-  if (actions_file)
-  {
-    /* Keep a row reference */
-    GtkTreeIter row_iter;
-    /* Read the size of the first item */
-    gint size=0;
-    if(0 ==fread(&size, 4, 1, actions_file)) g_print("P1:0 Items read\n");
-    /* Continue reading until size is 0 */
-    while (size != 0)
-    {
-      /* Read name */
-      gchar* name = (gchar*)g_malloc(size + 1);
-      if(0 ==fread(name, size, 1, actions_file))  g_print("P1:0 Items read\n");
-      name[size] = '\0';
-      if(0 ==fread(&size, 4, 1, actions_file))  g_print("P1:0 Items read\n");
-      /* Read command */
-      gchar* command = (gchar*)g_malloc(size + 1);
-      if(0 ==fread(command, size, 1, actions_file))  g_print("P1:0 Items read\n");
-      command[size] = '\0';
-      if(0 ==fread(&size, 4, 1, actions_file))  g_print("P1:0 Items read\n");
-      /* Append the read action */
-      gtk_list_store_append(actions_list, &row_iter);
-      gtk_list_store_set(actions_list, &row_iter, 0, name, 1, command, -1);
-      g_free(name);
-      g_free(command);
-    }
-    fclose(actions_file);
-  }
-}
-
-/* Save the actions treeview to ~/.local/share/parcellite/actions */
-static void save_actions()
-{
-  /* Check config and data directories */
-  check_dirs();
-  /* Open the file for writing */
-  gchar* path = g_build_filename(g_get_user_data_dir(), ACTIONS_FILE, NULL);
-  FILE* actions_file = fopen(path, "wb");
-  g_free(path);
-  /* Check that it opened and begin write */
-  if (actions_file)
-  {
-    GtkTreeIter action_iter;
-    /* Get and check if there's a first iter */
-    if (gtk_tree_model_get_iter_first((GtkTreeModel*)actions_list, &action_iter))
-    {
-      do
-      {
-        /* Get name and command */
-        gchar *name, *command;
-        gtk_tree_model_get((GtkTreeModel*)actions_list, &action_iter, 0, &name, 1, &command, -1);
-        GString* s_name = g_string_new(name);
-        GString* s_command = g_string_new(command);
-        g_free(name);
-        g_free(command);
-        /* Check that there's text to save */
-        if ((s_name->len == 0) || (s_command->len == 0))
-        {
-          /* Free strings and skip iteration */
-          g_string_free(s_name, TRUE);
-          g_string_free(s_command, TRUE);
-          continue;
-        }
-        else
-        {
-          /* Save action */
-          fwrite(&(s_name->len), 4, 1, actions_file);
-          fputs(s_name->str, actions_file);
-          fwrite(&(s_command->len), 4, 1, actions_file);
-          fputs(s_command->str, actions_file);
-          /* Free strings */
-          g_string_free(s_name, TRUE);
-          g_string_free(s_command, TRUE);
-        }
-      }
-      while(gtk_tree_model_iter_next((GtkTreeModel*)actions_list, &action_iter));
-    }
-    /* End of file write */
-    gint end = 0;
-    fwrite(&end, 4, 1, actions_file);
-    fclose(actions_file);
-  }
-}
-
 /* Called when clipboard checks are pressed */
 static void check_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
@@ -715,100 +616,6 @@ static void check_toggled(GtkToggleButton *togglebutton, gpointer user_data)
     gtk_toggle_button_set_active((GtkToggleButton*)get_pref_widget("synchronize"), FALSE);
     gtk_widget_set_sensitive((GtkWidget*)get_pref_widget("synchronize"), FALSE);
 
-  }
-}
-
-/* Called when Add... button is clicked */
-static void add_action(GtkButton *button, gpointer user_data)
-{
-  /* Append new item */
-  GtkTreeIter row_iter;
-  gtk_list_store_append(actions_list, &row_iter);
-  /* Add a %s to the command */
-  gtk_list_store_set(actions_list, &row_iter, 1, "%s", -1);
-  /* Set the first column to editing */
-  GtkTreePath* row_path = gtk_tree_model_get_path((GtkTreeModel*)actions_list, &row_iter);
-  GtkTreeView* treeview = gtk_tree_selection_get_tree_view(actions_selection);
-  GtkTreeViewColumn* column = gtk_tree_view_get_column(treeview, 0);
-  gtk_tree_view_set_cursor(treeview, row_path, column, TRUE);
-  gtk_tree_path_free(row_path);
-}
-
-/* Called when Remove button is clicked */
-static void remove_action(GtkButton *button, gpointer user_data)
-{
-  GtkTreeIter sel_iter;
-  /* Check if selected */
-  if (gtk_tree_selection_get_selected(actions_selection, NULL, &sel_iter))
-  {
-    /* Delete selected and select next */
-    GtkTreePath* tree_path = gtk_tree_model_get_path((GtkTreeModel*)actions_list, &sel_iter);
-    gtk_list_store_remove(actions_list, &sel_iter);
-    gtk_tree_selection_select_path(actions_selection, tree_path);
-    /* Select previous if the last row was deleted */
-    if (!gtk_tree_selection_path_is_selected(actions_selection, tree_path))
-    {
-      if (gtk_tree_path_prev(tree_path))
-        gtk_tree_selection_select_path(actions_selection, tree_path);
-    }
-    gtk_tree_path_free(tree_path);
-  }
-}
-
-/* Called when Up button is clicked */
-static void move_action_up(GtkButton *button, gpointer user_data)
-{
-  GtkTreeIter sel_iter;
-  /* Check if selected */
-  if (gtk_tree_selection_get_selected(actions_selection, NULL, &sel_iter))
-  {
-    /* Create path to previous row */
-    GtkTreePath* tree_path = gtk_tree_model_get_path((GtkTreeModel*)actions_list, &sel_iter);
-    /* Check if previous row exists */
-    if (gtk_tree_path_prev(tree_path))
-    {
-      /* Swap rows */
-      GtkTreeIter prev_iter;
-      gtk_tree_model_get_iter((GtkTreeModel*)actions_list, &prev_iter, tree_path);
-      gtk_list_store_swap(actions_list, &sel_iter, &prev_iter);
-    }
-    gtk_tree_path_free(tree_path);
-  }
-}
-
-/* Called when Down button is clicked */
-static void move_action_down(GtkButton *button, gpointer user_data)
-{
-  GtkTreeIter sel_iter;
-  /* Check if selected */
-  if (gtk_tree_selection_get_selected(actions_selection, NULL, &sel_iter))
-  {
-    /* Create iter to next row */
-    GtkTreeIter next_iter = sel_iter;
-    /* Check if next row exists */
-    if (gtk_tree_model_iter_next((GtkTreeModel*)actions_list, &next_iter))
-      /* Swap rows */
-      gtk_list_store_swap(actions_list, &sel_iter, &next_iter);
-  }
-}
-
-/* Called when delete key is pressed */
-static void delete_key_pressed(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
-{
-  /* Check if DEL key was pressed (keyval: 65535) */
-  if (event->keyval == 65535)
-    remove_action(NULL, NULL);
-}
-
-/* Called when a cell is edited */
-static void edit_action(GtkCellRendererText *renderer, gchar *path, gchar *new_text,  gpointer cell)
-{
-  GtkTreeIter sel_iter;
-  /* Check if selected */
-  if (gtk_tree_selection_get_selected(actions_selection, NULL, &sel_iter))
-  {
-    /* Apply changes */
-    gtk_list_store_set(actions_list, &sel_iter, GPOINTER_TO_INT(cell), new_text, -1);
   }
 }
 
@@ -1043,87 +850,8 @@ void show_preferences(gint tab)
 	
 	/* Build the misc Display frame */
 	add_section(PREF_SEC_XMISC,vbox_display);
-  
-  /* Build the actions page */
-  GtkWidget* page_actions = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-  gtk_alignment_set_padding((GtkAlignment*)page_actions, 6, 6, 6, 6);
-  gtk_notebook_append_page((GtkNotebook*)notebook, page_actions, gtk_label_new(_("Actions")));
-  GtkWidget* vbox_actions = gtk_vbox_new(FALSE, 6);
-  gtk_container_add((GtkContainer*)page_actions, vbox_actions);
-  
-  /* Build the actions label */
-  label = gtk_label_new(_("Control-click Parcellite's tray icon to use actions,"));
-	gtk_widget_set_tooltip_text(label, _("Use %% if you want a literal %. See the man page for gnuC printf (man 2 printf) for more information."));
-  gtk_label_set_line_wrap((GtkLabel*)label, TRUE);
-  gtk_misc_set_alignment((GtkMisc*)label, 0.0, 0.50);
-  gtk_box_pack_start((GtkBox*)vbox_actions, label, FALSE, FALSE, 0);
-  
-  /* Build the actions treeview */
-  GtkWidget* scrolled_window = gtk_scrolled_window_new(
-                               (GtkAdjustment*)gtk_adjustment_new(0, 0, 0, 0, 0, 0),
-                               (GtkAdjustment*)gtk_adjustment_new(0, 0, 0, 0, 0, 0));
-  
-  gtk_scrolled_window_set_policy((GtkScrolledWindow*)scrolled_window, GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-  gtk_scrolled_window_set_shadow_type((GtkScrolledWindow*)scrolled_window, GTK_SHADOW_ETCHED_OUT);
-  GtkWidget* treeview = gtk_tree_view_new();
-  gtk_tree_view_set_reorderable((GtkTreeView*)treeview, TRUE);
-  gtk_tree_view_set_rules_hint((GtkTreeView*)treeview, TRUE);
-  actions_list = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-  gtk_tree_view_set_model((GtkTreeView*)treeview, (GtkTreeModel*)actions_list);
-  GtkCellRenderer* name_renderer = gtk_cell_renderer_text_new();
-  g_object_set(name_renderer, "editable", TRUE, NULL);
-  g_signal_connect((GObject*)name_renderer, "edited", (GCallback)edit_action, (gpointer)0);
-	
-	label=gtk_label_new(_("Action"));
-	gtk_widget_set_tooltip_text(label,"This is the Action Name. \nDO NOT put commands here.");
-	gtk_widget_show (label);
-  tree_column = gtk_tree_view_column_new_with_attributes(_("Action"), name_renderer, "text", 0, NULL);
-  gtk_tree_view_column_set_widget(tree_column,label); 
-	
-  gtk_tree_view_column_set_resizable(tree_column, TRUE);
-  gtk_tree_view_append_column((GtkTreeView*)treeview, tree_column);
-  GtkCellRenderer* command_renderer = gtk_cell_renderer_text_new();
-  g_object_set(command_renderer, "editable", TRUE, NULL);
-  g_object_set(command_renderer, "ellipsize-set", TRUE, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
-  g_signal_connect((GObject*)command_renderer, "edited", (GCallback)edit_action, (gpointer)1);
-	
-	label=gtk_label_new(_("Command"));
-	gtk_widget_set_tooltip_text(label,"Put the full commands here. ex echo \"parcellite gave me %s\">>$HOME/ptest");
-	gtk_widget_show (label);
-  tree_column = gtk_tree_view_column_new_with_attributes(_("Command"), command_renderer, "text", 1, NULL);
-	gtk_tree_view_column_set_widget(tree_column,label); 
-  gtk_tree_view_column_set_expand(tree_column, TRUE);
-  gtk_tree_view_append_column((GtkTreeView*)treeview, tree_column);
-  gtk_container_add((GtkContainer*)scrolled_window, treeview);
-  gtk_box_pack_start((GtkBox*)vbox_actions, scrolled_window, TRUE, TRUE, 0);
-  
-  /* Edit selection and connect treeview related signals */
-  actions_selection = gtk_tree_view_get_selection((GtkTreeView*)treeview);
-  gtk_tree_selection_set_mode(actions_selection, GTK_SELECTION_BROWSE);
-  g_signal_connect((GObject*)treeview, "key-press-event", (GCallback)delete_key_pressed, NULL);
-  
-  /* Build the buttons */
-  GtkWidget* hbbox = gtk_hbutton_box_new();
-  gtk_box_set_spacing((GtkBox*)hbbox, 6);
-  gtk_button_box_set_layout((GtkButtonBox*)hbbox, GTK_BUTTONBOX_START);
-  GtkWidget* add_button = gtk_button_new_with_label(_("Add..."));
-  gtk_button_set_image((GtkButton*)add_button, gtk_image_new_from_stock(GTK_STOCK_ADD, GTK_ICON_SIZE_MENU));
-  g_signal_connect((GObject*)add_button, "clicked", (GCallback)add_action, NULL);
-  gtk_box_pack_start((GtkBox*)hbbox, add_button, FALSE, TRUE, 0);
-  GtkWidget* remove_button = gtk_button_new_with_label(_("Remove"));
-  gtk_button_set_image((GtkButton*)remove_button, gtk_image_new_from_stock(GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU));
-  g_signal_connect((GObject*)remove_button, "clicked", (GCallback)remove_action, NULL);
-  gtk_box_pack_start((GtkBox*)hbbox, remove_button, FALSE, TRUE, 0);
-  GtkWidget* up_button = gtk_button_new();
-  gtk_button_set_image((GtkButton*)up_button, gtk_image_new_from_stock(GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU));
-  g_signal_connect((GObject*)up_button, "clicked", (GCallback)move_action_up, NULL);
-  gtk_box_pack_start((GtkBox*)hbbox, up_button, FALSE, TRUE, 0);
-  GtkWidget* down_button = gtk_button_new();
-  gtk_button_set_image((GtkButton*)down_button, gtk_image_new_from_stock(GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_MENU));
-  g_signal_connect((GObject*)down_button, "clicked", (GCallback)move_action_down, NULL);
-  gtk_box_pack_start((GtkBox*)hbbox, down_button, FALSE, TRUE, 0);
-  gtk_box_pack_start((GtkBox*)vbox_actions, hbbox, FALSE, FALSE, 0);
-  
+
+
   /* Build the hotkeys page */
   GtkWidget* page_extras = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
   gtk_alignment_set_padding((GtkAlignment*)page_extras, 12, 6, 12, 6);
@@ -1147,10 +875,7 @@ void show_preferences(gint tab)
   
   /* Make widgets reflect current preferences */
 	update_pref_widgets();
-  
-  /* Read actions */
-  read_actions();
-  
+
   /* Run the dialog */
   gtk_widget_show_all(dialog);
   gtk_notebook_set_current_page((GtkNotebook*)notebook, tab);
@@ -1159,7 +884,6 @@ void show_preferences(gint tab)
     /* Apply and save preferences */
     apply_preferences();
     save_preferences();
-    save_actions();
   }
   gtk_widget_destroy(dialog);
 }

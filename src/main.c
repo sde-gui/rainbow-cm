@@ -71,10 +71,6 @@ g_signal_connect(clipboard, "owner-change",  G_CALLBACK(handle_owner_change), NU
 #include <ctype.h>
 #include <pthread.h>
 
-/**ACT are actions, and MODE is the mode of the action  */
-/** #define ACT_STOP  0
-#define ACT_RUN   1 */
-
 /** defines the mode of the above actions. These are bit-wise */
 #define CMODE_PRI 1
 #define	CMODE_CLI 2
@@ -99,14 +95,12 @@ static GtkClipboard* clipboard;
 struct p_fifo *fifo;
 static GtkStatusIcon *status_icon=NULL; 
 GMutex *hist_lock=NULL;
-static gboolean actions_lock = FALSE;
 static int show_icon=0;
 static int ignore_clipboard=0; /**if set, don't process clip entries  */
 
 static gchar * history_text_casefold_key = NULL;
 
 static int cmd_mode=CMODE_ALL; /**both clipboards  */
-/** static int cmd_state=ACT_RUN; running  */
 /**defines for moving between clipboard histories  */
 #define HIST_MOVE_TO_CANCEL     0
 #define HIST_MOVE_TO_OK         1
@@ -624,59 +618,6 @@ gboolean check_clipboards_tic(gpointer data)
 	return TRUE;
 }
 
-/* Called when execution action exits */
-static void action_exit(GPid pid, gint status, gpointer data)
-{
-  g_spawn_close_pid(pid);
-  if (show_icon) {
-		gtk_status_icon_set_from_icon_name((GtkStatusIcon*)status_icon, APP_ICON);
-    gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
-  }
-  actions_lock = FALSE;
-}
-
-/* Called when an action is selected from actions menu */
-static void action_selected(GtkButton *button, gpointer user_data)
-{
-  /* Change icon and enable lock */
-  actions_lock = TRUE;
-  if (show_icon) {
-    gtk_status_icon_set_from_stock((GtkStatusIcon*)status_icon, GTK_STOCK_EXECUTE);
-    gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Executing action..."));
-  }
-  /* Insert clipboard into command (user_data), and prepare it for execution */
-  gchar* clipboard_text = gtk_clipboard_wait_for_text(clipboard);
-	g_fprintf(stderr,"Got cmd '%s', text '%s'->",(gchar *)user_data,clipboard_text);fflush(NULL);  
-	gchar* command=g_strdup_printf((gchar *)user_data,clipboard_text);
-	g_fprintf(stderr," '%s'\n",command);fflush(NULL);  
-  g_free(clipboard_text);
-  g_free(user_data);
-  gchar* shell_command = g_shell_quote(command);
-  g_free(command);
-  gchar* cmd = g_strconcat("/bin/sh -c ", shell_command, NULL);
-  g_free(shell_command);
-  
-  /* Execute action */
-  GPid pid;
-  gchar **argv;
-  g_shell_parse_argv(cmd, NULL, &argv, NULL);
-	g_fprintf(stderr,"cmd '%s' argv '%s' '%s' '%s'\n",cmd,argv[1],argv[2],argv[3]);  
-  g_free(cmd);
-  g_spawn_async(NULL, argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL);
-  g_child_watch_add(pid, (GChildWatchFunc)action_exit, NULL);
-  g_strfreev(argv);
-}
-
-/* Called when Edit Actions is selected from actions menu */
-static void edit_actions_selected(GtkButton *button, gpointer user_data)
-{
-  /* This helps prevent multiple instances */
-  if (!gtk_grab_get_current())
-    /* Show the preferences dialog on the actions tab */
-    show_preferences(ACTIONS_TAB);
-}
-
-
 /***************************************************************************/
 /**  Called when Edit is selected from history menu 
 \n\b Arguments:
@@ -1106,124 +1047,6 @@ static void quit_selected(GtkMenuItem *menu_item, gpointer user_data)
   if (!gtk_grab_get_current())
     /* Quit the program */
     gtk_main_quit();
-}
-
-/* Called when status icon is control-clicked */
-static gboolean show_actions_menu(gpointer data)
-{
-  /* Declare some variables */
-  GtkWidget *menu,       *menu_item,
-            *menu_image, *item_label;
-  
-  /* Create menu */
-  menu = gtk_menu_new();
-  g_signal_connect((GObject*)menu,"selection-done", (GCallback)gtk_widget_destroy, NULL);
-  /* Actions using: */
-  menu_item = gtk_image_menu_item_new_with_label("Actions using:");
-  menu_image = gtk_image_new_from_stock(GTK_STOCK_EXECUTE, GTK_ICON_SIZE_MENU);
-  gtk_image_menu_item_set_image((GtkImageMenuItem*)menu_item, menu_image);
-  g_signal_connect((GObject*)menu_item, "select", (GCallback)gtk_menu_item_deselect, NULL);
-  gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-  /* Clipboard contents */
-  gchar* text = gtk_clipboard_wait_for_text(clipboard);
-  if (text != NULL)
-  {
-    menu_item = gtk_menu_item_new_with_label("None");
-    /* Modify menu item label properties */
-    item_label = gtk_bin_get_child((GtkBin*)menu_item);
-    gtk_label_set_single_line_mode((GtkLabel*)item_label, TRUE);
-    gtk_label_set_ellipsize((GtkLabel*)item_label, get_pref_int32("ellipsize"));
-    gtk_label_set_width_chars((GtkLabel*)item_label, 30);
-    /* Making bold... */
-    gchar* bold_text = g_markup_printf_escaped("<b>%s</b>", text);
-    gtk_label_set_markup((GtkLabel*)item_label, bold_text);
-    g_free(bold_text);
-    /* Append menu item */
-    g_signal_connect((GObject*)menu_item, "select", (GCallback)gtk_menu_item_deselect, NULL);
-    gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-	  g_free(text);
-  }
-  else
-  {
-    /* Create menu item for empty clipboard contents */
-    menu_item = gtk_menu_item_new_with_label("None");
-    /* Modify menu item label properties */
-    item_label = gtk_bin_get_child((GtkBin*)menu_item);
-    gtk_label_set_markup((GtkLabel*)item_label, _("<b>None</b>"));
-    /* Append menu item */
-    g_signal_connect((GObject*)menu_item, "select", (GCallback)gtk_menu_item_deselect, NULL);
-    
-    gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-  }
-  /* -------------------- */
-  gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
-  /* Actions */
-  gchar* path = g_build_filename(g_get_user_data_dir(), ACTIONS_FILE, NULL);
-	printf("got path '%s'\n",path); fflush(NULL);
-  FILE* actions_file = fopen(path, "rb");
-  g_free(path);
-  /* Check that it opened and begin read */
-  if (actions_file)
-  {
-    gint size;
-    if(0==fread(&size, 4, 1, actions_file))
-    	g_print("1:got 0 items from fread\n");
-    /* Check if actions file is empty */
-    if (!size)
-    {
-      /* File contained no actions so adding empty */
-      menu_item = gtk_menu_item_new_with_label(_("Empty"));
-      gtk_widget_set_sensitive(menu_item, FALSE);
-      gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-    }
-    /* Continue reading items until size is 0 */
-    while (size)
-    {
-      /* Read name */
-      gchar* name = (gchar*)g_malloc(size + 1);
-      if( 0 ==fread(name, size, 1, actions_file))
-      	g_print("2:got 0 items from fread\n");
-      name[size] = '\0';
-      menu_item = gtk_menu_item_new_with_label(name);
-      
-      if(0 ==fread(&size, 4, 1, actions_file))
-      	g_print("3:got 0 items from fread\n");
-      /* Read command */
-      gchar* command = (gchar*)g_malloc(size + 1);
-      if(0 ==fread(command, size, 1, actions_file))
-      	g_print("4:got 0 items from fread\n");
-      command[size] = '\0';
-		  g_print("name='%s' cmd='%s'\n",name,command);
-      if(0 ==fread(&size, 4, 1, actions_file))
-      	g_print("5:got 0 items from fread\n");
-      /* Append the action */
-      gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-      g_signal_connect((GObject*)menu_item,        "activate",
-                       (GCallback)action_selected, (gpointer)command);      
-		  g_free(name);
-    }
-    fclose(actions_file);
-  }
-  else
-  {
-    /* File did not open so adding empty */
-    menu_item = gtk_menu_item_new_with_label(_("Empty"));
-    gtk_widget_set_sensitive(menu_item, FALSE);
-    gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-  }
-  /* -------------------- */
-  gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
-  /* Edit actions */
-  menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Edit actions"));
-  menu_image = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
-  gtk_image_menu_item_set_image((GtkImageMenuItem*)menu_item, menu_image);
-  g_signal_connect((GObject*)menu_item, "activate", (GCallback)edit_actions_selected, NULL);
-  gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-  /* Popup the menu... */
-  gtk_widget_show_all(menu);
-  gtk_menu_popup((GtkMenu*)menu, NULL, NULL, NULL, NULL, 1, gtk_get_current_event_time());
-  /* Return false so the g_timeout_add() function is called only once */
-  return FALSE;
 }
 
 /***************************************************************************/
@@ -1925,23 +1748,7 @@ static void  show_parcellite_menu(GtkStatusIcon *status_icon, guint button, guin
 /* Called when status icon is left-clicked */
 static void status_icon_clicked(GtkStatusIcon *status_icon, gpointer user_data)
 {
-  /* Check what type of click was recieved */
-  GdkModifierType state;
-  gtk_get_current_event_state(&state);
-  /* Control click */
-  if (state == GDK_MOD2_MASK+GDK_CONTROL_MASK || state == GDK_CONTROL_MASK)
-  {
-		g_fprintf(stderr,"Got Ctrl-click\n");
-    if (actions_lock == FALSE)
-    {
-      g_timeout_add(POPUP_DELAY, show_actions_menu, NULL);
-    }
-  }
-  /* Normal click */
-  else
-  {
-    show_history_menu(figure_histories(), 1, GDK_CURRENT_TIME);
-  }
+  show_history_menu(figure_histories(), 1, GDK_CURRENT_TIME);
 }
 /***************************************************************************/
 /** .
@@ -1964,12 +1771,6 @@ void setup_icon( void )
 void history_hotkey(char *keystring, gpointer user_data)
 {
   show_history_menu(figure_histories(), 0, GDK_CURRENT_TIME);
-}
-
-/* Called when actions global hotkey is pressed */
-void actions_hotkey(char *keystring, gpointer user_data)
-{
-  g_timeout_add(POPUP_DELAY, show_actions_menu, NULL);
 }
 
 /* Called when actions global hotkey is pressed */
@@ -2183,12 +1984,10 @@ int main(int argc, char *argv[])
 
   /* Unbind keys */
   keybinder_unbind(get_pref_string("history_key"), history_hotkey);
-  keybinder_unbind(get_pref_string("actions_key"), actions_hotkey);
   keybinder_unbind(get_pref_string("menu_key"), menu_hotkey);
   /* Cleanup */
 	/**  
   g_free(prefs.history_key);
-  g_free(prefs.actions_key);
   g_free(prefs.menu_key);
 	*/
   g_list_free(history_list);
