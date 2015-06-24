@@ -623,29 +623,7 @@ gboolean check_clipboards_tic(gpointer data)
 	check_clipboards(H_MODE_CHECK);
 	return TRUE;
 }
-#if 0
-/* Thread function called for each action performed */
-static void *execute_action(void *command)
-{
-  /* Execute action */
-  actions_lock = TRUE;
-  if (show_icon) {
-  gtk_status_icon_set_from_stock((GtkStatusIcon*)status_icon, GTK_STOCK_EXECUTE);
-  gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Executing action..."));
-  }
-  if(system((gchar*)command))
-  	g_fprintf(stderr,"sytem command '%s' failed\n",(gchar *)command);
-  if (show_icon) {
-	gtk_status_icon_set_from_icon_name((GtkStatusIcon*)status_icon, get_pref_string("icon_name"));
-  gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
-  }
-  actions_lock = FALSE;
-  g_free((gchar*)command);
-  /* Exit this thread */
-  pthread_exit(NULL);
-	return NULL;
-}
-#endif
+
 /* Called when execution action exits */
 static void action_exit(GPid pid, gint status, gpointer data)
 {
