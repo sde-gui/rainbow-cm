@@ -1733,8 +1733,15 @@ static gboolean do_show_history_menu(gpointer data)
 			if(nonprint_disp)
 				string=convert_string(string);
 			glong len=g_utf8_strlen(string->str, string->len);
+			gchar * tooltip = NULL;
 			/* Ellipsize text */
 			if (len > item_length) {
+				if (len > item_length * 4) {
+					tooltip = g_strndup(string->str,
+						g_utf8_offset_to_pointer(string->str, len - item_length * 4) - string->str);
+				} else {
+					tooltip = g_strdup(string->str);
+				}
 				switch (ellipsize) {
 					case PANGO_ELLIPSIZE_START:
 						string = g_string_erase(string, 0, g_utf8_offset_to_pointer(string->str, len - item_length) - string->str);
@@ -1782,6 +1789,11 @@ static gboolean do_show_history_menu(gpointer data)
 
 			g_object_set_data_full((GObject *) menu_item, history_text_casefold_key,
 				g_utf8_casefold(hist_text, -1), g_free);
+
+			if (tooltip) {
+				gtk_widget_set_tooltip_text(menu_item, tooltip);
+				g_free(tooltip);
+			}
 
 			/* Modify menu item label properties */
 			item_label = gtk_bin_get_child((GtkBin*)menu_item);
