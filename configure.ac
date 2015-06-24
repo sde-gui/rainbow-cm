@@ -43,52 +43,13 @@ AC_CHECK_FUNCS([memset])
 PKG_PROG_PKG_CONFIG(0.20)
 
 # -------------------------------------------------------------------------------
-# Application indicator.
-# -------------------------------------------------------------------------------
-
-APPINDICATOR_REQUIRED_VERSION=0.2.4
-APPIND_LIB=appindicator-0.1
-
-AC_ARG_ENABLE([appindicator],
-	AS_HELP_STRING([--enable-appindicator[=@<:@no/yes@:>@]],[Build support for application indicators]),
-	[enable_appindicator=$enableval],
-	[enable_appindicator="yes"])
-
-have_appindicator=no
-if test "x$enable_appindicator" = "xyes" ; then
-# PKG_CHECK_MODULES completly broken on my system.
-  echo -n "checking for $APPIND_LIB... "
-  if `$PKG_CONFIG --exists $APPIND_LIB` ; then  
-    if `$PKG_CONFIG --atleast-version=$APPINDICATOR_REQUIRED_VERSION $APPIND_LIB` ; then
-      have_appindicator=yes
-      PKG_CHECK_MODULES([APPINDICATOR], [$APPIND_LIB])
-      echo "yes"
-    else
-      echo "no"
-    fi 
-  else
-    echo "no"
-  fi
-#  PKG_CHECK_MODULES(APPINDICATOR,[appindicator-0.1>=9.9.9],[have_appindicator=yes],[have_appindicator=no])
-fi
-#echo "have_appindicator=$have_appindicator"
-#echo "pkgcfg=$PKG_CONFIG"
-AM_CONDITIONAL(HAVE_APPINDICATOR, test x$enable_appindicator = xyes)
-
-if test "x$have_appindicator" = "xyes" ; then
-  AC_DEFINE(HAVE_APPINDICATOR, 1, [ Have appindicator])
-  AC_SUBST(APPINDICATOR_CFLAGS)
-  AC_SUBST(APPINDICATOR_LIBS)
-fi
-
-AC_SUBST(X11_LIBS, -lX11)
-
-# -------------------------------------------------------------------------------
 # Checks for libraries.
 # -------------------------------------------------------------------------------
 # AC_CHECK_LIB(pthread, pthread_create)
 pkg_modules="gtk+-2.0 >= 2.24.0"
 PKG_CHECK_MODULES([GTK], [$pkg_modules])
+
+AC_SUBST(X11_LIBS, -lX11)
 
 # -------------------------------------------------------------------------------
 # Checks for header files.

@@ -32,7 +32,6 @@ struct cmdline_opts {
 	gboolean exit;
 	gboolean version;
 	gchar *leftovers;
-	gint appindicator;
 };
 
 gchar *p_strdup( const gchar *str );

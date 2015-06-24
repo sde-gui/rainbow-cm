@@ -97,19 +97,11 @@ GtkWidget *hmenu;
 static GtkClipboard* primary;
 static GtkClipboard* clipboard;
 struct p_fifo *fifo;
-#ifdef HAVE_APPINDICATOR
-static AppIndicator *indicator=NULL;
-static GtkWidget *indicator_menu = NULL;
-#endif
 static GtkStatusIcon *status_icon=NULL; 
 GMutex *hist_lock=NULL;
 static gboolean actions_lock = FALSE;
 static int show_icon=0;
-static int have_appindicator=0; /**if set, we have a running indicator-appmenu  */
 static int ignore_clipboard=0; /**if set, don't process clip entries  */
-#ifdef HAVE_APPINDICATOR
-static gchar *appindicator_process="indicator-messages-service"; /**process name  */
-#endif
 
 static gchar * history_text_casefold_key = NULL;
 
@@ -616,31 +608,7 @@ void check_clipboards(gint mode)
 done:	
 	return;
 }
-#ifdef HAVE_APPINDICATOR
-/***************************************************************************/
-/** Check for appindicator.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-gboolean check_for_appindictor( gpointer data)
-{ 
-	int mode=PROC_MODE_STRSTR;
-	if(NULL != appindicator_process && !have_appindicator ){
-		/*g_printf("Looking for '%s'\n",appindicator_process); */
-		if(get_pref_int32("multi_user"))
-			mode|=PROC_MODE_USER_QUALIFY;
-		if(proc_find(appindicator_process,mode,NULL) >0){
-			have_appindicator=1;
-			if(NULL == indicator && show_icon)
-				create_app_indicator();	
-			return FALSE;
-		}
-	}
-	if (1 == (int)data)/*short timer, don't call again, bug fix 118*/
-		return FALSE;
-	return TRUE;
-}
-#endif
+
 /***************************************************************************/
 /** Called every CHECK_INTERVAL seconds to check for new items 
 \n\b Arguments:
@@ -653,13 +621,6 @@ gboolean check_clipboards_tic(gpointer data)
 	if(2 == ignore_clipboard)
 		return TRUE;
 	check_clipboards(H_MODE_CHECK);
-#ifdef HAVE_APPINDICATOR
-	if(have_appindicator){
-		if(NULL == indicator && show_icon)
-			create_app_indicator();	
-	}
-	
-#endif
 	return TRUE;
 }
 #if 0
@@ -668,13 +629,13 @@ static void *execute_action(void *command)
 {
   /* Execute action */
   actions_lock = TRUE;
-  if (!have_appindicator && show_icon) {
+  if (show_icon) {
   gtk_status_icon_set_from_stock((GtkStatusIcon*)status_icon, GTK_STOCK_EXECUTE);
   gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Executing action..."));
   }
   if(system((gchar*)command))
   	g_fprintf(stderr,"sytem command '%s' failed\n",(gchar *)command);
-  if (!have_appindicator &&show_icon) {
+  if (show_icon) {
 	gtk_status_icon_set_from_icon_name((GtkStatusIcon*)status_icon, get_pref_string("icon_name"));
   gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
   }
@@ -689,7 +650,7 @@ static void *execute_action(void *command)
 static void action_exit(GPid pid, gint status, gpointer data)
 {
   g_spawn_close_pid(pid);
-  if (!have_appindicator && show_icon) {
+  if (show_icon) {
 		gtk_status_icon_set_from_icon_name((GtkStatusIcon*)status_icon, get_pref_string("icon_name"));
     gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
   }
@@ -701,7 +662,7 @@ static void action_selected(GtkButton *button, gpointer user_data)
 {
   /* Change icon and enable lock */
   actions_lock = TRUE;
-  if (!have_appindicator && show_icon) {
+  if (show_icon) {
     gtk_status_icon_set_from_stock((GtkStatusIcon*)status_icon, GTK_STOCK_EXECUTE);
     gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Executing action..."));
   }
@@ -1937,11 +1898,6 @@ static void show_history_menu(guint histno, guint mouse_button, guint32 activate
 }
 
 /***************************************************************************/
-static void on_history_menu_activate(GtkMenuItem *m, gpointer data)
-{
-	show_history_menu(figure_histories(), 1, GDK_CURRENT_TIME);
-}
-/***************************************************************************/
 /** .
 \n\b Arguments:
 \n\b Returns:
@@ -1968,14 +1924,6 @@ GtkWidget *create_parcellite_menu(guint button, guint activate_time)
   menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, NULL);
   g_signal_connect((GObject*)menu_item, "activate", (GCallback)preferences_selected, NULL);
   gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-	if(have_appindicator){
-			/* History */
-		GtkWidget *img=gtk_image_new_from_icon_name(PARCELLITE_ICON,GTK_ICON_SIZE_MENU); 
-	  menu_item = gtk_image_menu_item_new_with_mnemonic(_("_History"));
-		gtk_image_menu_item_set_image((GtkImageMenuItem *)menu_item,img);
-	  g_signal_connect((GObject*)menu_item, "activate", (GCallback)on_history_menu_activate, NULL);
-	  gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-	}
 	
   /* -------------------- */
   gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
@@ -2024,46 +1972,15 @@ static void status_icon_clicked(GtkStatusIcon *status_icon, gpointer user_data)
 ****************************************************************************/
 void setup_icon( void )
 {
-	if(0 == have_appindicator){/* no Indicator */
-		if(NULL == status_icon){
-			status_icon = gtk_status_icon_new_from_icon_name(get_pref_string("icon_name")); 
-			gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
-			g_signal_connect((GObject*)status_icon, "activate", (GCallback)status_icon_clicked, NULL);
-			g_signal_connect((GObject*)status_icon, "popup-menu", (GCallback)show_parcellite_menu, NULL);	
-		}	else {
-			gtk_status_icon_set_from_icon_name(status_icon,get_pref_string("icon_name")); 
-		}
-	}	
-#ifdef HAVE_APPINDICATOR	
-	else {
-		if(NULL == indicator) {
-			indicator = app_indicator_new(get_pref_string("icon_name"), get_pref_string("icon_name"), APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
-			app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
-		}
-		app_indicator_set_attention_icon (indicator,get_pref_string("icon_name"));
-		app_indicator_set_icon (indicator,get_pref_string("icon_name"));
+	if(NULL == status_icon){
+		status_icon = gtk_status_icon_new_from_icon_name(get_pref_string("icon_name")); 
+		gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
+		g_signal_connect((GObject*)status_icon, "activate", (GCallback)status_icon_clicked, NULL);
+		g_signal_connect((GObject*)status_icon, "popup-menu", (GCallback)show_parcellite_menu, NULL);	
+	}	else {
+		gtk_status_icon_set_from_icon_name(status_icon,get_pref_string("icon_name")); 
 	}
-#endif
 }
-
-#ifdef HAVE_APPINDICATOR
-/***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-void create_app_indicator(void)
-{
-	if(NULL == indicator_menu)
-		/* Create the menu */
-		indicator_menu = create_parcellite_menu(0,gtk_get_current_event_time());
-	/* check if we need to create the indicator or just refresh the menu */
-	setup_icon();
-	app_indicator_set_menu (indicator, GTK_MENU (indicator_menu));
-}
-#endif
-	
-
 
 /* Called when history global hotkey is pressed */
 void history_hotkey(char *keystring, gpointer user_data)
@@ -2080,14 +1997,7 @@ void actions_hotkey(char *keystring, gpointer user_data)
 /* Called when actions global hotkey is pressed */
 void menu_hotkey(char *keystring, gpointer user_data)
 {
-#ifdef HAVE_APPINDICATOR
-	/*create_app_indicator(); */
-	create_parcellite_menu(0, gtk_get_current_event_time());
-	/** GtkWidget * w=create_parcellite_menu(0, gtk_get_current_event_time());
-	app_indicator_set_menu (indicator, GTK_MENU (w));*/
-#else
   show_parcellite_menu(status_icon, 0, 0, NULL);
-#endif
 }
 
 
@@ -2124,11 +2034,6 @@ static void parcellite_init()
 	}
 	
   g_timeout_add(CHECK_INTERVAL, check_clipboards_tic, NULL);  
-#ifdef HAVE_APPINDICATOR 
-	/* This closes bug 118, menu showing up at launch*/
-	g_timeout_add(500, check_for_appindictor, (void *)(1));
-	g_timeout_add(CHECK_APPINDICATOR_INTERVAL, check_for_appindictor, NULL);
-#endif
   
   /* Bind global keys */
   keybinder_init();
@@ -2138,14 +2043,7 @@ static void parcellite_init()
   /* Create status icon */
   if (show_icon)
   {
-#ifdef HAVE_APPINDICATOR
-	if(have_appindicator)/* Indicator */
-		create_app_indicator();
-#endif
-		if(!have_appindicator){
-			setup_icon();
-		}
-	  
+		setup_icon();
   }
 }
 
@@ -2304,12 +2202,7 @@ int main(int argc, char *argv[])
   /*g_printf("Start main loop\n"); */
   /* Run GTK+ loop */
   gtk_main();
-  
-#ifdef HAVE_APPINDICATOR
-	if (have_appindicator & show_icon)
-		app_indicator_set_status(indicator, APP_INDICATOR_STATUS_PASSIVE);
-#endif
-	
+
   /* Unbind keys */
   keybinder_unbind(get_pref_string("history_key"), history_hotkey);
   keybinder_unbind(get_pref_string("actions_key"), actions_hotkey);
