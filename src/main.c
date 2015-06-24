@@ -629,7 +629,7 @@ static void action_exit(GPid pid, gint status, gpointer data)
 {
   g_spawn_close_pid(pid);
   if (show_icon) {
-		gtk_status_icon_set_from_icon_name((GtkStatusIcon*)status_icon, get_pref_string("icon_name"));
+		gtk_status_icon_set_from_icon_name((GtkStatusIcon*)status_icon, APP_ICON);
     gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
   }
   actions_lock = FALSE;
@@ -1951,12 +1951,12 @@ static void status_icon_clicked(GtkStatusIcon *status_icon, gpointer user_data)
 void setup_icon( void )
 {
 	if(NULL == status_icon){
-		status_icon = gtk_status_icon_new_from_icon_name(get_pref_string("icon_name")); 
+		status_icon = gtk_status_icon_new_from_icon_name(APP_ICON);
 		gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
 		g_signal_connect((GObject*)status_icon, "activate", (GCallback)status_icon_clicked, NULL);
 		g_signal_connect((GObject*)status_icon, "popup-menu", (GCallback)show_parcellite_menu, NULL);	
 	}	else {
-		gtk_status_icon_set_from_icon_name(status_icon,get_pref_string("icon_name")); 
+		gtk_status_icon_set_from_icon_name(status_icon,APP_ICON);
 	}
 }
 

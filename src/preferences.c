@@ -19,8 +19,6 @@
 #include "parcellite.h"
 #include <sys/wait.h>
 
-void setup_icon( void ); /**in main.c  */
-
 #define MAX_HISTORY 1000
 
 #define INIT_HISTORY_KEY      NULL
@@ -71,7 +69,6 @@ struct myadj {
 	gdouble step;
 	gdouble page;
 };
-static char *icon_name="parcellite";
 struct myadj align_hist_x={1,100,1,10};
 struct myadj align_hist_y={1,100,1,10};
 struct myadj align_data_lim={0,1000000,1,10};
@@ -144,7 +141,6 @@ struct pref_item myprefs[]={
 /**miscellaneous that doesn't fit elswhew  */	
   {.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_XMISC,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Miscellaneous</b>",.tip=NULL,.val=0},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_XMISC,.name="multi_user",.type=PREF_TYPE_TOGGLE,.desc="Multiuser",.tip="If checked, enables checking multiple concurrent user logic. Use if several different users are logged in at the same time.",.val=TRUE},
-	{.adj=NULL,.cval=APP_ICON,.sig=NULL,.sec=PREF_SEC_XMISC,.name="icon_name",.type=PREF_TYPE_ENTRY,.desc="Parcellite Icon Name",.tip="Name of Parcellite icon. If this is mis-typed, icon will not appear.",.val=TRUE},
 #ifdef	DEBUG_UPDATE
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_XMISC,.name="debug_update",.type=PREF_TYPE_TOGGLE,.desc="DebugUpdate",.tip="If checked, enables debug prints on clipboard update logic. This only takes effect when enabled at start up, and may be disabled at compile time.",.val=FALSE},
 #endif
@@ -453,12 +449,6 @@ mode - if 0, do not display helper missing dialog.
 void check_sanity(int mode)
 {
 	gint32 x,y;
-	gchar *val;
-	val=get_pref_string("icon_name");
-	if(NULL != val && strcmp(icon_name, val)){
-		setup_icon( );
-		icon_name=strdup(val);
-	}
  	x=get_pref_int32("history_limit");
   if ((!x) || (x > MAX_HISTORY) || (x < 0))
     set_pref_int32("history_limit",DEF_HISTORY_LIMIT);
