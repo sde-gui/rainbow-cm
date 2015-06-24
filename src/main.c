@@ -1077,10 +1077,10 @@ static void show_about_dialog(GtkMenuItem *menu_item, gpointer user_data)
     gtk_about_dialog_set_comments((GtkAboutDialog*)about_dialog,
                                 _("Lightweight GTK+ clipboard manager."));
     
-    gtk_about_dialog_set_website((GtkAboutDialog*)about_dialog,
-                                 "http://parcellite.sourceforge.net");
+/*    gtk_about_dialog_set_website((GtkAboutDialog*)about_dialog,
+                                 "http://parcellite.sourceforge.net");*/
     
-    gtk_about_dialog_set_copyright((GtkAboutDialog*)about_dialog, _("Copyright (C) 2007, 2008 Gilberto \"Xyhthyx\" Miralla\nCopyright (C) 2010-2013 Doug Springer"));
+    gtk_about_dialog_set_copyright((GtkAboutDialog*)about_dialog, _("Copyright (C) 2015 Vadim Ushakov\nCopyright (C) 2007, 2008 Gilberto \"Xyhthyx\" Miralla\nCopyright (C) 2010-2013 Doug Springer"));
     gtk_about_dialog_set_authors((GtkAboutDialog*)about_dialog, authors);
     gtk_about_dialog_set_translator_credits ((GtkAboutDialog*)about_dialog,
                                              "Miloš Koutný <milos.koutny@gmail.com>\n"
@@ -1103,7 +1103,7 @@ static void show_about_dialog(GtkMenuItem *menu_item, gpointer user_data)
                                              "Gilberto \"Xyhthyx\" Miralla <xyhthyx@gmail.com>");
     
     gtk_about_dialog_set_license((GtkAboutDialog*)about_dialog, license);
-	  gtk_about_dialog_set_logo_icon_name((GtkAboutDialog*)about_dialog, PARCELLITE_ICON);
+	  gtk_about_dialog_set_logo_icon_name((GtkAboutDialog*)about_dialog, APP_ICON);
     /* Run the about dialog */
     gtk_dialog_run((GtkDialog*)about_dialog);
     gtk_widget_destroy(about_dialog);
@@ -2120,7 +2120,7 @@ int main(int argc, char *argv[])
 	if(get_pref_int32("multi_user"))
 	  mode|=PROC_MODE_USER_QUALIFY;
 	/*g_printf("mode=0x%X\n",mode); */
-	if(proc_find(PARCELLITE_PROG_NAME,mode,NULL)<2)	/**1 for me, and 1 for a running instance  */
+	if(proc_find(APP_PROG_NAME,mode,NULL)<2)	/**1 for me, and 1 for a running instance  */
 		mode=PROG_MODE_DAEMON; /**first instance  */
 	else
 		mode=PROG_MODE_CLIENT; /**already running, just access fifos & exit.  */

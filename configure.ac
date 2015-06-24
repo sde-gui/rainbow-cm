@@ -2,7 +2,7 @@
 # Autoconf/automake.
 # -------------------------------------------------------------------------------
 AC_PREREQ([2.5])
-AC_INIT([parcellite], 2.0.0-alpha)
+AC_INIT([rainbow-cm], 2.0.0-alpha)
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -14,7 +14,7 @@ AM_CONFIG_HEADER([config.h])
 # Gettext.
 # -------------------------------------------------------------------------------
 
-GETTEXT_PACKAGE=parcellite
+GETTEXT_PACKAGE=rainbow-cm
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [gettext package])
 

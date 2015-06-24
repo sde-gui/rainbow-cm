@@ -36,8 +36,7 @@ static gchar* history_magics[]={
 																NULL,
 };
 
-#define HISTORY_FILE0 HISTORY_FILE 
-/*#define HISTORY_FILE0 "parcellite/hist.test" */
+#define HISTORY_FILE0 HISTORY_FILE
 
 /***************************************************************************/
 /** Pass in the text via the struct. We assume len is correct, and BYTE based,
@@ -106,7 +105,7 @@ void read_history_old ()
   }
 }
 
-/* Saves history to ~/.local/share/parcellite/history */
+/* Saves history to ~/.local/share/<application>/history */
 void save_history_old()
 {
   /* Check that the directory is available */
@@ -162,7 +161,7 @@ done:
 }
 
 /***************************************************************************/
-/** Reads history from ~/.local/share/parcellite/history .
+/** Reads history from ~/.local/share/<application>/history .
 Current scheme is to have the total zize of element followed by the type, then the data
 \n\b Arguments:
 \n\b Returns:
@@ -252,7 +251,7 @@ len of pixbuf=rowstride*(height-1)+width * ((n_channels * bits_per_sample + 7) /
 
 last row of pixbuf=width * ((n_channels * bits_per_sample + 7) / 8)
 */
-/* Saves history to ~/.local/share/parcellite/history */
+/* Saves history to ~/.local/share/<application>/history */
 
 /***************************************************************************/
 /** write total len, then write type, then write data.

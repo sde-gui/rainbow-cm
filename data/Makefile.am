@@ -19,7 +19,7 @@
 @INTLTOOL_DESKTOP_RULE@
 
 xdgdatadir=@XDGDATADIR@
-app_name=parcellite
+app_name=rainbow-cm
 
 app_icon_files = \
 	$(app_name:%=%.png) \

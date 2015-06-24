@@ -23,8 +23,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#define PARCELLITE_PROG_NAME "parcellite"
-#define PARCELLITE_ICON PARCELLITE_PROG_NAME
+#define APP_PROG_NAME "rainbow-cm"
+#define APP_ICON APP_PROG_NAME
 /*uncomment the next line to debug the clipboard updates
  This provides a debug_update preference. 
 must have debug_update enabled in prefs when started. 

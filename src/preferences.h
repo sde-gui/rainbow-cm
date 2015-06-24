@@ -21,12 +21,12 @@
 
 G_BEGIN_DECLS
 
-#define ACTIONS_FILE          "parcellite/actions"
-#define FIFO_FILE_C          "parcellite/fifo_c"
-#define FIFO_FILE_P          "parcellite/fifo_p"
-#define FIFO_FILE_CMD          "parcellite/fifo_cmd"
-#define FIFO_FILE_DAT         "parcellite/fifo_data"
-#define PREFERENCES_FILE      "parcellite/parcelliterc"
+#define ACTIONS_FILE          "rainbow-cm/actions"
+#define FIFO_FILE_C          "rainbow-cm/fifo_c"
+#define FIFO_FILE_P          "rainbow-cm/fifo_p"
+#define FIFO_FILE_CMD          "rainbow-cm/fifo_cmd"
+#define FIFO_FILE_DAT         "rainbow-cm/fifo_data"
+#define PREFERENCES_FILE      "rainbow-cm/rainbow-cm.rc"
 
 struct keys {
 	gchar *name;

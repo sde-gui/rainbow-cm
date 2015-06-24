@@ -144,7 +144,7 @@ struct pref_item myprefs[]={
 /**miscellaneous that doesn't fit elswhew  */	
   {.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_XMISC,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Miscellaneous</b>",.tip=NULL,.val=0},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_XMISC,.name="multi_user",.type=PREF_TYPE_TOGGLE,.desc="Multiuser",.tip="If checked, enables checking multiple concurrent user logic. Use if several different users are logged in at the same time.",.val=TRUE},
-	{.adj=NULL,.cval=PARCELLITE_ICON,.sig=NULL,.sec=PREF_SEC_XMISC,.name="icon_name",.type=PREF_TYPE_ENTRY,.desc="Parcellite Icon Name",.tip="Name of Parcellite icon. If this is mis-typed, icon will not appear.",.val=TRUE},
+	{.adj=NULL,.cval=APP_ICON,.sig=NULL,.sec=PREF_SEC_XMISC,.name="icon_name",.type=PREF_TYPE_ENTRY,.desc="Parcellite Icon Name",.tip="Name of Parcellite icon. If this is mis-typed, icon will not appear.",.val=TRUE},
 #ifdef	DEBUG_UPDATE
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_XMISC,.name="debug_update",.type=PREF_TYPE_TOGGLE,.desc="DebugUpdate",.tip="If checked, enables debug prints on clipboard update logic. This only takes effect when enabled at start up, and may be disabled at compile time.",.val=FALSE},
 #endif

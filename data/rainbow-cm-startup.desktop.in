@@ -1,8 +1,8 @@
 [Desktop Entry]
-_Name=Parcellite
+_Name=Rainbow Clipboard Manager
 _Comment=Clipboard Manager
-Icon=parcellite
-Exec=parcellite
+Icon=rainbow-cm
+Exec=rainbow-cm
 Terminal=false
 Type=Application
 X-GNOME-Autostart-enabled=true

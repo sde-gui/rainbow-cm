@@ -21,7 +21,7 @@
 
 G_BEGIN_DECLS
 
-#define HISTORY_FILE "parcellite/history"
+#define HISTORY_FILE "rainbow-cm/history"
 
 #define CLIP_TYPE_TEXT       0x1
 #define CLIP_TYPE_IMG        0x2

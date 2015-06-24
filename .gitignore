@@ -16,4 +16,7 @@ Makefile
 /libtool
 /aclocal.m4
 /compile
-
+/src/rainbow-cm
+/data/rainbow-cm-startup.desktop
+/data/rainbow-cm.desktop
+/autom4te.cache/
