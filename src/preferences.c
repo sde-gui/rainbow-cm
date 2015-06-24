@@ -33,8 +33,8 @@
 #define DEF_ITEM_LENGTH       50
 #define DEF_ITEM_LENGTH_MAX   200
 #define DEF_ELLIPSIZE         2
-#define DEF_HISTORY_KEY       "<Ctrl><Alt>H"
-#define DEF_MENU_KEY          "<Ctrl><Alt>P"
+#define DEF_HISTORY_KEY       "<Mod4>Insert"
+#define DEF_MENU_KEY          "<Mod4><Ctrl>Insert"
 #define DEF_NO_ICON           FALSE
 
 /**allow lower nibble to become the number of items of this type  */
