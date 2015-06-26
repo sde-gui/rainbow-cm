@@ -1,5 +1,7 @@
 #!/bin/sh
 
+if false ; then
+
 echo "gettextize..."
 
 GETTEXTIZE="gettextize"
@@ -61,3 +63,18 @@ autoconf
 echo "now run configure"
 
 exit 0
+
+fi
+
+
+set -xe
+
+AUTOPOINT="${AUTOPOINT:-autopoint}"
+INTLTOOLIZE="${INTLTOOLIZE:-intltoolize}"
+AUTORECONF="${AUTORECONF:-autoreconf}"
+
+$AUTOPOINT --force || exit $?
+export AUTOPOINT="$INTLTOOLIZE --automake --copy"
+$AUTORECONF --force --install --verbose
+
+rm -rf autom4te.cache

@@ -1,11 +1,11 @@
 # -------------------------------------------------------------------------------
 # Autoconf/automake.
 # -------------------------------------------------------------------------------
-AC_PREREQ([2.5])
+AC_PREREQ(2.53)
 AC_INIT([rainbow-cm], 2.0.0-alpha)
 AM_INIT_AUTOMAKE
 
-AC_CONFIG_MACRO_DIR([m4])
+#AC_CONFIG_MACRO_DIR([m4])
 
 AC_CONFIG_SRCDIR([src/main.c])
 AM_CONFIG_HEADER([config.h])
@@ -14,18 +14,16 @@ AM_CONFIG_HEADER([config.h])
 # Gettext.
 # -------------------------------------------------------------------------------
 
-GETTEXT_PACKAGE=rainbow-cm
-AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [gettext package])
+IT_PROG_INTLTOOL([0.50.1])
 
-ALL_LINGUAS="ca cs da de es fr hu it ja nb pl pl_PL pt_BR ro ru sv tr zh_CN"
-AM_GLIB_GNU_GETTEXT()
-AC_PROG_INTLTOOL([0.23])
+AM_GNU_GETTEXT_VERSION([0.19])
+AM_GNU_GETTEXT([external])
+
+AC_SUBST([GETTEXT_PACKAGE], [rainbow-cm])
+AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], "$GETTEXT_PACKAGE", [Define to the gettext package name.])
 
 parcellitelocaledir='${prefix}/${DATADIRNAME}/locale'
 AC_SUBST(parcellitelocaledir)
-
-AM_GNU_GETTEXT([external])
 
 # -------------------------------------------------------------------------------
 # Main settings.
