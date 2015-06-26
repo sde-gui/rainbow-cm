@@ -24,8 +24,6 @@
 #define INIT_HISTORY_KEY      NULL
 #define INIT_MENU_KEY         NULL
 
-#define DEF_USE_COPY          TRUE
-#define DEF_USE_PRIMARY       FALSE
 #define DEF_SYNCHRONIZE       FALSE
 #define DEF_SAVE_HISTORY      TRUE
 #define DEF_HISTORY_LIMIT     25
@@ -103,8 +101,16 @@ struct pref_item myprefs[]={
 /**Behaviour  */	
 	/**Clipboards  */
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_CLIP,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Clipboards</b>",.tip=NULL,.val=0}, 
-  {.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,.name="use_copy",.type=PREF_TYPE_TOGGLE,.desc="Use _Copy (Ctrl-C)",.tip="If checked, Use the clipboard, which is Ctrl-C, Ctrl-V",.val=DEF_USE_COPY},
-  {.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,.name="use_primary",.type=PREF_TYPE_TOGGLE,.desc="Use _Primary (Selection)",.tip="If checked, Use the primary clipboard (mouse highlight-copy, middle mouse button paste)",.val=DEF_USE_PRIMARY},
+	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
+	 .name="track_clipboard_selection",.type=PREF_TYPE_TOGGLE,
+	 .desc="Track the history of the _Clipboard",
+	 .tip="If checked, Rainbow watches for changes in the Clipboard (X11 CLIPBOARD SELECTION) and saves them in the history.",
+	 .val=TRUE},
+	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
+	 .name="track_primary_selection",.type=PREF_TYPE_TOGGLE,
+	 .desc="Track the history of the _selected text",
+	 .tip="If checked, Rainbow watches for changes of the selected text (X11 PRIMARY SELECTION) and saves them in the history.",
+	 .val=FALSE},
   {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_CLIP,.name="synchronize",.type=PREF_TYPE_TOGGLE,.desc="S_ynchronize clipboards",.tip="If checked, will keep both clipboards with the same content. If primary is pasted, then copy will have the same data.",.val=DEF_SYNCHRONIZE},
   /**History  */	
   {.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_HIST,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>History</b>",.tip=NULL,.val=0},

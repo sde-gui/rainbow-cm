@@ -129,14 +129,23 @@ typedef struct {
 /***************************************************************************/
 
 /**speed up pref to int lookup.  */
-int hyperlinks_only,ignore_whiteonly,trim_newline,trim_wspace_begend,use_primary,use_copy,restore_empty,synchronize;
+int
+	hyperlinks_only,
+	ignore_whiteonly,
+	trim_newline,
+	trim_wspace_begend,
+	track_primary_selection,
+	track_clipboard_selection,
+	restore_empty,
+	synchronize;
+
 static struct pref2int pref2int_map[]={
 	{.val=&hyperlinks_only,.name="hyperlinks_only"},
 	{.val=&ignore_whiteonly,.name="ignore_whiteonly"},
 	{.val=&trim_newline,.name="trim_newline"},
 	{.val=&trim_wspace_begend,.name="trim_wspace_begend"},
-	{.val=&use_primary,.name="use_primary"},
-	{.val=&use_copy,.name="use_copy"},
+	{.val=&track_primary_selection,.name="track_primary_selection"},
+	{.val=&track_clipboard_selection,.name="track_clipboard_selection"},
 	{.val=&restore_empty,.name="restore_empty"},
 	{.val=&synchronize,.name="synchronize"},
 	{.val=NULL,.name=NULL},		
@@ -371,8 +380,8 @@ gchar *update_clipboard(GtkClipboard *clip,gchar *intext,  gint mode)
 	}
 	/**check that our clipboards are valid and user wants to use them  */
 	if((clip != primary && clip != clipboard) ||
-		(clip == primary && !use_primary) ||
-		(clip == clipboard && !use_copy))
+		(clip == primary && !track_primary_selection) ||
+		(clip == clipboard && !track_clipboard_selection))
 			return NULL;
 	
 	
@@ -1177,9 +1186,9 @@ void set_clipboard_text(struct history_info *h, GList *element)
 		/**make a copy of txt, because it gets freed and re-allocated.  */
 		txt=p_strdup(((struct history_item *)(element->data))->text);
 		DTRACE(g_fprintf(stderr,"set_clip_text %s\n",txt));  
-		if(use_copy)
+		if(track_clipboard_selection)
 			update_clipboard(clipboard, txt, H_MODE_LIST);
-		if(use_primary)
+		if(track_primary_selection)
 	  	update_clipboard(primary, txt, H_MODE_LIST);	
 	}
   g_signal_emit_by_name ((gpointer)h->menu,"selection-done");
