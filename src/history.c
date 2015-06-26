@@ -22,13 +22,7 @@
 /**This is now a gslist of   */
 GList* history_list=NULL;
 static gint dbg=0;
-/**todo:
-handle parcellite history magic:
-if it does not exist, then we assume original format, and convert. 
-	Need to provide a menu item that allows user to convert back to old?
-	or just provide manual instructions to convert back (i.e. dd skip)?
-	
-  */
+
 #define HISTORY_MAGIC_SIZE 32
 #define HISTORY_VERSION     1 /**index (-1) into array below  */
 static gchar* history_magics[]={  
@@ -147,25 +141,7 @@ done:
   }
 	if(dbg) g_printf("History read done\n");
 }
-/**  NOTES:
-	gint width, height, rowstride, n_channels,bits_per_sample ;
-  guchar *pixels;
 
-  n_channels = gdk_pixbuf_get_n_channels (pixbuf);
-
-  g_assert (gdk_pixbuf_get_colorspace (pixbuf) == GDK_COLORSPACE_RGB);
-  bits_per_sample=gdk_pixbuf_get_bits_per_sample (pixbuf);
-
-  width = gdk_pixbuf_get_width (pixbuf);
-  height = gdk_pixbuf_get_height (pixbuf);
-
-  rowstride = gdk_pixbuf_get_rowstride (pixbuf);
-  pixels = gdk_pixbuf_get_pixels (pixbuf);
-
-len of pixbuf=rowstride*(height-1)+width * ((n_channels * bits_per_sample + 7) / 8)
-
-last row of pixbuf=width * ((n_channels * bits_per_sample + 7) / 8)
-*/
 /* Saves history to ~/.local/share/<application>/history */
 
 /***************************************************************************/
