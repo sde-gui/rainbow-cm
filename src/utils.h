@@ -33,8 +33,6 @@ struct cmdline_opts {
 gchar *p_strdup( const gchar *str );
 void check_dirs( void );
 
-gboolean is_hyperlink(gchar* link);
-
 struct cmdline_opts *parse_options(int argc, char* argv[]);
 
 void show_gtk_dialog(gchar *message, gchar *title);

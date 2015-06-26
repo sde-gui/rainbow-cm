@@ -130,7 +130,6 @@ typedef struct {
 
 /**speed up pref to int lookup.  */
 int
-	hyperlinks_only,
 	ignore_whiteonly,
 	trim_newline,
 	trim_wspace_begend,
@@ -140,7 +139,6 @@ int
 	synchronize;
 
 static struct pref2int pref2int_map[]={
-	{.val=&hyperlinks_only,.name="hyperlinks_only"},
 	{.val=&ignore_whiteonly,.name="ignore_whiteonly"},
 	{.val=&trim_newline,.name="trim_newline"},
 	{.val=&trim_wspace_begend,.name="trim_wspace_begend"},
@@ -172,10 +170,7 @@ gchar *process_new_item(GtkClipboard *clip,gchar *ntext, int *mod)
 
 	/**we now check our options...  */
 	/*printf("opt\n"); fflush(NULL); */
-	if (hyperlinks_only){
-		 if(is_hyperlink(ntext))
-			 	goto process;
-	}	else {
+	{
 		/*printf("wo\n"); fflush(NULL); */
 		if(ignore_whiteonly){
 			gchar *s;

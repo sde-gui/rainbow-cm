@@ -120,22 +120,6 @@ done:
   g_free(config_dir);
 }
 
-/* Returns TRUE if text is a hyperlink */
-gboolean is_hyperlink(gchar* text)
-{
-  /* TODO: I need a better regex, this one is poor */
-  GRegex* regex = g_regex_new("([A-Za-z][A-Za-z0-9+.-]{1,120}:[A-Za-z0-9/]" \
-                              "(([A-Za-z0-9$_.+!*,;/?:@&~=-])|%[A-Fa-f0-9]{2}){1,333}" \
-                              "(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*,;/?:@&~=%-]{0,1000}))?)",
-                              G_REGEX_CASELESS, 0, NULL);
-  
-  gboolean result = g_regex_match(regex, text, 0, NULL);
-  g_regex_unref(regex);
-  return result;
-}
-
-
-
 /* Parses the program arguments. Returns TRUE if program needs
  * to exit after parsing is complete
  */
