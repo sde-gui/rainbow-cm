@@ -27,9 +27,6 @@ G_BEGIN_DECLS
 #define CLIP_TYPE_IMG        0x2
 #define CLIP_TYPE_PERSISTENT 0x4
 
-#define HIST_DEL 0x10
-#define HIST_CHECKDUP 1
-#define HIST_KEEP_FLAGS 2
 /**give us a genric struct for future expansion  */
 struct history_gen{ /**16 bytes, for overlay over res, below.  */
 	gint16 a;
@@ -54,10 +51,7 @@ void read_history();
 
 void save_history();
 
-struct history_item *new_clip_item(gint type, guint32 len, void *data);
-gint is_duplicate(gchar* item, int mode,int *type);
-
-void append_item(gchar* item, int checkdup, gint iflags, gint itype);
+void history_add_text_item(gchar * text, gint flags);
 
 void truncate_history();
 

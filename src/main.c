@@ -396,7 +396,7 @@ gchar *update_clipboard(GtkClipboard *clip,gchar *intext,  gint mode)
 		DTRACE(g_fprintf(stderr,"%sInList '%s' ex '%s'\n",clip==clipboard?"CLI":"PRI",intext,*existing)); 
 		last=_update_clipboard(clip,intext,existing,1,mode);
 		if( NULL != last){/**maintain persistence, if set  */
-			append_item(last,HIST_DEL|HIST_CHECKDUP|HIST_KEEP_FLAGS,0,CLIP_TYPE_TEXT);
+			history_add_text_item(last, 0);
 		}
 		goto done;
 	}
@@ -456,7 +456,7 @@ gchar *update_clipboard(GtkClipboard *clip,gchar *intext,  gint mode)
 				
 		}
 		if(NULL != last)
-			append_item(last,HIST_DEL|HIST_CHECKDUP|HIST_KEEP_FLAGS,0,CLIP_TYPE_TEXT);
+			history_add_text_item(last, 0);
 		g_free(changed);
 		changed=NULL;
 	}
@@ -477,7 +477,7 @@ gchar *update_clipboard(GtkClipboard *clip,gchar *intext,  gint mode)
 		if(NULL != processed){
 			last=_update_clipboard(clip,processed,existing,set,mode);
 			if(NULL != last)
-				append_item(last,HIST_DEL|HIST_CHECKDUP|HIST_KEEP_FLAGS,0,CLIP_TYPE_TEXT);
+				history_add_text_item(last, 0);
 		}else 
 			return NULL;	
 	}

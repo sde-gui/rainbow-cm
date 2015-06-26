@@ -200,7 +200,7 @@ void save_history()
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-struct history_item *new_clip_item(gint type, guint32 len, void *data)
+static struct history_item *new_clip_item(gint type, guint32 len, void *data)
 {
 	struct history_item *c;
 	if(NULL == (c=g_malloc0(sizeof(struct history_item)+len))){
@@ -208,7 +208,7 @@ struct history_item *new_clip_item(gint type, guint32 len, void *data)
 		return NULL;
 	}
 		
-	c->type=type;
+	c->type = type;
 	memcpy(c->text,data,len);
 	c->len=len;
 	return c;
@@ -218,31 +218,24 @@ struct history_item *new_clip_item(gint type, guint32 len, void *data)
 \n\b Arguments: if mode is 1, delete it too.
 \n\b Returns: -1 if not found, or nth element.
 ****************************************************************************/
-gint is_duplicate(gchar* item, int mode, gint *flags)
+static gint find_duplicate_text_item(const gchar * text)
 {
-  GList* element;
+	GList * element;
 	gint i;
-	if(NULL ==item)
+	if (!text)
 		return -1;
-  /* Go through each element compare each */
-  for (i=0,element = history_list; element != NULL; element = element->next,++i) {
-	  struct history_item *c;
-		c=(struct history_item *)element->data;
-		if(CLIP_TYPE_TEXT == c->type){
-	    if (g_strcmp0((gchar*)c->text, item) == 0) {
-				if(mode){
-					if(NULL != flags && (CLIP_TYPE_PERSISTENT&c->flags)){
-						*flags=c->flags;
-					}
-					/*g_printf("Freeing 0x%02X '%s'\n",c->flags,c->text);  */
-					/** g_free(element->data);
-		      history_list = g_list_delete_link(history_list, element);*/
-				}
+
+	for (i=0, element = history_list; element != NULL; element = element->next, ++i)
+	{
+		struct history_item * hi = (struct history_item *) element->data;
+		if (CLIP_TYPE_TEXT == hi->type)
+		{
+			if (g_strcmp0((gchar *) hi->text, text) == 0)
+			{
 				return i;
-	      break;
-	    }
+			}
 		}
-  }
+	}
 	return -1;
 }
 /***************************************************************************/
@@ -250,46 +243,37 @@ gint is_duplicate(gchar* item, int mode, gint *flags)
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-void append_item(gchar* item, int checkdup, gint iflags, gint itype)
+void history_add_text_item(gchar * text, gint flags)
 {
-	gint flags=0,node=-1;
-	GList *element=NULL;
-	struct history_item *c=NULL;
-	if(NULL == item)
-		return;
-	g_mutex_lock(hist_lock);
-/**delete if HIST_DEL flag is set.  */
-	if( checkdup & HIST_CHECKDUP){
-		node=is_duplicate(item, checkdup & HIST_DEL, &flags);
-		/*g_printf("isd done "); */
-		if(node > -1){ /**found it  */
-			/*g_printf(" found\n"); */
-			if(!(checkdup & HIST_DEL))
-				return;	
-		}
-	}
-	if (-1 != node ){/**we found a duplicate in the history, remove, then re-add existing  */
-		element=g_list_nth(history_list,node);
-		history_list=g_list_remove_link(history_list,element);
-	}else{ /**not found   */
-		if(NULL == (c=new_clip_item(CLIP_TYPE_TEXT,strlen(item),item)) )
-			return;
-		if(node > -1 && (checkdup & HIST_KEEP_FLAGS) ){
-			c->flags=flags;
-			/*g_printf("Restoring 0x%02X '%s'\n",c->flags,c->text);  */
-		}	else
-			c->flags=iflags;
-		c->type=itype;
-	}
-	
+	struct history_item * hi = NULL;
 
-		
-	/*g_printf("Append '%s'\n",item); */
-   /* Prepend new item */
-  history_list = g_list_prepend(history_list, NULL ==element?c:element->data);
+	if (!text)
+		return;
+
+	g_mutex_lock(hist_lock);
+
+	gint dup_index = find_duplicate_text_item(text);
+
+	if (dup_index >= 0)
+	{
+		GList * element = g_list_nth(history_list, dup_index);
+		history_list = g_list_remove_link(history_list, element);
+		hi = element->data;
+		g_list_free(element);
+	}
+	else
+	{
+		hi = new_clip_item(CLIP_TYPE_TEXT, strlen(text), text);
+		if (!hi)
+			return;
+		hi->flags = flags;
+	}
+
+	history_list = g_list_prepend(history_list, hi);
+
 	g_mutex_unlock(hist_lock);
-  /* Shorten history if necessary */
-  truncate_history();
+
+	truncate_history();
 }
 
 /***************************************************************************/
