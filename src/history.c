@@ -58,53 +58,6 @@ glong validate_utf8_text(gchar *text, glong len)
 	return len;
 }
 /***************************************************************************/
-/** Read the old history file and covert to the new format.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-void read_history_old ()
-{
-  /* Build file path */
-  gchar* history_path = g_build_filename(g_get_user_data_dir(), HISTORY_FILE0,   NULL);
-  
-  /* Open the file for reading */
-  FILE* history_file = fopen(history_path, "rb");
-  g_free(history_path);
-  /* Check that it opened and begin read */
-  if (history_file)   {
-    /* Read the size of the first item */
-    gint size=1;
-    g_mutex_lock(hist_lock);
-    /* Continue reading until size is 0 */
-    while (size)   {
-			struct history_item *c;
-			if (fread(&size, 4, 1, history_file) != 1){
-				size = 0;
-				break;
-			} else if( 0 == size )
-				break;
-      /* Malloc according to the size of the item */  
-			c = (struct history_item *)g_malloc0(size+ 2+sizeof(struct history_item));
-      c->type=CLIP_TYPE_TEXT;
-			c->len=size;
-      /* Read item and add ending character */
-      if(fread(c->text, size, 1, history_file) !=1){
-				g_printf("Error reading history file entry \n");
-			}else{
-				c->text[size] = 0;
-				c->len=validate_utf8_text(c->text,c->len);
-				if(0 != c->len) /* Prepend item and read next size */
-	      	history_list = g_list_prepend(history_list, c);
-				else g_free(c);
-			}
-    }
-    /* Close file and reverse the history to normal */
-    fclose(history_file);
-    history_list = g_list_reverse(history_list);
-		g_mutex_unlock(hist_lock);
-  }
-}
-
 /***************************************************************************/
 /** .
 \n\b Arguments:
@@ -153,14 +106,6 @@ void read_history ()
 		if (fread(magic,HISTORY_MAGIC_SIZE , 1, history_file) != 1){
 			g_fprintf(stderr,"No magic! Assume no history.\n");
 			goto done;
-		}
-    if(HISTORY_VERSION !=check_magic(magic)){
-			g_fprintf(stderr,"Assuming old history style. Read and convert.\n");
-			/*g_printf("TODO! History version not matching!!Discarding history.\n"); */
-			g_free(magic);
-			fclose(history_file);
-			read_history_old();
-			return;
 		}
 		if(dbg) g_printf("History Magic OK. Reading\n");
     /* Continue reading until size is 0 */
