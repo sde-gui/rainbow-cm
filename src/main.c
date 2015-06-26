@@ -1836,11 +1836,6 @@ int main(int argc, char *argv[])
 	else
 		mode=PROG_MODE_CLIENT; /**already running, just access fifos & exit.  */
 	
-    /* Run as daemon option */
-    if (opts->daemon && (PROG_MODE_DAEMON & mode))  {
-        init_daemon_mode();
-    }
-
 	if(PROG_MODE_CLIENT & mode){
 		return 0;
 	}	

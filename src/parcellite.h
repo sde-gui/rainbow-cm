@@ -45,7 +45,6 @@ static int debug_update=0; /**disable/enable DTRACE  */
 #else
 #  define DTRACE(x) do {} while (FALSE);
 #endif
-#include "daemon.h"
 #include "utils.h"
 #include "preferences.h"
 #include "history.h"
