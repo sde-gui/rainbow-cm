@@ -195,7 +195,7 @@ struct cmdline_opts *parse_options(int argc, char* argv[])
         #else
             v = "Unknown";
         #endif
-        g_fprintf(stderr,"Rainbow Clipboarb Manager %s, GTK %d.%d.%d\n",
+        g_fprintf(stderr,"Rainbow Clipboard Manager %s, GTK %d.%d.%d\n",
             v, gtk_major_version, gtk_minor_version,gtk_micro_version);
         opts->exit = 1;
     }
