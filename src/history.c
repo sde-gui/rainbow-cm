@@ -105,36 +105,6 @@ void read_history_old ()
   }
 }
 
-/* Saves history to ~/.local/share/<application>/history */
-void save_history_old()
-{
-  /* Check that the directory is available */
-  check_dirs();
-  /* Build file path */
-  gchar* history_path = g_build_filename(g_get_user_data_dir(),HISTORY_FILE0, NULL);
-  /* Open the file for writing */
-  FILE* history_file = fopen(history_path, "wb");
-  g_free(history_path);
-  /* Check that it opened and begin write */
-  if (history_file)  {
-    GList* element;
-    /* Write each element to a binary file */
-    for (element = history_list; element != NULL; element = element->next) {
-      /* Create new GString from element data, write its length (size)
-       * to file followed by the element data itself
-       */
-      GString* item = g_string_new((gchar*)element->data);
-      fwrite(&(item->len), 4, 1, history_file);
-      fputs(item->str, history_file);
-      g_string_free(item, TRUE);
-    }
-    /* Write 0 to indicate end of file */
-    gint end = 0;
-    fwrite(&end, 4, 1, history_file);
-    fclose(history_file);
-  }
-}
-
 /***************************************************************************/
 /** .
 \n\b Arguments:
