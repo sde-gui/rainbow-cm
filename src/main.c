@@ -114,10 +114,6 @@ static int cmd_mode=CMODE_ALL; /**both clipboards  */
 #define H_MODE_EMPTY_MASK 0x100 /**debug, see line 399  */
 #define H_MODE_CHANGED_MASK 0x200 /**debug, see line 399  */
 
-#define EDIT_MODE_USE_RIGHT_CLICK 1 /**used in edit dialog creation to determine behaviour. 
-                                    If this is set, it will edit the entry, and replace it in the history.  */
-#define EDIT_MODE_RC_EDIT_SET 2 /**used to   */                                    
-
 /***************************************************************************/
 
 typedef struct {
@@ -590,171 +586,6 @@ gboolean check_clipboards_tic(gpointer data)
 }
 
 /***************************************************************************/
-/**  Called when Edit is selected from history menu 
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-static void edit_selected(GtkMenuItem *menu_item, gpointer user_data)
-{
-	struct history_info *h=(struct history_info*)user_data;
-	GList* element=NULL;
-	struct history_item *c=NULL;
-	gint rslt,itype,iflags;
-	if(NULL ==h)
-		return;
-	/*g_fprintf(stderr,"edit_selected call\n");  */
-  /* This helps prevent multiple instances */
-  if (!gtk_grab_get_current() ||h->wi.tmp1&EDIT_MODE_RC_EDIT_SET)  {
-	  gchar* current_clipboard_text=NULL;
-		/*g_fprintf(stderr,"current..."); */
-    /* Create clipboard buffer and set its text */
-    GtkTextBuffer* text_buffer = gtk_text_buffer_new(NULL);
-		if(h->wi.index != -1){/**use index as pointer to text  */
-			element = g_list_nth(history_list, h->wi.index);
-			if(NULL == element){
-				g_fprintf(stderr,"edit_selected: element is NULL\n");
-				return;
-			}
-			c=(struct history_item *)(element->data);
-			if(NULL == c){
-				g_fprintf(stderr,"edit_selected: element->data is NULL\n");
-				return;
-			}
-			current_clipboard_text=p_strdup(c->text);
-			g_fprintf(stderr,"Got Text frmo wi.index ele %p '%s'",element,c->text);  
-			
-		}	else{
-			h->wi.tmp1=0;
-			if( NULL != h->element_text){/**this case should never happen  */
-				g_fprintf(stderr,"Oops. shouldn't be here\n");
-				current_clipboard_text=p_strdup(h->element_text);
-				
-			}else{
-				g_fprintf(stderr,"List Empty. Grab clipboard.\n");
-				current_clipboard_text = gtk_clipboard_wait_for_text(clipboard);
-			}	
-		}
-    
-    if (current_clipboard_text != NULL)   {
-		g_fprintf(stderr,"Got '%s' for edit text\n",current_clipboard_text); 
-			TRACE(g_fprintf(stderr,"Got '%s'\n",current_clipboard_text));
-      gtk_text_buffer_set_text(text_buffer, current_clipboard_text, -1);
-    }	 else	 {
-			g_fprintf(stderr,"NULL text to edit. Nothing to do.\n");
-			return;
-		}
-    /*g_fprintf(stderr,"cr dialog\n");	 */
-    
-    /* Create the dialog */
-    GtkWidget* dialog = gtk_dialog_new_with_buttons(_("Editing Clipboard"), NULL,
-                                                   (GTK_DIALOG_MODAL   +    GTK_DIALOG_NO_SEPARATOR),
-                                                    GTK_STOCK_CANCEL,       GTK_RESPONSE_REJECT,
-                                                    GTK_STOCK_OK,           GTK_RESPONSE_ACCEPT, NULL);
-    
-    gtk_window_set_default_size((GtkWindow*)dialog, 450, 300);
-    gtk_window_set_icon((GtkWindow*)dialog, gtk_widget_render_icon(dialog, GTK_STOCK_EDIT, -1, NULL));
-    
-    /* Build the scrolled window with the text view */
-    GtkWidget* scrolled_window = gtk_scrolled_window_new((GtkAdjustment*) gtk_adjustment_new(0, 0, 0, 0, 0, 0),
-                                                         (GtkAdjustment*) gtk_adjustment_new(0, 0, 0, 0, 0, 0));
-    
-    gtk_scrolled_window_set_policy((GtkScrolledWindow*)scrolled_window,
-                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), scrolled_window, TRUE, TRUE, 2);
-    GtkWidget* text_view = gtk_text_view_new_with_buffer(text_buffer);
-    gtk_text_view_set_left_margin((GtkTextView*)text_view, 2);
-    gtk_text_view_set_right_margin((GtkTextView*)text_view, 2);
-    gtk_container_add((GtkContainer*)scrolled_window, text_view);
-    ignore_clipboard=1;
-    /* Run the dialog */
-    gtk_widget_show_all(dialog);
-		rslt=gtk_dialog_run((GtkDialog*)dialog);
-		
-    if ( GTK_RESPONSE_ACCEPT == rslt) {
-			GtkTextIter start, end;
-			guint32 slen;
-			gchar *ntext=NULL;
-      gtk_text_buffer_get_start_iter(text_buffer, &start);
-      gtk_text_buffer_get_end_iter(text_buffer, &end);
-      gchar* new_clipboard_text = gtk_text_buffer_get_text(text_buffer, &start, &end, TRUE);
-			slen=strlen(new_clipboard_text);
-			/*g_fprintf(stderr,"New Txt='%s'\n",new_clipboard_text); */
-			if(0 == slen ){ /**just delete history entry, and set next in order to clipboard  */
-				if(NULL == element){/**just clear clipboard? or FIXME: is there a way to determine the element?  */
-					/*gtk_clipboard_set_text(clipboard,"",0); */
-					gtk_clipboard_clear(clipboard);
-					goto finish;
-				}
-				g_fprintf(stderr,"Freeing %p\n",element->data); 
-				g_free(element->data);
-				if(element == history_list && NULL != element->next ){ /**set clipboard(s) to next entry  */
-					c=(struct history_item *)(element->next->data);	
-					if(NULL != c)
-						ntext=c->text;
-				}
-					
-	      history_list = g_list_delete_link(history_list, element);
-				if(NULL != ntext)/**set clipboards to next entry FIXME: Need logic here as to which clip(s) to update.  */
-	      	update_clipboards(ntext, H_MODE_LIST);
-			}else {/**Text is not blank  */
-				g_fprintf(stderr,"Try to add '%s'\n",new_clipboard_text); 
-				if(!g_strcmp0(new_clipboard_text,current_clipboard_text)) /**same text, nothing to do  */
-					goto finish; 
-				if( NULL != c){
-					itype=c->type;
-					iflags=c->flags;
-				}else {
-					itype=CLIP_TYPE_TEXT;
-					iflags=0;
-				}
-					
-				/**save changes to the history - deallocate current entry, and add new entry */
-				/**FIXME: Need to filter this through existing & valid text? */
-				if(NULL != element && NULL != element->data){
-					struct history_item *d=(struct history_item *)(element->data);
-					g_fprintf(stderr,"ele!null. Free %p '%s'\n",element,d->text); 
-					g_free(element->data);
-					history_list=g_list_delete_link(history_list, element);
-					append_item(new_clipboard_text,HIST_DEL|HIST_CHECKDUP|HIST_KEEP_FLAGS,iflags,itype);
-				}else{
-					gint flags=0;
-					g_fprintf(stderr,"ele IS null\n"); 
-					/**delete the edited entry - sets the flags for the entry. */
-					gint node=is_duplicate(current_clipboard_text, 1, &flags);
-					element=g_list_nth(history_list,node);
-					history_list=g_list_remove_link(history_list,element);
-					/**Does this cause crash since we are in the middle of a history window? 
-					Need to kill history menu too? 
-					What about setting up an indicator that on next tic, if history is not active, we update?
-					*/
-				}
-			}
-finish:			
-			if(NULL != new_clipboard_text)
-				g_free(new_clipboard_text);	
-    }
-		ignore_clipboard=0;
-    gtk_widget_destroy(dialog);
-    g_free(current_clipboard_text);
-  }
-	else TRACE(g_fprintf(stderr,"gtk_grab_get_current returned !0\n")); 
-
-}
-
-/***************************************************************************/
-/** Only enabled when persistent history is enabled.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-gboolean history_item_right_click_on_edit(GtkWidget *menuitem, gpointer data)
-{
-	struct history_info *h=(struct history_info*)data;
-	h->wi.tmp1|=EDIT_MODE_USE_RIGHT_CLICK;
-	edit_selected((GtkMenuItem *)menuitem, data);
-	return TRUE;
-}
-/***************************************************************************/
 /** .
 \n\b Arguments:
 \n\b Returns:
@@ -838,10 +669,6 @@ void  history_item_right_click (struct history_info *h, GdkEventKey *e, gint ind
 		g_signal_connect(menuitem, "activate",(GCallback) history_item_right_click_on_move, (gpointer)h);
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 	}
-
-	menuitem = gtk_menu_item_new_with_label("Edit");
-	g_signal_connect(menuitem, "activate", (GCallback) history_item_right_click_on_edit, (gpointer)h);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 
 	menuitem = gtk_menu_item_new_with_label("Cancel");
 	g_signal_connect(menuitem, "activate", (GCallback) history_item_right_click_on_cancel, (gpointer)h);
@@ -1151,13 +978,7 @@ static gboolean key_release_cb (GtkWidget *w,GdkEventKey *e, gpointer user)
 		}
 
 		if (e->type == GDK_KEY_PRESS && e->state & GDK_MOD1_MASK){ /* alt key pressed  */
-			if(e->keyval == 'e'){
-				TRACE(g_fprintf(stderr,"Alt-E\n"));
-				gtk_grab_remove(w);
-				edit_selected((GtkMenuItem *)h, (gpointer)h);
-				return TRUE;
-			}
-			else if(e->keyval == 'c'){
+			if(e->keyval == 'c'){
 				TRACE(g_fprintf(stderr,"Alt-C\n"));
 				clear_selected(NULL, (gpointer)h);
 				return TRUE;
@@ -1380,7 +1201,6 @@ static gboolean do_show_history_menu(gpointer data)
 	h.clip_item = NULL;
 	h.delete_list = NULL;
 	h.persist_list = NULL;
-	h.wi.tmp1 = 0; /** used to tell edit what we are to edit  */
 
 	my_item_event(NULL,NULL,(gpointer)&h); /**init our function  */
 	item_selected(NULL,(gpointer)&h);	/**ditto  */
@@ -1544,19 +1364,12 @@ next_loop:
 	gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
 	
 	if(get_pref_int32("type_search")){
-		/* Edit clipboard */
-		h.title_item = gtk_image_menu_item_new_with_label( _("Use Alt-E to edit, Alt-C to clear") );
+		h.title_item = gtk_image_menu_item_new_with_label( _("Use Alt-C to clear") );
 		menu_image = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
 		gtk_image_menu_item_set_image((GtkImageMenuItem*)h.title_item, menu_image);
 		gtk_menu_shell_append((GtkMenuShell*)menu, h.title_item);    
 	}else{
-		menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Edit Clipboard"));
-		menu_image = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
-		gtk_image_menu_item_set_image((GtkImageMenuItem*)menu_item, menu_image);
-		g_signal_connect((GObject*)menu_item, "activate", (GCallback)edit_selected, (gpointer)&h); 
-		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
 		menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Clear"));
-		/* Clear */
 		menu_image = gtk_image_new_from_stock(GTK_STOCK_CLEAR, GTK_ICON_SIZE_MENU);
 		gtk_image_menu_item_set_image((GtkImageMenuItem*)menu_item, menu_image);
 		g_signal_connect((GObject*)menu_item, "activate", (GCallback)clear_selected, (gpointer)&h);
