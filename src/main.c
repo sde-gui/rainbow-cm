@@ -750,47 +750,6 @@ gboolean history_item_right_click_on_edit(GtkWidget *menuitem, gpointer data)
 	edit_selected((GtkMenuItem *)menuitem, data);
 	return TRUE;
 }
-
-/***************************************************************************/
-/** Paste all. Grab all of the history and paste it to the clipboard.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-gboolean history_item_right_click_on_copy_all(GtkWidget *menuitem, gpointer data)
-{
-	GList *element;
-	gchar*str=NULL;
-	gchar*last=NULL;
-	gchar*delim= g_strcompress(get_pref_string("persistent_delim"));
-	int which;
-	struct history_info *h=(struct history_info*)data;
-	/**if persistent and this history is persistent, only get persistent.  
-	FIXME: this will only work with separarate set.
-	*/
-	which=(get_pref_int32("persistent_history") && h->histno == HIST_DISPLAY_PERSISTENT);
-	for (element = history_list; element != NULL; element = element->next) {
-		struct history_item *c=(struct history_item *)(element->data);
-		if(which && !(c->flags&CLIP_TYPE_PERSISTENT))
-			continue;
-		if(NULL ==str)
-			str=c->text;
-		else {
-			if(NULL == delim)
-				str=g_strconcat(str,c->text,NULL);
-			else
-				str=g_strconcat(str,delim,c->text,NULL);
-			if(NULL != last)
-				g_free(last);
-			last=str;
-		}
-	}	
-	if(NULL != last){
-		update_clipboards(str,H_MODE_IGNORE);
-		g_free(last);
-	}
-		
-	return TRUE;
-}
 /***************************************************************************/
 /** .
 \n\b Arguments:
@@ -867,11 +826,6 @@ void  history_item_right_click (struct history_info *h, GdkEventKey *e, gint ind
 	menu = gtk_menu_new();
 	gtk_menu_attach_to_widget((GtkMenu *)h->menu,menu,destroy_right_click_history_cb); /**fix  */
 
-	menuitem = gtk_menu_item_new_with_label("Copy All to Clip");
-	g_signal_connect(menuitem, "activate", (GCallback) history_item_right_click_on_copy_all, (gpointer)h);
-
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-	/*g_printf("CreatehistR\n"); */
 	if(get_pref_int32("persistent_history")) {
 		if(NULL != c){
 			if(c->flags & CLIP_TYPE_PERSISTENT)
