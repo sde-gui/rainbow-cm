@@ -92,7 +92,6 @@ GtkWidget *hmenu;
 /**see parcellite.h for DEBUG defines  */
 static GtkClipboard* primary;
 static GtkClipboard* clipboard;
-struct p_fifo *fifo;
 static GtkStatusIcon *status_icon=NULL; 
 GMutex *hist_lock=NULL;
 static int show_icon=0;
@@ -545,40 +544,8 @@ void check_clipboards(gint mode)
 	int n=0;
 	
 	/*g_printf("check_clipboards\n"); */
-	if(fifo->clen){/**we have a command to execute  */
-			/*fifo->which should be ID_CMD: */
-		if(fifo->dbg) g_printf("Running CMD '%s'\n",fifo->cbuf);
-		do_command(fifo->cbuf, fifo->clen);
-		if(fifo->dbg) g_printf("mode is 0x%X\n",cmd_mode);
-		fifo->clen=0;
-		return;
-	}	
 	if(!(CMODE_ALL & cmd_mode))
 		return;
-	if(fifo->rlen >0){
-		switch(fifo->which){
-			case ID_PRIMARY:
-				fifo->rlen=validate_utf8_text(fifo->buf, fifo->rlen);
-				if(fifo->dbg) g_printf("Setting PRI '%s'\n",fifo->buf);
-				update_clipboard(primary, fifo->buf, H_MODE_NEW);
-				fifo->rlen=0;
-				n=1;
-				break;
-			case ID_CLIPBOARD:
-				fifo->rlen=validate_utf8_text(fifo->buf, fifo->rlen);
-				if(fifo->dbg) g_printf("Setting CLI '%s'\n",fifo->buf);
-				update_clipboard(clipboard, fifo->buf, H_MODE_NEW);
-				n=2;
-				fifo->rlen=0;
-				break;
-			
-			default:
-				fifo->rlen=validate_utf8_text(fifo->buf, fifo->rlen);
-				g_printf("CLIP not set, discarding '%s'\n",fifo->buf);
-				fifo->rlen=0;
-				break;
-		}
-	}
 	ptext=update_clipboard(primary, NULL, H_MODE_CHECK);
 	ctext=update_clipboard(clipboard, ptext, H_MODE_CHECK);
 	
@@ -1826,41 +1793,6 @@ static void parcellite_init()
   }
 }
 
-
-/***************************************************************************/
-/** .
-\n\b Arguments: 
-which - which fifo we write to.
-\n\b Returns:
-****************************************************************************/
-void write_stdin(struct p_fifo *fifo, int which)
-{
-  if (!isatty(fileno(stdin)))   {
-    GString* piped_string = g_string_new(NULL);
-    /* Append stdin to string */
-    while (1)    {
-      gchar* buffer = (gchar*)g_malloc(256);
-      if (fgets(buffer, 256, stdin) == NULL)  {
-        g_free(buffer);
-        break;
-      }
-      g_string_append(piped_string, buffer);
-      g_free(buffer);
-    }
-    /* Check if anything was piped in */
-    if (piped_string->len > 0) {
-      /* Truncate new line character */
-      /* g_string_truncate(piped_string, (piped_string->len - 1)); */
-      /* Copy to clipboard */
-	   write_fifo(fifo,which,piped_string->str,piped_string->len); 
-     /*sleep(10); */
-      /* Exit */
-    }
-    g_string_free(piped_string, TRUE);
-	 		
-	}
-}
-	
 /***************************************************************************/
 	/** .
 	\n\b Arguments:
@@ -1910,7 +1842,6 @@ int main(int argc, char *argv[])
     }
 
 	if(PROG_MODE_CLIENT & mode){
-		close_fifos(fifo);
 		return 0;
 	}	
   
@@ -1929,7 +1860,6 @@ int main(int argc, char *argv[])
   g_free(prefs.menu_key);
 	*/
   g_list_free(history_list);
-  close_fifos(fifo);
   /* Exit */
   return 0;
 }
