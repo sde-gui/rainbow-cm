@@ -408,23 +408,20 @@ void append_item(gchar* item, int checkdup, gint iflags, gint itype)
 ****************************************************************************/
 void delete_duplicate(gchar* item)
 {
-  GList* element;
-	int p=get_pref_int32("persistent_history");
-  /* Go through each element compare each */
-	g_mutex_lock(hist_lock);
-  for (element = history_list; element != NULL; element = element->next) {
-	  struct history_item *c;
-		c=(struct history_item *)element->data;
-		if( (!p || !(CLIP_TYPE_PERSISTENT&c->flags)) && CLIP_TYPE_TEXT == c->type){
-	    if (g_strcmp0((gchar*)c->text, item) == 0) {
-				g_printf("del dup '%s'\n",c->text);
-	      g_free(element->data);
-	      history_list = g_list_delete_link(history_list, element);
-	      break;
-	    }
-		}
-  }
-	g_mutex_unlock(hist_lock);
+    GList* element;
+    g_mutex_lock(hist_lock);
+    for (element = history_list; element != NULL; element = element->next) {
+        struct history_item *c = (struct history_item *) element->data;
+        if ( (!(CLIP_TYPE_PERSISTENT&c->flags)) && CLIP_TYPE_TEXT == c->type) {
+            if (g_strcmp0((gchar*)c->text, item) == 0) {
+                g_printf("del dup '%s'\n",c->text);
+                g_free(element->data);
+                history_list = g_list_delete_link(history_list, element);
+                break;
+            }
+        }
+    }
+    g_mutex_unlock(hist_lock);
 }
 
 /***************************************************************************/
@@ -436,27 +433,24 @@ void delete_duplicate(gchar* item)
 ****************************************************************************/
 void truncate_history()
 {
-  int p=get_pref_int32("persistent_history");
-  if (history_list)  {
-		g_mutex_lock(hist_lock);
-		guint ll=g_list_length(history_list);
-		guint lim=get_pref_int32("history_limit");
-		if(ll > lim){ /* Shorten history if necessary */
-			GList* last = g_list_last(history_list);	
-			while (last->prev && ll>lim)   {
-	      struct history_item *c=(struct history_item *)last->data;
-				last=last->prev;
-	      if(!p || !(c->flags&CLIP_TYPE_PERSISTENT)){
-					history_list=g_list_remove(history_list,c);
-					--ll;
-				}
-	    }	
-		}
-		g_mutex_unlock(hist_lock);
-    /* Save changes */
+    g_mutex_lock(hist_lock);
+    guint ll = g_list_length(history_list);
+    guint lim = get_pref_int32("history_limit");
+    if (ll > lim) { /* Shorten history if necessary */
+        GList * last = g_list_last(history_list);
+        while (last->prev && ll > lim) {
+            struct history_item * c = (struct history_item *) last->data;
+            last=last->prev;
+            if (!(c->flags&CLIP_TYPE_PERSISTENT)) {
+                history_list=g_list_remove(history_list,c);
+                --ll;
+            }
+        }
+    }
+    g_mutex_unlock(hist_lock);
+
     if (get_pref_int32("save_history"))
-      save_history();
-  }
+        save_history();
 }
 
 /* Returns pointer to last item in history */
@@ -485,22 +479,19 @@ gpointer get_last_item()
 ****************************************************************************/
 void clear_history( void )
 {
-	g_mutex_lock(hist_lock);
-	if( !get_pref_int32("persistent_history")){
-		g_list_free(history_list);
-		history_list = NULL;
-	}	else{ /**save any persistent items  */
-		GList* element;
-		for (element = history_list; element != NULL; element = element->next) {
-		  struct history_item *c;
-			c=(struct history_item *)element->data;
-			if(!(c->flags & CLIP_TYPE_PERSISTENT))
-				history_list=g_list_remove(history_list,c);
-		}		
-	}
-	g_mutex_unlock(hist_lock);
-  if (get_pref_int32("save_history"))
-  	save_history();
+    g_mutex_lock(hist_lock);
+
+    GList * element;
+    for (element = history_list; element != NULL; element = element->next) {
+        struct history_item * c = (struct history_item *) element->data;
+        if(!(c->flags & CLIP_TYPE_PERSISTENT))
+            history_list = g_list_remove(history_list,c);
+    }
+
+    g_mutex_unlock(hist_lock);
+
+    if (get_pref_int32("save_history"))
+        save_history();
 }
 /***************************************************************************/
 /** .

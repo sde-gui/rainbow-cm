@@ -826,14 +826,11 @@ void  history_item_right_click (struct history_info *h, GdkEventKey *e, gint ind
 	menu = gtk_menu_new();
 	gtk_menu_attach_to_widget((GtkMenu *)h->menu,menu,destroy_right_click_history_cb); /**fix  */
 
-	if(get_pref_int32("persistent_history")) {
-		if(NULL != c){
-			if(c->flags & CLIP_TYPE_PERSISTENT)
-				menuitem = gtk_menu_item_new_with_label("Move To Normal");
-			else
-				menuitem = gtk_menu_item_new_with_label("Move To Persistent");
-		}	else
-		menuitem = gtk_menu_item_new_with_label("Move To?");
+    if(NULL != c) {
+		if(c->flags & CLIP_TYPE_PERSISTENT)
+			menuitem = gtk_menu_item_new_with_label(_("Unpin"));
+		else
+			menuitem = gtk_menu_item_new_with_label(_("Pin"));
 		g_signal_connect(menuitem, "activate",(GCallback) history_item_right_click_on_move, (gpointer)h);
 		gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 	}
@@ -1398,7 +1395,6 @@ static gboolean do_show_history_menu(gpointer data)
 		/* Declare some variables */
 		gint32 item_length = get_pref_int32("item_length");
 		gint32 ellipsize = get_pref_int32("ellipsize");
-		gint32 persistent_history = get_pref_int32("persistent_history");
 		gint32 nonprint_disp = get_pref_int32("nonprint_disp");
 		gint element_number = 0;
 		gchar * primary_temp = gtk_clipboard_wait_for_text(primary);
@@ -1503,7 +1499,7 @@ static gboolean do_show_history_menu(gpointer data)
 				h.element_text=hist_text;
 				h.wi.index=element_number;
 			}
-			if(persistent_history && c->flags &CLIP_TYPE_PERSISTENT){
+			if(c->flags &CLIP_TYPE_PERSISTENT){
 				persistent = g_list_prepend(persistent, menu_item);
 				/*g_printf("persistent %s\n",c->text); */
 			}	else{
@@ -1534,12 +1530,10 @@ next_loop:
 	}	
 
 	/**now actually add them from the list  */
-	if (get_pref_int32("persistent_history")){
+    {
 		write_history_menu_items(lhist,menu);
 		gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new()); 
 		write_history_menu_items(persistent,menu);
-	} else {
-		write_history_menu_items(lhist,menu);
 	}
 
 	/* -------------------- */
@@ -1593,12 +1587,7 @@ end:
 ****************************************************************************/
 static guint figure_histories(void)
 {
-	guint i;
-	if(get_pref_int32("persistent_history"))
-		i = HIST_DISPLAY_PERSISTENT | HIST_DISPLAY_NORMAL;
-	else
-		i = HIST_DISPLAY_NORMAL;
-	return i;
+	return HIST_DISPLAY_PERSISTENT | HIST_DISPLAY_NORMAL;
 }
 
 /***************************************************************************/
