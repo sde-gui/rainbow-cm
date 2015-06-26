@@ -37,10 +37,6 @@ gboolean is_hyperlink(gchar* link);
 
 struct cmdline_opts *parse_options(int argc, char* argv[]);
 
-#define PROC_MODE_EXACT 1
-#define PROC_MODE_STRSTR 2
-#define PROC_MODE_USER_QUALIFY 4
-
 void show_gtk_dialog(gchar *message, gchar *title);
 G_END_DECLS
 

@@ -1748,7 +1748,7 @@ void menu_hotkey(char *keystring, gpointer user_data)
 
 
 /* Startup calls and initializations */
-static void parcellite_init()
+static void parcellite_init(void)
 {
 	int i;
 /* Create clipboard */
@@ -1801,7 +1801,6 @@ static void parcellite_init()
 int main(int argc, char *argv[])
 {
 	struct cmdline_opts *opts;
-	int mode;
 	
 	bindtextdomain(GETTEXT_PACKAGE, PARCELLITELOCALEDIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
@@ -1827,13 +1826,9 @@ int main(int argc, char *argv[])
    	return 1;
 	if(opts->exit)
 		return 0;
-	mode=PROC_MODE_EXACT;
-	if(get_pref_int32("multi_user"))
-	  mode|=PROC_MODE_USER_QUALIFY;
-	/*g_printf("mode=0x%X\n",mode); */
 
   /* Init Parcellite */
-  parcellite_init(mode);
+  parcellite_init();
   /*g_printf("Start main loop\n"); */
   /* Run GTK+ loop */
   gtk_main();
