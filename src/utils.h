@@ -37,14 +37,10 @@ gboolean is_hyperlink(gchar* link);
 
 struct cmdline_opts *parse_options(int argc, char* argv[]);
 
-#define PROG_MODE_CLIENT 2
-#define PROG_MODE_DAEMON 1
-
 #define PROC_MODE_EXACT 1
 #define PROC_MODE_STRSTR 2
 #define PROC_MODE_USER_QUALIFY 4
 
-int proc_find(const char* name, int mode, pid_t *pid);
 void show_gtk_dialog(gchar *message, gchar *title);
 G_END_DECLS
 

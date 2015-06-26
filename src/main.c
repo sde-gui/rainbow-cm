@@ -1831,15 +1831,7 @@ int main(int argc, char *argv[])
 	if(get_pref_int32("multi_user"))
 	  mode|=PROC_MODE_USER_QUALIFY;
 	/*g_printf("mode=0x%X\n",mode); */
-	if(proc_find(APP_PROG_NAME,mode,NULL)<2)	/**1 for me, and 1 for a running instance  */
-		mode=PROG_MODE_DAEMON; /**first instance  */
-	else
-		mode=PROG_MODE_CLIENT; /**already running, just access fifos & exit.  */
-	
-	if(PROG_MODE_CLIENT & mode){
-		return 0;
-	}	
-  
+
   /* Init Parcellite */
   parcellite_init(mode);
   /*g_printf("Start main loop\n"); */
