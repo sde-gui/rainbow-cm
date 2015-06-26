@@ -141,82 +141,72 @@ gboolean is_hyperlink(gchar* text)
  */
 struct cmdline_opts *parse_options(int argc, char* argv[])
 {
-	struct cmdline_opts *opts=g_malloc0(sizeof(struct cmdline_opts));
-	if(NULL == opts){
-		g_fprintf(stderr,"Unable to malloc cmdline_opts\n");
-		return NULL;
-	}
-  if (argc <= 1) 
-		return opts;	
-  GOptionEntry main_entries[] = 
-  {
-    {
-      "daemon", 'd',
-      0,
-      G_OPTION_ARG_NONE,
-      &opts->daemon, _("Run as daemon"),
-      NULL
-    },
-    {
-      "no-icon", 'n',
-      0,
-      G_OPTION_ARG_NONE,
-      &opts->icon, _("Do not use status icon (Ctrl-Alt-P for menu)"),
-      NULL
-    },
-    {
-      "clipboard", 'c',
-      0,
-      G_OPTION_ARG_NONE,
-      &opts->clipboard, _("Print clipboard contents"),
-      NULL
-    },
-    {
-      "primary", 'p',
-      0,
-      G_OPTION_ARG_NONE,
-      &opts->primary, _("Print primary contents"),
-      NULL
-    },
-    {
-		  "version", 'v',0, G_OPTION_ARG_NONE,&opts->version,_("Display Version info"),NULL
-		},
-		{
-      NULL
+    struct cmdline_opts * opts = g_malloc0(sizeof(struct cmdline_opts));
+    if (NULL == opts) {
+        g_fprintf(stderr,"Unable to malloc cmdline_opts\n");
+        return NULL;
     }
-  };
-  
-  /* Option parsing */
-  GOptionContext* context = g_option_context_new(NULL);
-  /* Set summary */
-  g_option_context_set_summary(context,
-                             _("Clipboard CLI usage examples:\n\n  echo \"copied to clipboard\" | parcellite\n  parcellite \"copied to clipboard\"\n  echo \"copied to clipboard\" | parcellite -c"));
-  /* Set description */
-  g_option_context_set_description(context,
-                                 _("Written by Gilberto \"Xyhthyx\" Miralla and Doug Springer.\nReport bugs to <gpib@rickyrockrat.net>."));
-  /* Add entries and parse options */
-  g_option_context_add_main_entries(context, main_entries, NULL);
-  g_option_context_parse(context, &argc, &argv, NULL);
-  g_option_context_free(context);
-	opts->leftovers = g_strjoinv(" ", argv + 1);
-  /* Check which options were parseed */
-  
-  /* Do not display icon option */
-  if (opts->icon)  {
-		set_pref_int32("no_icon",TRUE);
-  } else
-  	set_pref_int32("no_icon",FALSE);
-	if(opts->version){
-		gchar *v;
-		#ifdef HAVE_CONFIG_H	/**VER=555; sed "s#\(.*\)svn.*\".*#\1svn$VER\"#" config.h  */
-    	v=VERSION;
-		#else
-			v="Unknown";
-    #endif
-		g_fprintf(stderr,"Parcellite %s, GTK %d.%d.%d\n",v, gtk_major_version, gtk_minor_version,gtk_micro_version );
-		opts->exit=1;
-	}
-	return opts;                                                              
+
+    if (argc <= 1)
+        return opts;
+
+    GOptionEntry main_entries[] =
+    {
+        {
+            "daemon", 'd',
+            0,
+            G_OPTION_ARG_NONE,
+            &opts->daemon, _("Run as daemon"),
+            NULL
+        },
+        {
+            "no-icon", 'n',
+            0,
+            G_OPTION_ARG_NONE,
+            &opts->icon, _("Do not use status icon (Ctrl-Alt-P for menu)"),
+            NULL
+        },
+        {
+            "version", 'v',
+            0,
+            G_OPTION_ARG_NONE,
+            &opts->version, _("Display Version info"),
+            NULL
+        },
+        {
+            NULL
+        }
+    };
+
+    GOptionContext* context = g_option_context_new(NULL);
+    /*g_option_context_set_summary(context,
+        _(""));*/
+    g_option_context_set_description(context, _(
+            "Copyright (c) 2015 Vadim Ushakov.\n"
+            "Copyright (c) 2007-2014 Gilberto \"Xyhthyx\" Miralla and Doug Springer.\n"
+            "Report bugs to <igeekless@gmail.com>."
+    ));
+    g_option_context_add_main_entries(context, main_entries, NULL);
+    g_option_context_parse(context, &argc, &argv, NULL);
+    g_option_context_free(context);
+
+    if (opts->icon)
+        set_pref_int32("no_icon",TRUE);
+    else
+        set_pref_int32("no_icon",FALSE);
+
+    if (opts->version) {
+        gchar *v;
+        #ifdef HAVE_CONFIG_H
+            v = VERSION;
+        #else
+            v = "Unknown";
+        #endif
+        g_fprintf(stderr,"Rainbow Clipboarb Manager %s, GTK %d.%d.%d\n",
+            v, gtk_major_version, gtk_minor_version,gtk_micro_version);
+        opts->exit = 1;
+    }
+	return opts;
 }
 
 /***************************************************************************/

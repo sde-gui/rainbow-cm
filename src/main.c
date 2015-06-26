@@ -1904,73 +1904,11 @@ int main(int argc, char *argv[])
 	else
 		mode=PROG_MODE_CLIENT; /**already running, just access fifos & exit.  */
 	
-	/**get options/cmd line not parsed.  */
-	if( NULL != opts->leftovers)g_print("%s\n",opts->leftovers);
-	/**init fifo should set up the fifo and the callback (if we are daemon mode)  */
-		if(opts->primary)	{
-			if(NULL == (fifo=init_fifo(FIFO_MODE_PRI|mode))) return 1;
-			if(fifo->dbg) g_fprintf(stderr,"Hit PRI opt!\n");
-			
-			if(PROG_MODE_CLIENT & mode){
-				if(NULL != opts->leftovers){
-					write_fifo(fifo,FIFO_MODE_PRI,opts->leftovers,strlen(opts->leftovers));
-		      g_free(opts->leftovers);	
-				}
-				
-				if(fifo->dbg) g_fprintf(stderr,"checking stdin\n");
-				write_stdin(fifo,FIFO_MODE_PRI);
-				usleep(1000);
-			}
-			/* Grab primary */
-	    GtkClipboard* prim = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
-	    /* Print primary text (if any) */
-	    gchar* prim_text = gtk_clipboard_wait_for_text(prim);
-	    if (prim_text)
-	      g_print("%s", prim_text);
-	    g_free(prim_text);
-			
-	  }  else if(opts->clipboard){
-			if(NULL == (fifo=init_fifo(FIFO_MODE_CLI|mode))) return 1;
-			
-			if(PROG_MODE_CLIENT & mode){
-				if(NULL != opts->leftovers){
-					write_fifo(fifo,FIFO_MODE_CLI,opts->leftovers,strlen(opts->leftovers));
-		      g_free(opts->leftovers);
-				}	
-				write_stdin(fifo,FIFO_MODE_CLI);
-				usleep(1000);
-			}
-	      
-			GtkClipboard* clip = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-	    /* Print clipboard text (if any) */
-	    gchar* clip_text = gtk_clipboard_wait_for_text(clip);
-	    if (clip_text)
-	      g_print("%s", clip_text);
-	    g_free(clip_text);
-	  }  else  	{ /*use CLIPBOARD*/
-			GtkClipboard* clip = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-			if(NULL == (fifo=init_fifo(FIFO_MODE_NONE|mode))) return 1;
-				/* Copy from unrecognized options */
-			if(PROG_MODE_CLIENT & mode){
-			  if(NULL != opts->leftovers){
-			    write_fifo(fifo,FIFO_MODE_CLI,opts->leftovers,strlen(opts->leftovers));
-		      g_free(opts->leftovers);
-				}	
-					 /* Check if stdin is piped */
-		    write_stdin(fifo,FIFO_MODE_CLI);
-				usleep(1000);
-			}
-			
-			gchar* clip_text = gtk_clipboard_wait_for_text(clip);
-    	if (clip_text)
-      	g_print("%s", clip_text);
-    	 g_free(clip_text);
-	    
-		}	
-			  /* Run as daemon option */
-  if (opts->daemon && (PROG_MODE_DAEMON & mode))  {
-    init_daemon_mode();
-  } 
+    /* Run as daemon option */
+    if (opts->daemon && (PROG_MODE_DAEMON & mode))  {
+        init_daemon_mode();
+    }
+
 	if(PROG_MODE_CLIENT & mode){
 		close_fifos(fifo);
 		return 0;

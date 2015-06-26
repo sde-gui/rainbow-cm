@@ -25,13 +25,10 @@ G_BEGIN_DECLS
 #define DATA_DIR    APP_PROG_NAME
 
 struct cmdline_opts {
-	gboolean icon;    
+	gboolean icon;
 	gboolean daemon;
-	gboolean clipboard;
-	gboolean primary;
 	gboolean exit;
 	gboolean version;
-	gchar *leftovers;
 };
 
 gchar *p_strdup( const gchar *str );
