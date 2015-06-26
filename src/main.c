@@ -976,14 +976,6 @@ static gboolean key_release_cb (GtkWidget *w,GdkEventKey *e, gpointer user)
 				return TRUE;
 			}
 		}
-
-		if (e->type == GDK_KEY_PRESS && e->state & GDK_MOD1_MASK){ /* alt key pressed  */
-			if(e->keyval == 'c'){
-				TRACE(g_fprintf(stderr,"Alt-C\n"));
-				clear_selected(NULL, (gpointer)h);
-				return TRUE;
-			}
-		}
 	}
 
 	return FALSE;
@@ -1360,22 +1352,6 @@ next_loop:
 		write_history_menu_items(persistent,menu);
 	}
 
-	/* -------------------- */
-	gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
-	
-	if(get_pref_int32("type_search")){
-		h.title_item = gtk_image_menu_item_new_with_label( _("Use Alt-C to clear") );
-		menu_image = gtk_image_new_from_stock(GTK_STOCK_EDIT, GTK_ICON_SIZE_MENU);
-		gtk_image_menu_item_set_image((GtkImageMenuItem*)h.title_item, menu_image);
-		gtk_menu_shell_append((GtkMenuShell*)menu, h.title_item);    
-	}else{
-		menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Clear"));
-		menu_image = gtk_image_new_from_stock(GTK_STOCK_CLEAR, GTK_ICON_SIZE_MENU);
-		gtk_image_menu_item_set_image((GtkImageMenuItem*)menu_item, menu_image);
-		g_signal_connect((GObject*)menu_item, "activate", (GCallback)clear_selected, (gpointer)&h);
-		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-	}
-
 	g_list_free(lhist);
 	g_list_free(persistent);
 	/*g_signal_connect(menu,"deactivate",(GCallback)destroy_history_menu,(gpointer)&h); */
@@ -1432,36 +1408,53 @@ static void show_history_menu(guint histno, guint mouse_button, guint32 activate
 ****************************************************************************/
 GtkWidget *create_parcellite_menu(guint button, guint activate_time)
 {
-  /* Declare some variables */
-  GtkWidget *menu, *menu_item;
-  
-  /* Create the menu */
-  menu = gtk_menu_new();
-  /*g_signal_connect((GObject*)menu, "selection-done", (GCallback)gtk_widget_destroy, NULL); */
-  /* About */
-  menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, NULL);
-  g_signal_connect((GObject*)menu_item, "activate", (GCallback)show_about_dialog, NULL);
-  gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-	
+	GtkWidget * menu = gtk_menu_new();
+
+	/* About */
+	{
+		GtkWidget * menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, NULL);
+		g_signal_connect((GObject*)menu_item, "activate", (GCallback)show_about_dialog, NULL);
+		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
+	}
+
 	/* Save History */
-  menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_SAVE_AS, NULL);
-  g_signal_connect((GObject*)menu_item, "activate", (GCallback)history_save_as, NULL);
-	gtk_widget_set_tooltip_text(menu_item, _("Save History as a text file. Prepends xHIST_0000 to each entry. x is either P(persistent) or N (normal)"));
-  gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-  /* Preferences */
-  menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, NULL);
-  g_signal_connect((GObject*)menu_item, "activate", (GCallback)preferences_selected, NULL);
-  gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
+	{
+		GtkWidget * menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Save History as..."));
+		GtkWidget * menu_image = gtk_image_new_from_stock(GTK_STOCK_SAVE_AS, GTK_ICON_SIZE_MENU);
+		g_signal_connect((GObject*)menu_item, "activate", (GCallback)history_save_as, NULL);
+		gtk_widget_set_tooltip_text(menu_item,
+			_("Save History as a text file. "
+			  "Prepends xHIST_0000 to each entry. x is either P(persistent) or N (normal)"));
+		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
+	}
+
+	/* Clear History */
+	{
+		GtkWidget * menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Clear History"));
+		GtkWidget * menu_image = gtk_image_new_from_stock(GTK_STOCK_CLEAR, GTK_ICON_SIZE_MENU);
+		gtk_image_menu_item_set_image((GtkImageMenuItem*)menu_item, menu_image);
+		g_signal_connect((GObject*)menu_item, "activate", (GCallback)clear_selected, NULL);
+		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
+	}
+
+	/* Preferences */
+	{
+		GtkWidget * menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, NULL);
+		g_signal_connect((GObject*)menu_item, "activate", (GCallback)preferences_selected, NULL);
+		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
+	}
 	
-  /* -------------------- */
-  gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
-  /* Quit */
-  menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, NULL);
-  g_signal_connect((GObject*)menu_item, "activate", (GCallback)quit_selected, NULL);
-  gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-  /* Popup the menu... */
-  gtk_widget_show_all(menu);
-  gtk_menu_popup((GtkMenu*)menu, NULL, NULL, NULL, NULL, button, activate_time);	
+	gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
+
+	/* Quit */
+	{
+		GtkWidget * menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, NULL);
+		g_signal_connect((GObject*)menu_item, "activate", (GCallback)quit_selected, NULL);
+		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
+	}
+
+	gtk_widget_show_all(menu);
+	gtk_menu_popup((GtkMenu*)menu, NULL, NULL, NULL, NULL, button, activate_time);	
 	return menu;
 }
 
