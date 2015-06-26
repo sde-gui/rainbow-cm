@@ -1,5 +1,5 @@
 src/main.c
 src/utils.c
 src/preferences.c
-data/parcellite.desktop.in
-data/parcellite-startup.desktop.in
+data/rainbow-cm.desktop.in
+data/rainbow-cm-startup.desktop.in
