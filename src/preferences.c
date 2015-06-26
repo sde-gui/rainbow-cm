@@ -109,7 +109,7 @@ struct pref_item myprefs[]={
   /**History  */	
   {.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_HIST,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>History</b>",.tip=NULL,.val=0},
   {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="save_history",.type=PREF_TYPE_TOGGLE,.desc="Save history across sessions",.tip="Keep history in a file across sessions.",.val=DEF_SAVE_HISTORY},
-	{.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="history_limit",.type=PREF_TYPE_SPIN,.desc="Items in history",.tip="Maximum number of clipboard entries to keep",.val=DEF_HISTORY_LIMIT},
+	{.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="history_limit",.type=PREF_TYPE_SPIN,.desc="Remember the last {{}} clipboards",.tip="Maximum number of clipboard entries to keep",.val=DEF_HISTORY_LIMIT},
   {.adj=&align_data_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="data_size",.type=PREF_TYPE_SPIN,.desc="Max Data Size(KB)",.tip="Maximum data size of entire history list",.val=0},
   {.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="item_size",.type=PREF_TYPE_SPIN,.desc="Max Item Size(KB)",.tip="Maximum data size of one item",.val=0},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
@@ -133,9 +133,6 @@ struct pref_item myprefs[]={
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
   {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name="ellipsize",.type=PREF_TYPE_COMBO,.desc="Omit items in the:",.tip=NULL,.val=DEF_ELLIPSIZE}, 
 	
-/**miscellaneous that doesn't fit elswhew  */	
-  {.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_XMISC,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Miscellaneous</b>",.tip=NULL,.val=0},
-
 #ifdef	DEBUG_UPDATE
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_XMISC,.name="debug_update",.type=PREF_TYPE_TOGGLE,.desc="DebugUpdate",.tip="If checked, enables debug prints on clipboard update logic. This only takes effect when enabled at start up, and may be disabled at compile time.",.val=FALSE},
 #endif
@@ -655,6 +652,32 @@ int update_pref_widgets( void)
 	
 	return rtn;
 }
+
+/***************************************************************************/
+
+static void label_pair_from_markup(const gchar * markup, GtkWidget ** p_label1, GtkWidget ** p_label2)
+{
+	if (!p_label1 || !p_label2)
+		return;
+	*p_label1 = NULL; *p_label2 = NULL;
+
+	gchar ** pair = g_strsplit(markup, "{{}}", 2);
+
+	if (pair && pair[0])
+	{
+		*p_label1 = gtk_label_new(NULL);
+		gtk_label_set_markup((GtkLabel *) *p_label1, pair[0]);
+
+		if (pair[1])
+		{
+			*p_label2 = gtk_label_new(NULL);
+			gtk_label_set_markup((GtkLabel *) *p_label2, pair[1]);
+		}
+	}
+
+	g_strfreev(pair);
+}
+
 /***************************************************************************/
 /** .
 \n\b Arguments:
@@ -680,7 +703,7 @@ int add_section(int sec, GtkWidget *parent)
 			single_is=1;
 		}
 		
-		switch (myprefs[i].type&PREF_TYPE_MASK){
+		switch (myprefs[i].type & PREF_TYPE_MASK){
 			case PREF_TYPE_FRAME:/**must be first in section, since it sets vbox.  */
 					myprefs[i].w= gtk_frame_new(NULL);
 				  gtk_frame_set_shadow_type((GtkFrame*)	myprefs[i].w, GTK_SHADOW_NONE);
@@ -701,31 +724,54 @@ int add_section(int sec, GtkWidget *parent)
 				break;
 			
 			case PREF_TYPE_SPIN:
-				if(!single_is)
-					hbox = gtk_hbox_new(FALSE, 4);  
-  			label = gtk_label_new(NULL);
-				gtk_label_set_markup((GtkLabel*)label, _(myprefs[i].desc));
-				gtk_box_pack_start((GtkBox*)hbox, label, FALSE, FALSE, 0);
-  			myprefs[i].w=gtk_spin_button_new((GtkAdjustment*)gtk_adjustment_new ( \
-				myprefs[i].val,myprefs[i].adj->lower,myprefs[i].adj->upper,myprefs[i].adj->step,myprefs[i].adj->page,0 ),10,0); 
-  			gtk_box_pack_start((GtkBox*)hbox, myprefs[i].w, FALSE, FALSE, 0);
-  			gtk_spin_button_set_update_policy((GtkSpinButton*)myprefs[i].w, GTK_UPDATE_IF_VALID);
-  			if(NULL != myprefs[i].tip) gtk_widget_set_tooltip_text(label, _(myprefs[i].tip));
-  			packit=hbox;
-				break;
-			
 			case PREF_TYPE_ENTRY:
+			{
+				GtkWidget * label1;
+				GtkWidget * label2;
+				label_pair_from_markup(_(myprefs[i].desc), &label1, &label2);
+
 				if(!single_is)
-					hbox = gtk_hbox_new(TRUE, 4);
-			  label = gtk_label_new(NULL);
-				gtk_label_set_markup((GtkLabel*)label, _(myprefs[i].desc));
-			  gtk_misc_set_alignment((GtkMisc*)label, 0.0, 0.50);
-			  gtk_box_pack_start((GtkBox*)hbox, label, TRUE, TRUE, 0);
-			  myprefs[i].w = gtk_entry_new();
-			  gtk_entry_set_width_chars((GtkEntry*)myprefs[i].w, 10);
-				gtk_box_pack_end((GtkBox*)hbox,myprefs[i].w, TRUE, TRUE, 0);
-			  packit=hbox;
+					hbox = gtk_hbox_new(label2 == NULL, 4);
+
+				if (label1) {
+					gtk_misc_set_alignment((GtkMisc *) label1, 0.0, 0.50);
+					gtk_box_pack_start((GtkBox *) hbox, label1, label2 == NULL, label2 == NULL, 0);
+					if (NULL != myprefs[i].tip)
+						gtk_widget_set_tooltip_text(label1, _(myprefs[i].tip));
+				}
+
+				if ((myprefs[i].type & PREF_TYPE_MASK) == PREF_TYPE_SPIN)
+				{
+					myprefs[i].w = gtk_spin_button_new(
+						(GtkAdjustment*)gtk_adjustment_new (
+							myprefs[i].val,
+							myprefs[i].adj->lower,
+							myprefs[i].adj->upper,
+							myprefs[i].adj->step,
+							myprefs[i].adj->page,0
+						),
+						10, 0
+					);
+					gtk_box_pack_start((GtkBox*)hbox, myprefs[i].w, TRUE, TRUE, 0);
+					gtk_spin_button_set_update_policy((GtkSpinButton*)myprefs[i].w, GTK_UPDATE_IF_VALID);
+				}
+				else if ((myprefs[i].type & PREF_TYPE_MASK) == PREF_TYPE_ENTRY)
+				{
+					myprefs[i].w = gtk_entry_new();
+					gtk_entry_set_width_chars((GtkEntry*)myprefs[i].w, 10);
+					gtk_box_pack_start((GtkBox*)hbox,myprefs[i].w, TRUE, TRUE, 0);
+				}
+				packit = hbox;
+
+				if (label2) {
+					gtk_misc_set_alignment((GtkMisc *) label2, 0.0, 0.50);
+					gtk_box_pack_start((GtkBox *) hbox, label2, FALSE, FALSE, 0);
+					if (NULL != myprefs[i].tip)
+						gtk_widget_set_tooltip_text(label2, _(myprefs[i].tip));
+				}
+
 				break;
+			}
 			case PREF_TYPE_COMBO: /**handled in show_preferences, only one so  */
 				continue;
 				break;
