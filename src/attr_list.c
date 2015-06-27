@@ -31,7 +31,7 @@
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-PangoAttrInt *get_underline_attr(GtkLabel *label)
+static PangoAttrInt *get_underline_attr(GtkLabel *label)
 {
 	PangoAttrList *attrs=gtk_label_get_attributes (label);
 	PangoAttribute *attr;
@@ -53,7 +53,7 @@ PangoAttrInt *get_underline_attr(GtkLabel *label)
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-gboolean is_underline(GtkLabel *label)
+static gboolean is_underline(GtkLabel *label)
 {
 	PangoAttrInt *strike=get_underline_attr(label);
 	if(NULL == strike || strike->value == FALSE)
@@ -67,7 +67,7 @@ list.
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-void set_underline(GtkLabel *label, gboolean mode)
+static void set_underline(GtkLabel *label, gboolean mode)
 {
 	PangoAttrInt *strike;
 	PangoAttrList *attrs;
@@ -88,7 +88,7 @@ void set_underline(GtkLabel *label, gboolean mode)
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-PangoAttrInt *get_strikethrough_attr(GtkLabel *label)
+static PangoAttrInt *get_strikethrough_attr(GtkLabel *label)
 {
 	PangoAttrList *attrs=gtk_label_get_attributes (label);
 	PangoAttribute *attr;
@@ -116,7 +116,7 @@ PangoAttrInt *get_strikethrough_attr(GtkLabel *label)
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-gboolean is_strikethrough(GtkLabel *label)
+static gboolean is_strikethrough(GtkLabel *label)
 {
 	PangoAttrInt *strike=get_strikethrough_attr(label);
 	if(NULL == strike || strike->value == FALSE)
@@ -130,7 +130,7 @@ list.
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-void set_strikethrough(GtkLabel *label, gboolean mode)
+static void set_strikethrough(GtkLabel *label, gboolean mode)
 {
 	PangoAttrInt *strike;
 	PangoAttrList *attrs;
@@ -169,7 +169,7 @@ GList *find_h_item(GList *list,GtkWidget *w, GList *e)
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-void add_h_item(struct history_info *h, GtkWidget *w, GList* element, gint which)
+static void add_h_item(struct history_info *h, GtkWidget *w, GList* element, gint which)
 {
 	GList *ele;
 	GList *op=NULL;
@@ -212,7 +212,7 @@ from the list.
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-void rm_h_item(struct history_info *h, GtkWidget *w, GList* element, gint which)
+static void rm_h_item(struct history_info *h, GtkWidget *w, GList* element, gint which)
 {
 	GList *i;
 	GList *op;

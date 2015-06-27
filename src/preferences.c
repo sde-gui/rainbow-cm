@@ -87,7 +87,7 @@ struct pref_item {
 static struct pref_item dummy[2];
 static void check_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static gint dbg=0;
-struct pref2int *pref2int_mapper=NULL;
+static struct pref2int *pref2int_mapper=NULL;
 
 /**hot key list, mainly for easy sanity checks.  */
 struct keys keylist[]={
@@ -96,8 +96,8 @@ struct keys keylist[]={
 	{.name=NULL,.keyval=NULL,.keyfunc=(void *)0},
 };
 /**must be in same order as above struct array  */
-gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY};
-struct pref_item myprefs[]={
+static gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY};
+static struct pref_item myprefs[]={
 /**Behaviour  */	
 	/**Clipboards  */
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_CLIP,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Clipboards</b>",.tip=NULL,.val=0}, 
