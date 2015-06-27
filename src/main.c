@@ -765,40 +765,6 @@ done:
 }
 
 /***************************************************************************/
-/** Set the background color of the widget.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-static void set_widget_bg(gchar *color, GtkWidget *w)
-{
-  GdkColor c, *cp;
-  /**GtkRcStyle *st;
-   c.red = 65535;
-  c.green = 0;
-  c.blue = 0;*/
-  /*g_print("set_widget_bg\n"); */
-  if(NULL != color){
-    gdk_color_parse (color, &c); 
-    cp=&c;
-  }else
-    cp=NULL;
-    
-  gtk_widget_modify_bg(w, GTK_STATE_NORMAL, cp);
-  return;
-#if 0 /**none of this works  */  
-  gtk_widget_modify_bg(w, GTK_STATE_ACTIVE, cp);
-
-  /*gdk_color_parse (color, &c); */
-  st=gtk_widget_get_modifier_style(w);
-  /*st=gtk_rc_style_new (); */
-  st->bg[GTK_STATE_NORMAL] = st->bg[GTK_STATE_ACTIVE] = c;
-  gtk_widget_modify_style (w, st);
-  gtk_widget_show(w);
-  /*gtk_widget_modify_bg (w, GTK_STATE_NORMAL, &c); */
-#endif
-}
-
-/***************************************************************************/
 
 static void on_history_menu_position(GtkMenu * menu, gint * px, gint * py, gboolean * push_in, gpointer user_data)
 {
@@ -1506,8 +1472,8 @@ int main(int argc, char *argv[])
 	/**this just maps to the static struct, prefs do not need to be loaded  */
 	pref_mapper(pref2int_map,PM_INIT); 
 	check_dirs(); /**make sure we set up default RC if it doesn't exist.  */
-   /* Read preferences */
-  read_preferences(0);	
+
+	read_preferences();
 #ifdef	DEBUG_UPDATE
 	if(get_pref_int32("debug_update")) debug_update=1;
 #endif

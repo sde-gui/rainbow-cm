@@ -204,7 +204,7 @@ struct pref_item* get_pref_by_widget(GtkWidget *w)
 \n\b Arguments:
 \n\b Returns: index into struct where found, or end of list
 ****************************************************************************/
-int get_first_pref(int section)
+static int get_first_pref(int section)
 {
 	int i;
 	for (i=0;NULL != myprefs[i].desc; ++i){
@@ -220,7 +220,7 @@ int get_first_pref(int section)
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-int init_pref( void )
+static int init_pref(void)
 {
 	GdkScreen *s;
 	gint sx,sy;
@@ -238,24 +238,11 @@ int init_pref( void )
 	return 0;
 }
 /***************************************************************************/
-/** set the wideget of item.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-int set_pref_widget (char *name, GtkWidget *w)
-{
-	struct pref_item *p=get_pref(name);
-	if(NULL == p)
-		return -1;
-	p->w=w;
-	return 0;
-}
-/***************************************************************************/
 /** get the char * value of string.
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-GtkWidget *get_pref_widget (char *name)
+static GtkWidget *get_pref_widget (char *name)
 {
 	struct pref_item *p=get_pref(name);
 	if(NULL == p)
@@ -434,7 +421,7 @@ void set_keys_from_prefs( void )
 mode - if 0, do not display helper missing dialog.
 \n\b Returns:
 ****************************************************************************/
-void check_sanity(int mode)
+static void check_sanity(void)
 {
 	gint32 x;
  	x=get_pref_int32("history_limit");
@@ -480,7 +467,7 @@ static void apply_preferences()
 				break;
 		}
 	}
-  check_sanity(1);
+  check_sanity();
   /* Bind keys and apply the new history limit */
 	for (i=0;NULL != keylist[i].name; ++i)
 	  bind_itemkey(keylist[i].name,keylist[i].keyfunc);	
@@ -537,7 +524,7 @@ static void save_preferences()
 mode - 0 to not display missing helper warnings 
 \n\b Returns:
 ****************************************************************************/
-void read_preferences(int mode)
+void read_preferences(void)
 {
 	gchar *c,*rc_file = g_build_filename(g_get_user_config_dir(), PREFERENCES_FILE, NULL);
   gint32 z;
@@ -580,7 +567,7 @@ void read_preferences(int mode)
 				g_printf("Unable to load pref '%s'\n",myprefs[i].name);
 		}
     /* Check for errors and set default values if any */
-    check_sanity(mode);
+    check_sanity();
   }
   else  { /* Init default keys on error */
 	  int i;
