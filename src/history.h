@@ -56,7 +56,7 @@ void history_add_text_item(gchar * text, gint flags);
 void truncate_history();
 
 gpointer get_last_item();
-void clear_history( void );
+void clear_history(void);
 
 void delete_duplicate(gchar* item);
 

@@ -32,6 +32,20 @@ static gchar* history_magics[]={
 
 #define HISTORY_FILE0 HISTORY_FILE
 
+#define HISTORY_EACH(element, item, code) \
+{\
+    GList * element;\
+    for (element = history_list; element != NULL; element = element->next)\
+	{\
+        struct history_item * item = (struct history_item *) element->data;\
+        {\
+			code\
+		}\
+    }\
+}
+
+#define PINNED(item) ((item)->flags & CLIP_TYPE_PERSISTENT)
+
 /***************************************************************************/
 /** Pass in the text via the struct. We assume len is correct, and BYTE based,
 not character.
@@ -346,27 +360,26 @@ gpointer get_last_item()
     return NULL;
 }
 
-
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-void clear_history( void )
+
+void clear_history(void)
 {
-    g_mutex_lock(hist_lock);
+	g_mutex_lock(hist_lock);
 
-    GList * element;
-    for (element = history_list; element != NULL; element = element->next) {
-        struct history_item * c = (struct history_item *) element->data;
-        if(!(c->flags & CLIP_TYPE_PERSISTENT))
-            history_list = g_list_remove(history_list,c);
-    }
+again:
+	HISTORY_EACH(element, item, {
+		if (!PINNED(item)) {
+			history_list = g_list_remove_link(history_list, element);
+			g_free(item);
+			g_list_free(element);
+			goto again;
+		}
+	});
 
-    g_mutex_unlock(hist_lock);
+	g_mutex_unlock(hist_lock);
 
-    if (get_pref_int32("save_history"))
-        save_history();
+	if (get_pref_int32("save_history"))
+		save_history();
 }
 /***************************************************************************/
 /** .
