@@ -86,7 +86,6 @@ struct pref_item {
 };
 static struct pref_item dummy[2];
 static void check_toggled(GtkToggleButton *togglebutton, gpointer user_data);
-static gint dbg=0;
 static struct pref2int *pref2int_mapper=NULL;
 
 /**hot key list, mainly for easy sanity checks.  */
@@ -210,12 +209,10 @@ int get_first_pref(int section)
 	int i;
 	for (i=0;NULL != myprefs[i].desc; ++i){
 		if(section == myprefs[i].sec){
-			if(dbg)g_printf("gfp:returning sec %d, '%s\n",section, myprefs[i].desc);
 			return i;
 		}
 			
 	}	
-	if(dbg)g_printf("Didn't find section %d\n",i);
 	return i;
 }                 
 /***************************************************************************/
@@ -357,7 +354,6 @@ void unbind_itemkey(char *name, void *fhk )
 	
 	struct pref_item *p=get_pref(name);
 	if(NULL == p){
-		if(dbg)g_printf("pref:null found for %s\n",name);
 		return;
 	}
 	keybinder_unbind(p->cval, fhk);
@@ -375,7 +371,6 @@ void bind_itemkey(char *name, void (fhk)(char *, gpointer) )
 {
 	struct pref_item *p=get_pref(name);
 	if(NULL ==p){
-		if(dbg)g_printf("pref2:null found for %s\n",name);
 		return;
 	}
 	if(NULL != p->cval && 0 != p->cval)
@@ -441,7 +436,7 @@ mode - if 0, do not display helper missing dialog.
 ****************************************************************************/
 void check_sanity(int mode)
 {
-	gint32 x,y;
+	gint32 x;
  	x=get_pref_int32("history_limit");
   if ((!x) || (x > MAX_HISTORY) || (x < 0))
     set_pref_int32("history_limit",DEF_HISTORY_LIMIT);
@@ -481,7 +476,7 @@ static void apply_preferences()
 				break;
 			case PREF_TYPE_SPACER:
 				break;
-			default: if(dbg)g_printf("apply_pref:don't know how to handle type %d\n",myprefs[i].type);
+			default:
 				break;
 		}
 	}
@@ -522,7 +517,7 @@ static void save_preferences()
 				break;
 			case PREF_TYPE_SPACER:
 				break;
-			default: if(dbg)g_printf("save_pref:don't know how to handle type %d\n",myprefs[i].type);
+			default:
 				break;
 		}
 	}
@@ -547,7 +542,6 @@ void read_preferences(int mode)
 	gchar *c,*rc_file = g_build_filename(g_get_user_config_dir(), PREFERENCES_FILE, NULL);
   gint32 z;
   GError *err=NULL;
-	struct pref_item *p;
 	init_pref();
   /* Create key */
   GKeyFile* rc_key = g_key_file_new();
@@ -579,13 +573,11 @@ void read_preferences(int mode)
 				case PREF_TYPE_SPACER:
 				break;
 				default: 
-					if(dbg) g_printf("read_pref:don't know how to handle type %d for '%s'\n",myprefs[i].type,myprefs[i].name);
 					continue;
 					break;
 			}
 			if(NULL != err)
 				g_printf("Unable to load pref '%s'\n",myprefs[i].name);
-			if(dbg)g_printf("rp:Set '%s' to %d (%s)\n",myprefs[i].name, myprefs[i].val, myprefs[i].cval);
 		}
     /* Check for errors and set default values if any */
     check_sanity(mode);
@@ -645,12 +637,10 @@ int update_pref_widgets( void)
 				case PREF_TYPE_SPACER:
 					break;
 				default: 
-					if(dbg)g_printf("apply_pref:don't know how to handle type %d\n",myprefs[i].type);
 					rtn=-1;
 					continue;
 					break;
 			}
-			if(dbg)g_printf("up:Set '%s' to %d (%s)\n",myprefs[i].name, myprefs[i].val, myprefs[i].cval);	
 		}
 		
 	}	
@@ -788,7 +778,6 @@ int add_section(int sec, GtkWidget *parent)
 				break;
 			
 			default: 
-				if(dbg)g_printf("add_sec:don't know how to handle type %d\n",myprefs[i].type);
 				rtn=-1;
 				continue;
 				break;
@@ -801,7 +790,6 @@ int add_section(int sec, GtkWidget *parent)
 		if(NULL != myprefs[i].sig && connect)
 			g_signal_connect((GObject*)myprefs[i].w, myprefs[i].sig, (GCallback)myprefs[i].sfunc, myprefs[i].w);
 		
-		if(dbg)g_printf("Packing %s\n",myprefs[i].name);
 		if(single_is){
 			if(packit != hbox){
 				/*g_printf("Packed a slwidget %p<-%p\n",hbox, myprefs[i].w); */
@@ -820,7 +808,6 @@ int add_section(int sec, GtkWidget *parent)
 			single_is=0;
 		}
 	}
-	if(dbg)g_printf("Ending on %d '%s'\n",i,myprefs[i].name);
 	return rtn;
 	
 }
@@ -831,7 +818,6 @@ void show_preferences(gint tab)
   /* Declare some variables */
   GtkWidget *frame,*label,*alignment,*hbox, *vbox;
 	struct pref_item *p;
-  GtkTreeViewColumn *tree_column;
 	init_pref();
   
   /* Create the dialog */
