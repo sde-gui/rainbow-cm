@@ -291,29 +291,6 @@ void history_add_text_item(gchar * text, gint flags)
 }
 
 /***************************************************************************/
-/**  Deletes duplicate item in history . Orphaned function.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-void delete_duplicate(gchar* item)
-{
-    GList* element;
-    g_mutex_lock(hist_lock);
-    for (element = history_list; element != NULL; element = element->next) {
-        struct history_item *c = (struct history_item *) element->data;
-        if ( (!(CLIP_TYPE_PERSISTENT&c->flags)) && CLIP_TYPE_TEXT == c->type) {
-            if (g_strcmp0((gchar*)c->text, item) == 0) {
-                g_printf("del dup '%s'\n",c->text);
-                g_free(element->data);
-                history_list = g_list_delete_link(history_list, element);
-                break;
-            }
-        }
-    }
-    g_mutex_unlock(hist_lock);
-}
-
-/***************************************************************************/
 /**  Truncates history to history_limit items, while preserving persistent
     data, if specified by the user. FIXME: This may not shorten the history 
     
@@ -330,7 +307,7 @@ void truncate_history()
         while (last->prev && ll > lim) {
             struct history_item * c = (struct history_item *) last->data;
             last=last->prev;
-            if (!(c->flags&CLIP_TYPE_PERSISTENT)) {
+            if (!PINNED(c)) {
                 history_list=g_list_remove(history_list,c);
                 --ll;
             }
@@ -398,7 +375,7 @@ int save_history_as_text(gchar *path)
     for (i=0,element = history_list; element != NULL; element = element->next) {
 		  struct history_item *c;
 			c=(struct history_item *)element->data;
-			if(c->flags & CLIP_TYPE_PERSISTENT)
+			if(PINNED(c))
 				fprintf(fp,"PHIST_%04d %s\n",i,c->text);
 			else
 				fprintf(fp,"NHIST_%04d %s\n",i,c->text);
