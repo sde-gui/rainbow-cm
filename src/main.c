@@ -119,8 +119,6 @@ typedef struct {
 /**speed up pref to int lookup.  */
 static int
 	ignore_whiteonly,
-	trim_newline,
-	trim_wspace_begend,
 	track_primary_selection,
 	track_clipboard_selection,
 	restore_empty,
@@ -128,8 +126,6 @@ static int
 
 static struct pref2int pref2int_map[]={
 	{.val=&ignore_whiteonly,.name="ignore_whiteonly"},
-	{.val=&trim_newline,.name="trim_newline"},
-	{.val=&trim_wspace_begend,.name="trim_wspace_begend"},
 	{.val=&track_primary_selection,.name="track_primary_selection"},
 	{.val=&track_clipboard_selection,.name="track_clipboard_selection"},
 	{.val=&restore_empty,.name="restore_empty"},
@@ -178,25 +174,6 @@ process:  /**now process the text.  */
 	nlen= validate_utf8_text(ntext, len);
 	if(nlen){
 		rtn=ntext;
-		if(trim_newline){
-			gchar *c;
-			for (c=ntext;*c;){
-				if(iscntrl(*c)){
-					*c=' ';
-					++i;
-				}
-				c=g_utf8_next_char(c);
-			}	
-		}
-			
-		if( trim_wspace_begend ) {
-			ntext=g_strstrip(ntext);
-			if(NULL != mod && 0 == i && len == nlen){
-				if(strlen(ntext) != len)
-					++i;	
-			}
-		}
-		
 	}else
 		++i;
 	if(NULL != mod ){
