@@ -820,15 +820,15 @@ space-E290A3 - \u2423
 ****************************************************************************/
 static GString* convert_string(GString* s)
 {
-	gchar arrow[4]={0xe2,0x86,0x92,0x00};/**0xe28692 (UTF-8 right-arrow) \\  */
-	gchar pharagraph[4]={0xe2,0x81,0x8b,0x00}; /**utf-8 pharagraph symbol \2192 */
-	gchar square_u[4]={0xe2,0x90,0xA3,0};	 /**square-u \\2423  */
+	gchar arrow[4]={0xe2,0x86,0x92,0x00};
+	gchar paragraph[4]={0xe2,0x81,0x8b,0x00};
+	gchar square_u[4]={0xe2,0x90,0xA3,0};
 	gchar *p, *r;
 	
 	for (p=s->str; p!= NULL; p=g_utf8_find_next_char(p,s->str+s->len)){
 		switch(*p){
 			case 0x09:r=arrow; break;
-			case 0x0a:r=pharagraph; break;
+			case 0x0a:r=paragraph; break;
 			case 0x20:r=square_u; break;
 		  default:r=NULL; break; 
 		}

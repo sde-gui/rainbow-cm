@@ -51,7 +51,7 @@
 #define PREF_SEC_CLIP 1
 #define PREF_SEC_HIST 2
 #define PREF_SEC_MISC 3
-#define PREF_SEC_DISP 4
+#define PREF_SEC_POPUP 4
 
 #define PREF_SEC_ACT	5
 #define PREF_SEC_XMISC 6
@@ -134,18 +134,41 @@ static struct pref_item myprefs[]={
 
   /**Miscellaneous  */  
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Miscellaneous</b>",.tip=NULL,.val=0},
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name="type_search",.type=PREF_TYPE_TOGGLE,.desc="Search _As You Type",.tip="Instant search in the history menu."},
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc="Ignore _Whitespace Only",.tip="If checked, will ignore any clipboard additions that contain only whitespace."},
+		{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc="Ignore _Whitespace Only",.tip="If checked, will ignore any clipboard additions that contain only whitespace."},
 	
-/**Display  add icon here...*/
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_DISP,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Items</b>",.tip=NULL,.val=0},
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
-	{.adj=&align_line_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="item_length",.type=PREF_TYPE_SPIN,.desc="  Character length _of items",.tip=NULL,.val=DEF_ITEM_LENGTH},  
-    {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
 
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nonprint_disp",.type=PREF_TYPE_TOGGLE,.desc="Alternate _Non-printing Display",.tip="If checked, will display tabs with Right arrow (utf8,\\2192), newlines with pharagrph(\\204b), and spaces with square-u(\\2423).", .val=FALSE},
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
-  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name="ellipsize",.type=PREF_TYPE_COMBO,.desc="Omit items in the:",.tip=NULL,.val=DEF_ELLIPSIZE},
+	/* Popup Page */
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_POPUP,.name=NULL,.type=PREF_TYPE_FRAME,
+	 .desc="<b>Settings of the History menu</b>",
+	 .tip=NULL,.val=0
+	},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_POPUP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_POPUP,
+	 .name="type_search",.type=PREF_TYPE_TOGGLE,
+	 .desc="Search _As You Type",
+	 .tip="Enables Instant Search in the History menu.\n\nType a word when the History menu is shown to see only the entries that contains this word."
+	},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_POPUP,
+	 .name="nonprint_disp",.type=PREF_TYPE_TOGGLE,
+	 .desc="Displaying of _non-printing characters",
+	 .tip="Enables displaying of non-printing characters:\n\n"
+	  "The horizontal tab character as → (rightwards arrow).\n"
+	  "The space character as ␣ (open box).\n"
+	  "The new line character as ¶ (paragraph sign).",
+	 .val=FALSE
+	},
+	{.adj=&align_line_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_POPUP,
+	 .name="item_length",.type=PREF_TYPE_SPIN,
+	 .desc="_Limit the History menu width to {{}} characters",
+	 .tip=NULL,
+	 .val=DEF_ITEM_LENGTH},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_POPUP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,
+	 .name="ellipsize",.type=PREF_TYPE_COMBO,
+	 .desc="Omit characters in the:",
+	 .tip=NULL,
+	 .val=DEF_ELLIPSIZE
+	},
 
 /**hotkeys  */
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc="Men_u key combination",.tip=NULL},	
@@ -866,7 +889,7 @@ void show_preferences(gint tab)
   gtk_container_add((GtkContainer*)page_display, vbox_display);
   
   /* Build the items frame */
-	add_section(PREF_SEC_DISP,vbox_display);
+	add_section(PREF_SEC_POPUP,vbox_display);
 	
   /* Build the omitting frame */
   frame = gtk_frame_new(NULL);
