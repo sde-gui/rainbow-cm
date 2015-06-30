@@ -14,48 +14,18 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
-NOTES:
-We keep track of a delete list while the history menu is up. We add/remove items from that 
-list until we get a selection done event, then we delete those items from the real history
 
-From http://standards.freedesktop.org/clipboards-spec/clipboards-latest.txt
+ Links:
+ http://standards.freedesktop.org/clipboards-spec/clipboards-latest.txt
+ http://standards.freedesktop.org/clipboard-extensions-spec/clipboard-extensions-latest.txt
+ http://www.freedesktop.org/wiki/ClipboardManager/
+ https://developer.gnome.org/gtk2/2.24/gtk2-Clipboards.html
 
-Application authors should follow the following guidelines to get
-correct behavior:
 
- - selecting but with no explicit copy should only set PRIMARY,
-   never CLIPBOARD
+ NOTES:
+ We keep track of a delete list while the history menu is up. We add/remove items from that 
+ list until we get a selection done event, then we delete those items from the real history
 
- - middle mouse button should paste PRIMARY, never CLIPBOARD
-
- - explicit cut/copy commands (i.e. menu items, toolbar buttons)
-   should always set CLIPBOARD to the currently-selected data (i.e.
-   conceptually copy PRIMARY to CLIPBOARD)
-
- - explicit cut/copy commands should always set both CLIPBOARD and
-   PRIMARY, even when copying doesn't involve a selection (e.g. a
-   "copy url" -option which explicitly copies an url without the
-   url being selected first)
-
- - explicit paste commands should paste CLIPBOARD, not PRIMARY
-
- - a selection becoming unselected should never unset PRIMARY
-
- - possibly contradicting the ICCCM, clients don't need to support
-   SECONDARY, though if anyone can figure out what it's good
-   for they should feel free to use it for that
-
- - cut buffers are evil; they only support ASCII, they don't 
-   work with many clients, and they require data to be 
-   copied to the X server. Therefore clients should avoid 
-   using cut buffers and use only selections.
-   
-We can monitor ownership change with:
-// This callback is invoked when the clipboard owner changes.
-void handle_owner_change(GtkClipboard *clipboard, GdkEvent *event,  gpointer data){	}
-}
-g_signal_connect(clipboard, "owner-change",  G_CALLBACK(handle_owner_change), NULL);
  */
 
 #ifdef HAVE_CONFIG_H
@@ -70,6 +40,8 @@ g_signal_connect(clipboard, "owner-change",  G_CALLBACK(handle_owner_change), NU
 #include <gdk/gdkkeysyms.h>
 #include <ctype.h>
 #include <pthread.h>
+
+#define DEFERRED_CHECK_INTERVAL 300
 
 #define GDK_MODIFIER_MASK_MINE (GDK_CONTROL_MASK|GDK_META_MASK|GDK_SUPER_MASK) /*\
                            GDK_MOD1_MASK|GDK_MOD2_MASK |GDK_MOD3_MASK|GDK_MOD4_MASK|GDK_MOD5_MASK|   \
@@ -92,7 +64,7 @@ static gchar * history_text_casefold_key = NULL;
 /**defines for moving between clipboard histories  */
 #define HIST_MOVE_TO_CANCEL     0
 #define HIST_MOVE_TO_OK         1
-/**clipboard handling modes  */
+
 
 typedef enum {
 	CLIPBOARD_ACTION_RESET, /* clear out clipboard  */
@@ -107,6 +79,11 @@ typedef struct {
 	guint   mouse_button;
 	guint32 activate_time;
 } history_menu_query_t;
+
+/***************************************************************************/
+
+static void schedule_deferred_clipboard_update(void);
+static void disable_deferred_clipboard_update(void);
 
 /***************************************************************************/
 
@@ -234,11 +211,15 @@ static gchar * update_clipboard(GtkClipboard * clipboard, CLIPBOARD_ACTION actio
 		{
 			if (clipboard == selection_primary)
 			{
-				/* fix auto-deselect of text in applications like DevHelp and LyX */
+				/* HACK: don't spam the history with useless records when text selection is in progress */
 				GdkModifierType button_state;
 				gdk_window_get_pointer(NULL, NULL, NULL, &button_state);
-				if (button_state & (GDK_BUTTON1_MASK|GDK_SHIFT_MASK)) /* button down, done. */
+				if (button_state & (GDK_BUTTON1_MASK|GDK_SHIFT_MASK)) { /* button down, done. */
+					schedule_deferred_clipboard_update();
 					break;
+				} else {
+					disable_deferred_clipboard_update();
+				}
 			}
 
 			gchar * new_text = get_clipboard_text(clipboard);
@@ -316,7 +297,32 @@ static gboolean check_clipboards_tic(gpointer data)
 	return TRUE;
 }
 
+static guint deferred_clipboard_update_source_id = 0;
+
+static void schedule_deferred_clipboard_update(void)
+{
+	if (!deferred_clipboard_update_source_id)
+		deferred_clipboard_update_source_id = g_timeout_add(DEFERRED_CHECK_INTERVAL, check_clipboards_tic, NULL);
+}
+
+static void disable_deferred_clipboard_update(void)
+{
+	if (deferred_clipboard_update_source_id)
+	{
+		g_source_remove(deferred_clipboard_update_source_id);
+		deferred_clipboard_update_source_id = 0;
+	}
+}
+
 /***************************************************************************/
+
+static void on_clipboard_owner_change(GtkClipboard * clipboard, GdkEvent * event, gpointer user_data)
+{
+	check_clipboards();
+}
+
+/***************************************************************************/
+
 /** .
 \n\b Arguments:
 \n\b Returns:
@@ -1187,11 +1193,12 @@ void menu_hotkey(char *keystring, gpointer user_data)
 static void parcellite_init(void)
 {
 	int i;
-/* Create clipboard */
-  selection_primary = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
-  selection_clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
-	/**check to see if optional helpers exist.  */
 
+	/* Create clipboard */
+	selection_primary = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
+	selection_clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+
+	/**check to see if optional helpers exist.  */
 	if(FALSE ==g_thread_supported()){
 		g_fprintf(stderr,"g_thread not init!\n");
 	}
@@ -1217,7 +1224,8 @@ static void parcellite_init(void)
 		}
 	}
 
-	g_timeout_add(CHECK_INTERVAL, check_clipboards_tic, NULL);
+	g_signal_connect(selection_primary, "owner-change", (GCallback) on_clipboard_owner_change, NULL);
+	g_signal_connect(selection_clipboard, "owner-change", (GCallback) on_clipboard_owner_change, NULL);
 
   /* Bind global keys */
   keybinder_init();

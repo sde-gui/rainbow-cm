@@ -24,7 +24,6 @@ G_BEGIN_DECLS
 extern GMutex *hist_lock;
 
 #define POPUP_DELAY    100
-#define CHECK_INTERVAL 500
 #define ID_PRIMARY   0
 #define ID_CLIPBOARD 1
 #define ID_CMD       2
