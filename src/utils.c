@@ -35,40 +35,6 @@ of parcellite  */
 #  define DMTRACE(x) do {} while (FALSE);
 #endif
 
-/** Wrapper to replace g_strdup to limit size of text copied from clipboard. 
-g_strndup will dup to the size of the limit, which will waste resources, so
-try to allocate using other methods.
-*/
-gchar *p_strdup( const gchar *str )
-{
-  gchar *n=NULL;
-  size_t l,x;
-  if(NULL == str)
-    return NULL;
-	x=get_pref_int32("item_size")*1000; 
-	l=get_pref_int32("data_size")*1000; 
-	if(l>0 && l<x) /**whichever is smaller, limit.  */
-		x=l;
-  if(0 == x)
-    return g_strdup(str);
-		/**use the following to test truncation  */
-	  /*x=get_pref_int32("data_size")*10; */
-  l=strlen(str);
-    
-/*  g_printf("Str '%s' x=%d l=%d u8=%d ",str,x,l,u8); */
-  if(l>x){
-    l=x;
-  }
-/*	g_printf("Tl=%d ",l); */
-  
-  if(NULL !=(n=g_malloc(l+8))){
-    n[l+7]=0;
-    g_strlcpy(n,str,l+1);
-  }
-/*  g_printf("str '%s'\n",n);  */
-  return n;
-}
-
 /* Creates program related directories if needed */
 void check_dirs( void )
 {

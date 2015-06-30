@@ -30,7 +30,6 @@ struct cmdline_opts {
 	gboolean version;
 };
 
-gchar *p_strdup( const gchar *str );
 void check_dirs( void );
 
 struct cmdline_opts *parse_options(int argc, char* argv[]);

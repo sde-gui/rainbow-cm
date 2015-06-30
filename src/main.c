@@ -703,7 +703,7 @@ static void set_clipboard_text_from_item(struct history_info *h, GList *element)
 	gchar *txt=NULL;
 	if(NULL == find_h_item(h->delete_list,NULL,element)){	/**not in our delete list  */
 		/**make a copy of txt, because it gets freed and re-allocated.  */
-		txt=p_strdup(((struct history_item *)(element->data))->text);
+		txt=g_strdup(((struct history_item *)(element->data))->text);
 		update_clipboards(CLIPBOARD_ACTION_SET, txt);
 	}
 	g_signal_emit_by_name ((gpointer)h->menu,"selection-done");
