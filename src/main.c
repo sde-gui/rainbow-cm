@@ -89,6 +89,7 @@ static void disable_deferred_clipboard_update(void);
 
 /**speed up pref to int lookup.  */
 static int
+	clipboard_management_enabled,
 	ignore_whiteonly,
 	track_primary_selection,
 	track_clipboard_selection,
@@ -96,6 +97,7 @@ static int
 	synchronize;
 
 static struct pref2int pref2int_map[]={
+	{.val=&clipboard_management_enabled,.name="enabled"},
 	{.val=&ignore_whiteonly,.name="ignore_whiteonly"},
 	{.val=&track_primary_selection,.name="track_primary_selection"},
 	{.val=&track_clipboard_selection,.name="track_clipboard_selection"},
@@ -209,6 +211,12 @@ static gchar * update_clipboard(GtkClipboard * clipboard, CLIPBOARD_ACTION actio
 		}
 		case CLIPBOARD_ACTION_CHECK:
 		{
+			if (!clipboard_management_enabled)
+			{
+				disable_deferred_clipboard_update();
+				break;
+			}
+
 			if (clipboard == selection_primary)
 			{
 				/* HACK: don't spam the history with useless records when text selection is in progress */
@@ -276,8 +284,8 @@ static void check_clipboards(void)
 {
 	gchar * ptext = update_clipboard(selection_primary, CLIPBOARD_ACTION_CHECK, NULL);
 	gchar * ctext = update_clipboard(selection_clipboard, CLIPBOARD_ACTION_CHECK, NULL);
-	
-	if (synchronize)  {
+
+	if (synchronize && clipboard_management_enabled) {
 		if (ptext || ctext) {
 			gchar * last = last_text;
 			if (last && g_strcmp0(ptext, ctext) != 0) {
@@ -441,6 +449,11 @@ static void clear_selected(GtkMenuItem *menu_item, gpointer user_data)
 		/*g_printf("Clear hist done, h=%p, h->delete_list=%p\n",h, h->delete_list); */
 		update_clipboards(CLIPBOARD_ACTION_RESET, "");
 	}
+}
+
+static void on_enabled_toggled(GtkCheckMenuItem * menu_item, gpointer user_data)
+{
+	set_pref_int32("enabled", gtk_check_menu_item_get_active(menu_item));
 }
 
 /* Called when About is selected from right-click menu */
@@ -1094,7 +1107,7 @@ static void show_history_menu(guint histno, guint mouse_button, guint32 activate
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-static GtkWidget *create_parcellite_menu(guint button, guint activate_time)
+static GtkWidget * create_main_menu(void)
 {
 	GtkWidget * menu = gtk_menu_new();
 
@@ -1126,6 +1139,14 @@ static GtkWidget *create_parcellite_menu(guint button, guint activate_time)
 		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
 	}
 
+	/* Enabled */
+	{
+		GtkWidget * menu_item = gtk_check_menu_item_new_with_mnemonic(_("_Enabled"));
+		gtk_check_menu_item_set_active((GtkCheckMenuItem *) menu_item, clipboard_management_enabled);
+		g_signal_connect((GObject*)menu_item, "toggled", (GCallback)on_enabled_toggled, NULL);
+		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
+	}
+
 	/* Preferences */
 	{
 		GtkWidget * menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, NULL);
@@ -1143,14 +1164,14 @@ static GtkWidget *create_parcellite_menu(guint button, guint activate_time)
 	}
 
 	gtk_widget_show_all(menu);
-	gtk_menu_popup((GtkMenu*)menu, NULL, NULL, NULL, NULL, button, activate_time);	
 	return menu;
 }
 
 /* Called when status icon is right-clicked */
-static void  show_parcellite_menu(GtkStatusIcon *status_icon, guint button, guint activate_time,  gpointer data)
+static void  show_main_menu(GtkStatusIcon *status_icon, guint button, guint activate_time,  gpointer data)
 {
-	create_parcellite_menu(button, activate_time);
+	GtkWidget * menu = create_main_menu();
+	gtk_menu_popup((GtkMenu*)menu, NULL, NULL, NULL, NULL, button, activate_time);	
 }
 
 
@@ -1170,7 +1191,7 @@ static void setup_icon( void )
 		status_icon = gtk_status_icon_new_from_icon_name(APP_ICON);
 		gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
 		g_signal_connect((GObject*)status_icon, "activate", (GCallback)status_icon_clicked, NULL);
-		g_signal_connect((GObject*)status_icon, "popup-menu", (GCallback)show_parcellite_menu, NULL);	
+		g_signal_connect((GObject*)status_icon, "popup-menu", (GCallback)show_main_menu, NULL);	
 	}	else {
 		gtk_status_icon_set_from_icon_name(status_icon,APP_ICON);
 	}
@@ -1185,7 +1206,7 @@ void history_hotkey(char *keystring, gpointer user_data)
 /* Called when actions global hotkey is pressed */
 void menu_hotkey(char *keystring, gpointer user_data)
 {
-  show_parcellite_menu(status_icon, 0, 0, NULL);
+  show_main_menu(status_icon, 0, 0, NULL);
 }
 
 

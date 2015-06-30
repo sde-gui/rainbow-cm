@@ -101,6 +101,11 @@ static struct pref_item myprefs[]={
 	/**Clipboards  */
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_CLIP,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Clipboards</b>",.tip=NULL,.val=0}, 
 	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
+	 .name="enabled",.type=PREF_TYPE_TOGGLE,
+	 .desc="<b>Clipboard Managment Enabled</b>",
+	 .tip="When unchecked, fully disables clipboard managment and clipboard tracking.\n\nThis option is useful to temporarely disable the Rainbow Clipboard Manager, if you encounter a conflict between the Manager and another application, or if you copy and paste confidential information that should not be visible in the clipboard history.",
+	 .val=TRUE},
+	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
 	 .name="track_clipboard_selection",.type=PREF_TYPE_TOGGLE,
 	 .desc="Track the history of the _Clipboard",
 	 .tip="If checked, Rainbow watches for changes in the Clipboard (X11 CLIPBOARD SELECTION) and saves them in the history.",
@@ -258,6 +263,7 @@ int set_pref_int32(char *name, gint32 val)
 	if(NULL == p)
 		return -1;
 	p->val=val;
+	pref_mapper(NULL, PM_UPDATE);
 	return 0;
 }
 
@@ -637,18 +643,21 @@ int update_pref_widgets( void)
 
 static void label_pair_from_markup(const gchar * markup, GtkWidget ** p_label1, GtkWidget ** p_label2)
 {
-	if (!p_label1 || !p_label2)
-		return;
-	*p_label1 = NULL; *p_label2 = NULL;
+	if (p_label1)
+		*p_label1 = NULL;
+	if (p_label2)
+		*p_label2 = NULL;
 
 	gchar ** pair = g_strsplit(markup, "{{}}", 2);
 
 	if (pair && pair[0])
 	{
-		*p_label1 = gtk_label_new(NULL);
-		gtk_label_set_markup((GtkLabel *) *p_label1, pair[0]);
+		if (p_label1) {
+			*p_label1 = gtk_label_new(NULL);
+			gtk_label_set_markup((GtkLabel *) *p_label1, pair[0]);
+		}
 
-		if (pair[1])
+		if (pair[1] && p_label2)
 		{
 			*p_label2 = gtk_label_new(NULL);
 			gtk_label_set_markup((GtkLabel *) *p_label2, pair[1]);
@@ -699,9 +708,16 @@ int add_section(int sec, GtkWidget *parent)
 				continue;
 				break;
 			case PREF_TYPE_TOGGLE:
-				myprefs[i].w=gtk_check_button_new_with_mnemonic(_(myprefs[i].desc));
-				packit=myprefs[i].w;	
+			{
+				GtkWidget * label1;
+				label_pair_from_markup(_(myprefs[i].desc), &label1, NULL);
+
+				myprefs[i].w = gtk_check_button_new();
+				gtk_container_add(GTK_CONTAINER(myprefs[i].w), label1);
+
+				packit = myprefs[i].w;
 				break;
+			}
 			
 			case PREF_TYPE_SPIN:
 			case PREF_TYPE_ENTRY:
