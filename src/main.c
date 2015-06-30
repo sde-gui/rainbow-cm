@@ -1111,18 +1111,9 @@ static GtkWidget * create_main_menu(void)
 {
 	GtkWidget * menu = gtk_menu_new();
 
-	/* About */
-	{
-		GtkWidget * menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, NULL);
-		g_signal_connect((GObject*)menu_item, "activate", (GCallback)show_about_dialog, NULL);
-		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
-	}
-
 	/* Save History */
 	{
 		GtkWidget * menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Save History as..."));
-		GtkWidget * menu_image = gtk_image_new_from_stock(GTK_STOCK_SAVE_AS, GTK_ICON_SIZE_MENU);
-		gtk_image_menu_item_set_image((GtkImageMenuItem*)menu_item, menu_image);
 		g_signal_connect((GObject*)menu_item, "activate", (GCallback)history_save_as, NULL);
 		gtk_widget_set_tooltip_text(menu_item,
 			_("Save History as a text file. "
@@ -1133,15 +1124,23 @@ static GtkWidget * create_main_menu(void)
 	/* Clear History */
 	{
 		GtkWidget * menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Clear History"));
-		GtkWidget * menu_image = gtk_image_new_from_stock(GTK_STOCK_CLEAR, GTK_ICON_SIZE_MENU);
-		gtk_image_menu_item_set_image((GtkImageMenuItem*)menu_item, menu_image);
 		g_signal_connect((GObject*)menu_item, "activate", (GCallback)clear_selected, NULL);
+		gtk_widget_set_tooltip_text(menu_item, _("Erase all entries from the clipboard history."));
 		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
 	}
 
+	gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
+
 	/* Enabled */
 	{
-		GtkWidget * menu_item = gtk_check_menu_item_new_with_mnemonic(_("_Enabled"));
+		GtkWidget * menu_item = gtk_check_menu_item_new_with_mnemonic(
+			clipboard_management_enabled ?
+				_("_Enabled") :
+				_("Clipboard Management Disabled"));
+		gtk_widget_set_tooltip_text(menu_item,
+			clipboard_management_enabled ?
+				_("Clipboard Management and History Tracking are enabled.") :
+				_("Clipboard Management and History Tracking are disabled.\nPress here to enable."));
 		gtk_check_menu_item_set_active((GtkCheckMenuItem *) menu_item, clipboard_management_enabled);
 		g_signal_connect((GObject*)menu_item, "toggled", (GCallback)on_enabled_toggled, NULL);
 		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
@@ -1149,8 +1148,15 @@ static GtkWidget * create_main_menu(void)
 
 	/* Preferences */
 	{
-		GtkWidget * menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_PREFERENCES, NULL);
+		GtkWidget * menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Preferences"));
 		g_signal_connect((GObject*)menu_item, "activate", (GCallback)preferences_selected, NULL);
+		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
+	}
+
+	/* About */
+	{
+		GtkWidget * menu_item = gtk_image_menu_item_new_with_mnemonic(_("_About"));
+		g_signal_connect((GObject*)menu_item, "activate", (GCallback)show_about_dialog, NULL);
 		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
 	}
 	
@@ -1158,7 +1164,7 @@ static GtkWidget * create_main_menu(void)
 
 	/* Quit */
 	{
-		GtkWidget * menu_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, NULL);
+		GtkWidget * menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Quit"));
 		g_signal_connect((GObject*)menu_item, "activate", (GCallback)quit_selected, NULL);
 		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
 	}
