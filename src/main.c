@@ -285,7 +285,11 @@ static void check_clipboards(void)
 	gchar * ptext = update_clipboard(selection_primary, CLIPBOARD_ACTION_CHECK, NULL);
 	gchar * ctext = update_clipboard(selection_clipboard, CLIPBOARD_ACTION_CHECK, NULL);
 
-	if (synchronize && clipboard_management_enabled) {
+	if (clipboard_management_enabled &&
+		synchronize &&
+		track_primary_selection &&
+		track_clipboard_selection)
+	{
 		if (ptext || ctext) {
 			gchar * last = last_text;
 			if (last && g_strcmp0(ptext, ctext) != 0) {

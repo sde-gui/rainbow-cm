@@ -587,19 +587,13 @@ void read_preferences(void)
 /* Called when clipboard checks are pressed */
 static void check_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 {
-  if (gtk_toggle_button_get_active((GtkToggleButton*)get_pref_widget("use_copy")) &&
-      gtk_toggle_button_get_active((GtkToggleButton*)get_pref_widget("use_primary")))
-  {
-    /* Only allow synchronize option if both primary and clipboard are enabled */
-    gtk_widget_set_sensitive((GtkWidget*)get_pref_widget("synchronize"), TRUE);
-  }
-  else
-  {
-    /* Disable synchronize option */
-    gtk_toggle_button_set_active((GtkToggleButton*)get_pref_widget("synchronize"), FALSE);
-    gtk_widget_set_sensitive((GtkWidget*)get_pref_widget("synchronize"), FALSE);
-
-  }
+	gtk_widget_set_sensitive(
+		get_pref_widget("synchronize"),
+		(
+			gtk_toggle_button_get_active((GtkToggleButton*)get_pref_widget("track_clipboard_selection")) &&
+			gtk_toggle_button_get_active((GtkToggleButton*)get_pref_widget("track_primary_selection"))
+		)
+	);
 }
 
 /***************************************************************************/
@@ -654,13 +648,13 @@ static void label_pair_from_markup(const gchar * markup, GtkWidget ** p_label1, 
 	{
 		if (p_label1) {
 			*p_label1 = gtk_label_new(NULL);
-			gtk_label_set_markup((GtkLabel *) *p_label1, pair[0]);
+			gtk_label_set_markup_with_mnemonic((GtkLabel *) *p_label1, pair[0]);
 		}
 
 		if (pair[1] && p_label2)
 		{
 			*p_label2 = gtk_label_new(NULL);
-			gtk_label_set_markup((GtkLabel *) *p_label2, pair[1]);
+			gtk_label_set_markup_with_mnemonic((GtkLabel *) *p_label2, pair[1]);
 		}
 	}
 
@@ -715,6 +709,8 @@ int add_section(int sec, GtkWidget *parent)
 				myprefs[i].w = gtk_check_button_new();
 				gtk_container_add(GTK_CONTAINER(myprefs[i].w), label1);
 
+				gtk_label_set_mnemonic_widget((GtkLabel *) label1, myprefs[i].w);
+
 				packit = myprefs[i].w;
 				break;
 			}
@@ -759,11 +755,15 @@ int add_section(int sec, GtkWidget *parent)
 				}
 				packit = hbox;
 
+				if (label1)
+					gtk_label_set_mnemonic_widget((GtkLabel *) label1, myprefs[i].w);
+
 				if (label2) {
 					gtk_misc_set_alignment((GtkMisc *) label2, 0.0, 0.50);
 					gtk_box_pack_start((GtkBox *) hbox, label2, FALSE, FALSE, 0);
 					if (NULL != myprefs[i].tip)
 						gtk_widget_set_tooltip_text(label2, _(myprefs[i].tip));
+					gtk_label_set_mnemonic_widget((GtkLabel *) label2, myprefs[i].w);
 				}
 
 				break;
