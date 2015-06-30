@@ -26,14 +26,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <libgen.h>
-/**set this to debug looking up user environment vars to see other instances
-of parcellite  */
-/**#define DEBUG_MULTI  */
-#ifdef DEBUG_MULTI
-#  define DMTRACE(x) x
-#else
-#  define DMTRACE(x) do {} while (FALSE);
-#endif
 
 /* Creates program related directories if needed */
 void check_dirs( void )

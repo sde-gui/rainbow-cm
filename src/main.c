@@ -1294,9 +1294,7 @@ int main(int argc, char *argv[])
 	check_dirs(); /**make sure we set up default RC if it doesn't exist.  */
 
 	read_preferences();
-#ifdef	DEBUG_UPDATE
-	if(get_pref_int32("debug_update")) debug_update=1;
-#endif
+
   /* Parse options */
 	opts=parse_options(argc, argv);
   if(NULL == opts)
