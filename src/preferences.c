@@ -102,12 +102,12 @@ static struct pref_item myprefs[]={
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_CLIP,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Clipboards</b>",.tip=NULL,.val=0}, 
 	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
 	 .name="enabled",.type=PREF_TYPE_TOGGLE,
-	 .desc="<b>Clipboard Managment Enabled</b>",
+	 .desc="<b>Clipboard Managment _Enabled</b>",
 	 .tip="When unchecked, fully disables clipboard managment and clipboard tracking.\n\nThis option is useful to temporarely disable the Rainbow Clipboard Manager, if you encounter a conflict between the Manager and another application, or if you copy and paste confidential information that should not be visible in the clipboard history.",
 	 .val=TRUE},
 	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
 	 .name="track_clipboard_selection",.type=PREF_TYPE_TOGGLE,
-	 .desc="Track the history of the _Clipboard",
+	 .desc="Track the history of the C_lipboard",
 	 .tip="If checked, Rainbow watches for changes in the Clipboard (X11 CLIPBOARD SELECTION) and saves them in the history.",
 	 .val=TRUE},
 	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
@@ -115,28 +115,37 @@ static struct pref_item myprefs[]={
 	 .desc="Track the history of the _selected text",
 	 .tip="If checked, Rainbow watches for changes of the selected text (X11 PRIMARY SELECTION) and saves them in the history.",
 	 .val=FALSE},
-  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_CLIP,.name="synchronize",.type=PREF_TYPE_TOGGLE,.desc="S_ynchronize clipboards",.tip="If checked, will keep both clipboards with the same content. If primary is pasted, then copy will have the same data.",.val=DEF_SYNCHRONIZE},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_CLIP,
+	 .name="synchronize",.type=PREF_TYPE_TOGGLE,
+	 .desc="Synchroni_ze clipboards",
+	 .tip="If checked, will keep both clipboards with the same content. If primary is pasted, then copy will have the same data.",
+	 .val=DEF_SYNCHRONIZE},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_CLIP,
+	.name="restore_empty",.type=PREF_TYPE_TOGGLE,
+	.desc="Restore the contents of the e_mpty clipboard.",
+	.tip="Restore the contents of the clipboard when it gets empty.\n\nThe clipboard typically gets empty when an apllication that has held the clipboard contents is closed.",
+	.val=1},
+
   /**History  */	
   {.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_HIST,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>History</b>",.tip=NULL,.val=0},
-  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="save_history",.type=PREF_TYPE_TOGGLE,.desc="Save history across sessions",.tip="Keep history in a file across sessions.",.val=DEF_SAVE_HISTORY},
-	{.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="history_limit",.type=PREF_TYPE_SPIN,.desc="Remember the last {{}} clipboards",.tip="Maximum number of clipboard entries to keep",.val=DEF_HISTORY_LIMIT},
-  {.adj=&align_data_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="data_size",.type=PREF_TYPE_SPIN,.desc="Max Data Size(KB)",.tip="Maximum data size of entire history list",.val=0},
-  {.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="item_size",.type=PREF_TYPE_SPIN,.desc="Max Item Size(KB)",.tip="Maximum data size of one item",.val=0},
+  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="save_history",.type=PREF_TYPE_TOGGLE,.desc="Sa_ve history across sessions",.tip="Keep history in a file across sessions.",.val=DEF_SAVE_HISTORY},
+	{.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="history_limit",.type=PREF_TYPE_SPIN,.desc="_Remember the last {{}} clipboards",.tip="Maximum number of clipboard entries to keep",.val=DEF_HISTORY_LIMIT},
+  {.adj=&align_data_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="data_size",.type=PREF_TYPE_SPIN,.desc="Max _Data Size(KB)",.tip="Maximum data size of entire history list",.val=0},
+  {.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="item_size",.type=PREF_TYPE_SPIN,.desc="Max _Item Size(KB)",.tip="Maximum data size of one item",.val=0},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="restore_empty",.type=PREF_TYPE_TOGGLE,.desc="Restore Empty",.tip="If checked, will restore clipboard entry on application exit.",.val=1},
-  
+
   /**Miscellaneous  */  
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Miscellaneous</b>",.tip=NULL,.val=0},
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name="type_search",.type=PREF_TYPE_TOGGLE,.desc="Search As You Type",.tip="Instant search in the history menu."},
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc="Ignore Whitespace Only",.tip="If checked, will ignore any clipboard additions that contain only whitespace."},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name="type_search",.type=PREF_TYPE_TOGGLE,.desc="Search _As You Type",.tip="Instant search in the history menu."},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc="Ignore _Whitespace Only",.tip="If checked, will ignore any clipboard additions that contain only whitespace."},
 	
 /**Display  add icon here...*/
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_DISP,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Items</b>",.tip=NULL,.val=0},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
-	{.adj=&align_line_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="item_length",.type=PREF_TYPE_SPIN,.desc="  Character length of items",.tip=NULL,.val=DEF_ITEM_LENGTH},  
+	{.adj=&align_line_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="item_length",.type=PREF_TYPE_SPIN,.desc="  Character length _of items",.tip=NULL,.val=DEF_ITEM_LENGTH},  
     {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
 
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nonprint_disp",.type=PREF_TYPE_TOGGLE,.desc="Alternate Non-printing Display",.tip="If checked, will display tabs with Right arrow (utf8,\\2192), newlines with pharagrph(\\204b), and spaces with square-u(\\2423).", .val=FALSE},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nonprint_disp",.type=PREF_TYPE_TOGGLE,.desc="Alternate _Non-printing Display",.tip="If checked, will display tabs with Right arrow (utf8,\\2192), newlines with pharagrph(\\204b), and spaces with square-u(\\2423).", .val=FALSE},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_DISP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
   {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name="ellipsize",.type=PREF_TYPE_COMBO,.desc="Omit items in the:",.tip=NULL,.val=DEF_ELLIPSIZE}, 
 	
@@ -145,11 +154,20 @@ static struct pref_item myprefs[]={
 #endif
 	
 /**hotkeys  */
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc="Menu key combination",.tip=NULL},	
-  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="history_key",.type=PREF_TYPE_ENTRY,.desc="History key combination:",.tip=NULL},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc="Men_u key combination",.tip=NULL},	
+  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="history_key",.type=PREF_TYPE_ENTRY,.desc="_History key combination:",.tip=NULL},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name="no_icon",.val=FALSE},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name=NULL,.desc=NULL},
 };
+
+/***************************************************************************/
+
+static GtkWidget * label_new_with_markup_and_mnemonic(const char * markup)
+{
+	GtkWidget * label = gtk_label_new(NULL);
+	gtk_label_set_markup_with_mnemonic((GtkLabel *) label, markup);
+	return label;
+}
 
 /***************************************************************************/
 
@@ -647,14 +665,12 @@ static void label_pair_from_markup(const gchar * markup, GtkWidget ** p_label1, 
 	if (pair && pair[0])
 	{
 		if (p_label1) {
-			*p_label1 = gtk_label_new(NULL);
-			gtk_label_set_markup_with_mnemonic((GtkLabel *) *p_label1, pair[0]);
+			*p_label1 = label_new_with_markup_and_mnemonic(pair[0]);
 		}
 
 		if (pair[1] && p_label2)
 		{
-			*p_label2 = gtk_label_new(NULL);
-			gtk_label_set_markup_with_mnemonic((GtkLabel *) *p_label2, pair[1]);
+			*p_label2 = label_new_with_markup_and_mnemonic(pair[1]);
 		}
 	}
 
@@ -837,7 +853,7 @@ void show_preferences(gint tab)
 /* Build the behavior page */  
   GtkWidget* page_behavior = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
   gtk_alignment_set_padding((GtkAlignment*)page_behavior, 12, 6, 12, 6);
-  gtk_notebook_append_page((GtkNotebook*)notebook, page_behavior, gtk_label_new(_("Behavior")));
+  gtk_notebook_append_page((GtkNotebook*)notebook, page_behavior, label_new_with_markup_and_mnemonic(_("_General")));
   GtkWidget* vbox_behavior = gtk_vbox_new(FALSE, 12);
   gtk_container_add((GtkContainer*)page_behavior, vbox_behavior);
   
@@ -851,7 +867,7 @@ void show_preferences(gint tab)
   /* Build the display page */
   GtkWidget* page_display = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
   gtk_alignment_set_padding((GtkAlignment*)page_display, 12, 6, 12, 6);
-  gtk_notebook_append_page((GtkNotebook*)notebook, page_display, gtk_label_new(_("Display")));
+  gtk_notebook_append_page((GtkNotebook*)notebook, page_display, label_new_with_markup_and_mnemonic(_("_Popup")));
   GtkWidget* vbox_display = gtk_vbox_new(FALSE, 12);
   gtk_container_add((GtkContainer*)page_display, vbox_display);
   
@@ -891,7 +907,7 @@ void show_preferences(gint tab)
   /* Build the hotkeys page */
   GtkWidget* page_extras = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
   gtk_alignment_set_padding((GtkAlignment*)page_extras, 12, 6, 12, 6);
-  gtk_notebook_append_page((GtkNotebook*)notebook, page_extras, gtk_label_new(_("Hotkeys")));
+  gtk_notebook_append_page((GtkNotebook*)notebook, page_extras, label_new_with_markup_and_mnemonic(_("_Hotkeys")));
   GtkWidget* vbox_extras = gtk_vbox_new(FALSE, 12);
   gtk_container_add((GtkContainer*)page_extras, vbox_extras);
   
