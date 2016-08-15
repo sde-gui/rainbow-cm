@@ -811,14 +811,8 @@ static void write_history_menu_items(GList *list, GtkWidget *menu)
 }
 
 /***************************************************************************/
-/** Replace non-printing characters with ??.
-0x09->E28692 - \2192
-0x0a->E2818B - \204b
-space-E290A3 - \u2423 
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-static GString* convert_string(GString* s)
+
+static GString* convert_nonprinting_characters(GString* s)
 {
 	gchar arrow[4]={0xe2,0x86,0x92,0x00};
 	gchar paragraph[4]={0xe2,0x81,0x8b,0x00};
@@ -916,7 +910,7 @@ static gboolean do_show_history_menu(gpointer data)
 		/* Declare some variables */
 		gint32 item_length = get_pref_int32("item_length");
 		gint32 ellipsize = get_pref_int32("ellipsize");
-		gint32 nonprint_disp = get_pref_int32("nonprint_disp");
+		gint32 display_nonprinting_characters = get_pref_int32("display_nonprinting_characters");
 		gint element_number = 0;
 		gchar * primary_temp = gtk_clipboard_wait_for_text(selection_primary);
 		gchar * clipboard_temp = gtk_clipboard_wait_for_text(selection_clipboard);
@@ -930,8 +924,8 @@ static gboolean do_show_history_menu(gpointer data)
 			else if( !(HIST_DISPLAY_NORMAL&h.histno) && !(c->flags & CLIP_TYPE_PERSISTENT))
 				goto next_loop;
 			GString* string = g_string_new(hist_text);
-			if(nonprint_disp)
-				string=convert_string(string);
+			if (display_nonprinting_characters)
+				string = convert_nonprinting_characters(string);
 			glong len=g_utf8_strlen(string->str, string->len);
 			gchar * tooltip = NULL;
 			/* Ellipsize text */

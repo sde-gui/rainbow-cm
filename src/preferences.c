@@ -149,12 +149,12 @@ static struct pref_item myprefs[]={
 	 .tip="Enables Instant Search in the History menu.\n\nType a word when the History menu is shown to see only the entries that contains this word."
 	},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_POPUP,
-	 .name="nonprint_disp",.type=PREF_TYPE_TOGGLE,
-	 .desc="Displaying of _non-printing characters",
+	 .name="display_nonprinting_characters",.type=PREF_TYPE_TOGGLE,
+	 .desc="Display _non-printing characters",
 	 .tip="Enables displaying of non-printing characters:\n\n"
-	  "The horizontal tab character as → (rightwards arrow).\n"
-	  "The space character as ␣ (open box).\n"
-	  "The new line character as ¶ (paragraph sign).",
+	  "The horizontal tab character: → (rightwards arrow).\n"
+	  "The space character: ␣ (open box).\n"
+	  "The new line character: ¶ (paragraph sign).",
 	 .val=FALSE
 	},
 	{.adj=&align_line_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_POPUP,
