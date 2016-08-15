@@ -90,8 +90,8 @@ static struct pref2int *pref2int_mapper=NULL;
 
 /**hot key list, mainly for easy sanity checks.  */
 struct keys keylist[]={
-	{.name="menu_key",.keyval=DEF_MENU_KEY,.keyfunc=(void *)menu_hotkey},
-	{.name="history_key",.keyval=DEF_HISTORY_KEY,.keyfunc=(void *)history_hotkey},
+	{.name="menu_key",.keyval=DEF_MENU_KEY,.keyfunc=(void *)on_menu_hotkey},
+	{.name="history_key",.keyval=DEF_HISTORY_KEY,.keyfunc=(void *)on_history_hotkey},
 	{.name=NULL,.keyval=NULL,.keyfunc=(void *)0},
 };
 /**must be in same order as above struct array  */

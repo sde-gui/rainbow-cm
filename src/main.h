@@ -64,8 +64,8 @@ struct history_info{
 
 int p_strcmp (const char *str1, const char *str2);
 void phistory_hotkey(char *keystring, gpointer user_data);
-void history_hotkey(char *keystring, gpointer user_data);
-void menu_hotkey(char *keystring, gpointer user_data);
+void on_history_hotkey(char *keystring, gpointer user_data);
+void on_menu_hotkey(char *keystring, gpointer user_data);
 
 G_END_DECLS
 

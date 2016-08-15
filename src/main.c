@@ -1201,14 +1201,12 @@ static void setup_icon( void )
 	}
 }
 
-/* Called when history global hotkey is pressed */
-void history_hotkey(char *keystring, gpointer user_data)
+void on_history_hotkey(char *keystring, gpointer user_data)
 {
   show_history_menu(figure_histories(), 0, GDK_CURRENT_TIME);
 }
 
-/* Called when actions global hotkey is pressed */
-void menu_hotkey(char *keystring, gpointer user_data)
+void on_menu_hotkey(char *keystring, gpointer user_data)
 {
   show_main_menu(status_icon, 0, 0, NULL);
 }
@@ -1303,8 +1301,8 @@ int main(int argc, char *argv[])
   gtk_main();
 
   /* Unbind keys */
-  keybinder_unbind(get_pref_string("history_key"), history_hotkey);
-  keybinder_unbind(get_pref_string("menu_key"), menu_hotkey);
+  keybinder_unbind(get_pref_string("history_key"), on_history_hotkey);
+  keybinder_unbind(get_pref_string("menu_key"), on_menu_hotkey);
   /* Cleanup */
 	/**  
   g_free(prefs.history_key);
