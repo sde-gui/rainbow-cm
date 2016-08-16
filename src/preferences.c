@@ -73,7 +73,6 @@ struct myadj align_line_lim={5, DEF_ITEM_LENGTH_MAX, 1, 5};
 struct pref_item {
 	gchar *name;		/**name/id to find pref  */
 	gint32 val;			/**int val  */
-	float fval;
 	gchar *cval;	 /**char val  */
 	GtkWidget *w;	 /**widget in menu  */
 	gint type;		/**PREF_TYPE_  */
@@ -299,33 +298,6 @@ gint32 get_pref_int32 (char *name)
 	return p->val;
 }
 /***************************************************************************/
-/** Set the float value of name.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-int set_pref_float(char *name, float fval)
-{
-	struct pref_item *p=get_pref(name);
-	if(NULL == p)
-		return -1;
-	p->fval=fval;
-	return 0;
-}
-
-/***************************************************************************/
-/** get the float value of name.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-float get_pref_float (char *name)
-{
-	struct pref_item *p=get_pref(name);
-	if(NULL == p)
-		return -1;
-	return p->fval;
-}
-
-/***************************************************************************/
 /** set the char *value of string.
 \n\b Arguments:
 \n\b Returns:
@@ -476,7 +448,6 @@ static void apply_preferences()
 				break;
 			case PREF_TYPE_SPIN:
 				myprefs[i].val=gtk_spin_button_get_value_as_int((GtkSpinButton*)myprefs[i].w);
-				myprefs[i].fval=(float)gtk_spin_button_get_value((GtkSpinButton*)myprefs[i].w);
 				break;
 			case PREF_TYPE_COMBO:
 				myprefs[i].val=gtk_combo_box_get_active((GtkComboBox*)myprefs[i].w) + 1;
