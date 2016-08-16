@@ -863,7 +863,6 @@ static gboolean do_show_history_menu(gpointer data)
 
 	static struct history_info h;
 	h.change_flag = 0;
-	h.element_text = NULL;
 	h.wi.index = -1;
 
 	if (!h.search_string)
@@ -887,7 +886,6 @@ static gboolean do_show_history_menu(gpointer data)
 	menu = gtk_menu_new();
 
 	h.menu = menu;
-	h.clip_item = NULL;
 	h.delete_list = NULL;
 	h.persist_list = NULL;
 
@@ -994,8 +992,6 @@ static gboolean do_show_history_menu(gpointer data)
 				if( NULL == bold_text) g_fprintf(stderr,"NulBMKUp:'%s'\n",string->str);
 				gtk_label_set_markup((GtkLabel*)item_label, bold_text);
 				g_free(bold_text);
-				h.clip_item=menu_item;
-				h.element_text=hist_text;
 				h.wi.index=element_number;
 			}
 			else if ((primary_temp) && (g_strcmp0(hist_text, primary_temp) == 0))
@@ -1004,8 +1000,6 @@ static gboolean do_show_history_menu(gpointer data)
 				if( NULL == italic_text) g_fprintf(stderr,"NulIMKUp:'%s'\n",string->str);
 				gtk_label_set_markup((GtkLabel*)item_label, italic_text);
 				g_free(italic_text);
-				h.clip_item=menu_item;
-				h.element_text=hist_text;
 				h.wi.index=element_number;
 			}
 			if(c->flags &CLIP_TYPE_PERSISTENT){

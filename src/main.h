@@ -39,9 +39,6 @@ struct s_item_info {
 
 struct history_info{
 	GtkWidget *menu;			/**top level history menu  */
-	GtkWidget *clip_item; /**currently selected history item (represents clipboard)  */
-	gchar *element_text;	/**texts of selected history clipboard item  */
-	GtkWidget *title_item;
 	GList *delete_list; /**struct s_item_info - for the delete list  */
 	GList *persist_list; /**struct s_item_info - for the persistent list  */
 	struct widget_info wi;  /**temp  for usage in popups  */
