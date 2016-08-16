@@ -145,21 +145,3 @@ struct cmdline_opts *parse_options(int argc, char* argv[])
 }
 
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-void show_gtk_dialog(gchar *message, gchar *title)
-{
-GtkWidget *dialog;
-	if(NULL == message || NULL == title)
-		return;
-	dialog= gtk_message_dialog_new(NULL,GTK_DIALOG_DESTROY_WITH_PARENT,
-	            GTK_MESSAGE_WARNING,  GTK_BUTTONS_OK,
-	            message,NULL);
-	gtk_window_set_title(GTK_WINDOW(dialog), title ); 
-	gtk_widget_show_all(dialog);
-	gtk_dialog_run(GTK_DIALOG(dialog));
-	gtk_widget_destroy(dialog);	
-}
-

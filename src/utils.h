@@ -34,7 +34,6 @@ void check_dirs( void );
 
 struct cmdline_opts *parse_options(int argc, char* argv[]);
 
-void show_gtk_dialog(gchar *message, gchar *title);
 G_END_DECLS
 
 #endif
