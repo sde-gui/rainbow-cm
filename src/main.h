@@ -24,14 +24,10 @@ G_BEGIN_DECLS
 extern GMutex *hist_lock;
 
 #define POPUP_DELAY    100
-#define ID_PRIMARY   0
-#define ID_CLIPBOARD 1
-#define ID_CMD       2
 
 #define HIST_DISPLAY_NORMAL     1
 #define HIST_DISPLAY_PERSISTENT	2
 
-#define KBUF_SIZE 200
 struct widget_info{
 	GtkWidget *menu; /**top level history list window  */
 	GtkWidget *item; /**item we are looking at  */
@@ -62,8 +58,6 @@ struct history_info{
 	GtkWidget * first_matched;
 };
 
-int p_strcmp (const char *str1, const char *str2);
-void phistory_hotkey(char *keystring, gpointer user_data);
 void on_history_hotkey(char *keystring, gpointer user_data);
 void on_menu_hotkey(char *keystring, gpointer user_data);
 
