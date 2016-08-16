@@ -1,3 +1,4 @@
+src/history.c
 src/main.c
 src/utils.c
 src/preferences.c
