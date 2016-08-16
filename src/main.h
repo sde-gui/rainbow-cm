@@ -25,9 +25,6 @@ extern GMutex *hist_lock;
 
 #define POPUP_DELAY    100
 
-#define HIST_DISPLAY_NORMAL     1
-#define HIST_DISPLAY_PERSISTENT	2
-
 struct widget_info{
 	GtkWidget *menu; /**top level history list window  */
 	GtkWidget *item; /**item we are looking at  */
@@ -50,7 +47,6 @@ struct history_info{
 	GList *delete_list; /**struct s_item_info - for the delete list  */
 	GList *persist_list; /**struct s_item_info - for the persistent list  */
 	struct widget_info wi;  /**temp  for usage in popups  */
-	guint histno;           /**which history?  HIST_DISPLAY_NORMAL/HIST_DISPLAY_PERSISTENT*/
 	gint change_flag;	/**bit wise flags for history state  */
 	GtkIMContext * im_context;
 	GString * search_string;

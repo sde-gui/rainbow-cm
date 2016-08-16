@@ -75,7 +75,6 @@ typedef enum {
 /***************************************************************************/
 
 typedef struct {
-	guint   histno;
 	guint   mouse_button;
 	guint32 activate_time;
 } history_menu_query_t;
@@ -863,7 +862,6 @@ static gboolean do_show_history_menu(gpointer data)
 	GtkWidget * menu, * menu_item, * item_label;
 
 	static struct history_info h;
-	h.histno = query->histno;
 	h.change_flag = 0;
 	h.element_text = NULL;
 	h.wi.index = -1;
@@ -919,10 +917,6 @@ static gboolean do_show_history_menu(gpointer data)
 		for (element = history_list; element != NULL; element = element->next) {
 			struct history_item *c=(struct history_item *)(element->data);
 			gchar* hist_text=c->text;
-			if(!(HIST_DISPLAY_PERSISTENT&h.histno) && (c->flags & CLIP_TYPE_PERSISTENT))
-				goto next_loop;
-			else if( !(HIST_DISPLAY_NORMAL&h.histno) && !(c->flags & CLIP_TYPE_PERSISTENT))
-				goto next_loop;
 			GString* string = g_string_new(hist_text);
 			if (display_nonprinting_characters)
 				string = convert_nonprinting_characters(string);
@@ -1024,7 +1018,6 @@ static gboolean do_show_history_menu(gpointer data)
 
 			/* Prepare for next item */
 			g_string_free(string, TRUE);
-next_loop:
 			element_number++;
 		}	/**end of for loop for each history item  */
 		/* Cleanup */
@@ -1073,18 +1066,8 @@ end:
 }
 
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-static guint figure_histories(void)
-{
-	return HIST_DISPLAY_PERSISTENT | HIST_DISPLAY_NORMAL;
-}
 
-/***************************************************************************/
-
-static void show_history_menu(guint histno, guint mouse_button, guint32 activate_time)
+static void show_history_menu(guint mouse_button, guint32 activate_time)
 {
 	if (activate_time == GDK_CURRENT_TIME)
 		activate_time = gtk_get_current_event_time();
@@ -1093,7 +1076,6 @@ static void show_history_menu(guint histno, guint mouse_button, guint32 activate
 	if (!query)
 		return;
 
-	query->histno = histno;
 	query->mouse_button = mouse_button;
 	query->activate_time = activate_time;
 
@@ -1182,7 +1164,7 @@ static void  show_main_menu(GtkStatusIcon *status_icon, guint button, guint acti
 /* Called when status icon is left-clicked */
 static void status_icon_clicked(GtkStatusIcon *status_icon, gpointer user_data)
 {
-  show_history_menu(figure_histories(), 1, GDK_CURRENT_TIME);
+  show_history_menu(1, GDK_CURRENT_TIME);
 }
 /***************************************************************************/
 /** .
@@ -1203,12 +1185,12 @@ static void setup_icon( void )
 
 void on_history_hotkey(char *keystring, gpointer user_data)
 {
-  show_history_menu(figure_histories(), 0, GDK_CURRENT_TIME);
+	show_history_menu(0, GDK_CURRENT_TIME);
 }
 
 void on_menu_hotkey(char *keystring, gpointer user_data)
 {
-  show_main_menu(status_icon, 0, 0, NULL);
+	show_main_menu(status_icon, 0, 0, NULL);
 }
 
 
