@@ -55,7 +55,6 @@ void history_add_text_item(gchar * text, gint flags);
 
 void truncate_history();
 
-gpointer get_last_item();
 void clear_history(void);
 
 void history_save_as(GtkMenuItem *menu_item, gpointer user_data);

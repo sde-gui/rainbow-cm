@@ -332,24 +332,6 @@ void truncate_history()
         save_history();
 }
 
-/* Returns pointer to last item in history */
-gpointer get_last_item()
-{
-  if (history_list)
-  {
-    if (history_list->data)
-    {
-      /* Return the last element */
-      gpointer last_item = history_list->data;
-      return last_item;
-    }
-    else
-      return NULL;
-  }
-  else
-    return NULL;
-}
-
 /***************************************************************************/
 
 void clear_history(void)
