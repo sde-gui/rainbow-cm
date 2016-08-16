@@ -222,22 +222,6 @@ void pref_mapper (struct pref2int *m, int mode)
 	
 }
 /***************************************************************************/
-/** .
-\n\b Arguments: pointer of widget
-\n\b Returns: Structure of item
-****************************************************************************/
-struct pref_item* get_pref_by_widget(GtkWidget *w)
-{
-	int i;
-	for (i=0;NULL != myprefs[i].desc; ++i){
-		if(NULL == myprefs[i].name)
-			continue;
-		if(w == myprefs[i].w)
-			return &myprefs[i];
-	}	
-	return &dummy[0];
-}
-/***************************************************************************/
 /** Find first item in section.
 \n\b Arguments:
 \n\b Returns: index into struct where found, or end of list
