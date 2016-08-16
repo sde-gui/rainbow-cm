@@ -1093,11 +1093,10 @@ static GtkWidget * create_main_menu(void)
 
 	/* Save History */
 	{
-		GtkWidget * menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Save History as..."));
+		GtkWidget * menu_item = gtk_image_menu_item_new_with_mnemonic(_("_Save History..."));
 		g_signal_connect((GObject*)menu_item, "activate", (GCallback)history_save_as, NULL);
 		gtk_widget_set_tooltip_text(menu_item,
-			_("Save History as a text file. "
-			  "Prepends xHIST_0000 to each entry. x is either P(persistent) or N (normal)"));
+			_("Save the clipboard history in a text file."));
 		gtk_menu_shell_append((GtkMenuShell*)menu, menu_item);
 	}
 
