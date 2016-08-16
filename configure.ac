@@ -31,6 +31,20 @@ AC_SUBST(parcellitelocaledir)
 # prefix=/usr
 
 # -------------------------------------------------------------------------------
+#
+# -------------------------------------------------------------------------------
+
+AC_ARG_ENABLE(more-warnings,
+    [AC_HELP_STRING([--enable-more-warnings],
+        [compile with -Wall -Wextra])],
+    [enable_more_warnings="${enableval}"],
+    [enable_more_warnings=no])
+
+if test "$enable_more_warnings" = "yes"; then
+    CPPFLAGS="$CPPFLAGS -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers"
+fi
+
+# -------------------------------------------------------------------------------
 # Checks for programs.
 # -------------------------------------------------------------------------------
 AC_PROG_CC()
