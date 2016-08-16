@@ -65,31 +65,6 @@ glong validate_utf8_text(gchar *text, glong len)
 	}
 	return len;
 }
-/***************************************************************************/
-/***************************************************************************/
-/** .
-\n\b Arguments:
-magic is what we are looking for, fmagic iw what we read from the file.
-\n\b Returns: history matched on match, -1 on erro, 0 if not found 
-****************************************************************************/
-int check_magic(gchar *fmagic)
-{
-	gint i, rtn;
-	gchar *magic=g_malloc0(2+HISTORY_MAGIC_SIZE);
-	if( NULL == magic) return -1;
-	for (i=0;NULL !=history_magics[i];++i){
-		memset(magic,0,HISTORY_MAGIC_SIZE);
-		memcpy(magic,history_magics[i],strlen(history_magics[i]));	
-		if(!memcmp(magic,fmagic,HISTORY_MAGIC_SIZE)){
-			rtn= i+1;	
-			goto done;
-		}
-	}
-	rtn=0;
-done:
-	g_free(magic);
-	return rtn;
-}
 
 /***************************************************************************/
 /** Reads history from ~/.local/share/<application>/history .
