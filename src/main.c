@@ -292,7 +292,7 @@ static void check_clipboards(void)
 		if (ptext || ctext) {
 			gchar * last = last_text;
 			if (last && g_strcmp0(ptext, ctext) != 0) {
-				last = strdup(last);
+				last = g_strdup(last);
 				update_clipboards(CLIPBOARD_ACTION_SET, last);
 				g_free(last);
 			}
