@@ -27,13 +27,6 @@ G_BEGIN_DECLS
 #define CLIP_TYPE_IMG        0x2
 #define CLIP_TYPE_PERSISTENT 0x4
 
-/**give us a genric struct for future expansion  */
-struct history_gen{ /**16 bytes, for overlay over res, below.  */
-	gint16 a;
-	gint16 b;
-	gint16 c;
-	gint16 d;
-}__attribute__((__packed__));
 struct history_item {
 	guint32 len; /**length of data item, MUST be first in structure  */
 	gint16 type; /**currently, text or image  */
