@@ -36,10 +36,6 @@ struct pref2int {
 	gchar *name;
 	int *val;
 };
-struct tool_flag {
-	int flag;
-	gchar *name;
-};
 
 /**for our mapper  */
 #define PM_INIT 0
