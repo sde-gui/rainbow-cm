@@ -19,8 +19,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-G_BEGIN_DECLS
 #include "parcellite.h"
+
+G_BEGIN_DECLS
+
 #define CONFIG_DIR  APP_PROG_NAME
 #define DATA_DIR    APP_PROG_NAME
 
