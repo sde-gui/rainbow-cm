@@ -28,10 +28,8 @@ extern GMutex *hist_lock;
 struct widget_info{
 	GtkWidget *menu; /**top level history list window  */
 	GtkWidget *item; /**item we are looking at  */
-	 GdkEventKey *event; /**event info where we filled this struct  */
+	GdkEventKey *event; /**event info where we filled this struct  */
 	gint index;      /**index into the array  */
-	gint tmp1;			 /**gp vars  */
-	gint tmp2;
 };
 /**keeps track of each menu item and the element it's created from.  */
 struct s_item_info {
