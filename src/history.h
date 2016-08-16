@@ -49,7 +49,7 @@ glong validate_utf8_text(gchar *text, glong len);
 
 void read_history();
 
-void save_history();
+void save_history(void);
 
 void history_add_text_item(gchar * text, gint flags);
 

@@ -163,50 +163,63 @@ done:
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-void save_history()
+void save_history(void)
 {
-  /* Check that the directory is available */
-  check_dirs();
-  /* Build file path */
-  gchar* history_path = g_build_filename(g_get_user_data_dir(), HISTORY_FILE0, NULL); 
-  /* Open the file for writing */
-  FILE* history_file = fopen(history_path, "wb");
-  
-  /* Check that it opened and begin write */
-  if (history_file)  {
-    GList* element;
-		gchar *magic=g_malloc0(2+HISTORY_MAGIC_SIZE);
-	  if( NULL == magic) return;
-		memcpy(magic,history_magics[HISTORY_VERSION-1],strlen(history_magics[HISTORY_VERSION-1]));	
-		fwrite(magic,HISTORY_MAGIC_SIZE,1,history_file);
-		g_mutex_lock(hist_lock);
-    /* Write each element to a binary file */
-    for (element = history_list; element != NULL; element = element->next) {
-		  struct history_item *c;
-			gint32 len;
-      /* Create new GString from element data, write its length (size)
-       * to file followed by the element data itself
-       */
-			c=(struct history_item *)element->data;
-			/**write total len  */
-			/**write total len  */
-			if(c->len >0){
-				len=c->len+sizeof(struct history_item)+4;
-				fwrite(&len,4,1,history_file);
-				fwrite(c,sizeof(struct history_item),1,history_file);
-				fwrite(c->text,c->len,1,history_file);	
-			}
-			
-    }
-		g_mutex_unlock(hist_lock);
-    /* Write 0 to indicate end of file */
-    gint end = 0;
-    fwrite(&end, 4, 1, history_file);
-    fclose(history_file);
-  }else{
-		g_fprintf(stderr,"Unable to open history file for save '%s'\n",history_path);
+	gchar* history_path = NULL;
+	FILE* history_file = NULL;
+
+	check_dirs();
+
+	g_mutex_lock(hist_lock);
+
+	history_path = g_build_filename(g_get_user_data_dir(), HISTORY_FILE0, NULL);
+	if (!history_path)
+	{
+		g_fprintf(stderr, "history_path is NULL\n");
+		goto end;
 	}
-	g_free(history_path);
+
+	history_file = fopen(history_path, "wb");
+	if (!history_file)
+	{
+		g_fprintf(stderr, "Unable to open history file '%s'\n", history_path);
+		goto end;
+	}
+
+	GList* element;
+	gchar * magic = g_malloc0(2+HISTORY_MAGIC_SIZE);
+	if (NULL == magic)
+		goto end;
+
+	memcpy(magic, history_magics[HISTORY_VERSION-1], strlen(history_magics[HISTORY_VERSION-1]));
+	fwrite(magic, HISTORY_MAGIC_SIZE, 1, history_file);
+
+	/* Write each element to a binary file */
+	for (element = history_list; element != NULL; element = element->next)
+	{
+		struct history_item *c;
+		gint32 len;
+
+		c = (struct history_item *) element->data;
+		if (c->len >0)
+		{
+			len = c->len + sizeof(struct history_item) + 4;
+			fwrite(&len, 4, 1, history_file);
+			fwrite(c, sizeof(struct history_item), 1, history_file);
+			fwrite(c->text, c->len, 1, history_file);
+		}
+	}
+
+	/* Write 0 to indicate end of file */
+	gint end = 0;
+	fwrite(&end, 4, 1, history_file);
+
+end:
+	if (history_file)
+		fclose(history_file);
+	if (history_path)
+		g_free(history_path);
+	g_mutex_unlock(hist_lock);
 }
 
 /***************************************************************************/
