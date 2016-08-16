@@ -16,3 +16,7 @@ EXTRA_DIST = \
 	intltool-extract.in
 
 ACLOCAL_AMFLAGS = -I m4
+
+cppcheck cppcheck-inconclusive cppcheck-check-config:
+	make -C src $@
+
