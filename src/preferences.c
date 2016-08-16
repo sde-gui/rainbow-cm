@@ -506,7 +506,7 @@ static void save_preferences()
   check_dirs();
   /* Save key to file */
   gchar* rc_file = g_build_filename(g_get_user_config_dir(), PREFERENCES_FILE, NULL);
-  g_file_set_contents(rc_file, g_key_file_to_data(rc_key, NULL, NULL), -1, NULL);
+  g_key_file_save_to_file(rc_key, rc_file, NULL);
   g_key_file_free(rc_key);
   g_free(rc_file);
 }
