@@ -75,60 +75,72 @@ Current scheme is to have the total zize of element followed by the type, then t
 void read_history ()
 {
 	size_t x;
-  /* Build file path */
-  gchar* history_path = g_build_filename(g_get_user_data_dir(),HISTORY_FILE0,NULL); 
-	gchar *magic=g_malloc0(2+HISTORY_MAGIC_SIZE);
-  /*g_printf("History file '%s'",history_path); */
-  /* Open the file for reading */
-  FILE* history_file = fopen(history_path, "rb");
-  g_free(history_path);
-  /* Check that it opened and begin read */
-  if (history_file)  {
-    /* Read the magic*/
-    guint32 size=1, end;
-		if (fread(magic,HISTORY_MAGIC_SIZE , 1, history_file) != 1){
+
+	gchar * history_path = g_build_filename(g_get_user_data_dir(),HISTORY_FILE0,NULL); 
+	gchar * magic = g_malloc0(2+HISTORY_MAGIC_SIZE);
+
+	FILE* history_file = fopen(history_path, "rb");
+	g_free(history_path);
+
+	if (history_file)
+	{
+		guint32 size=1, end;
+		if (fread(magic,HISTORY_MAGIC_SIZE , 1, history_file) != 1)
+		{
 			g_fprintf(stderr,"No magic! Assume no history.\n");
 			goto done;
 		}
-		if(dbg) g_printf("History Magic OK. Reading\n");
-    /* Continue reading until size is 0 */
+
+		if(dbg)
+			g_printf("History Magic OK. Reading\n");
+
 		g_mutex_lock(hist_lock);
-    while (size)   {
+
+	    while (size)
+		{
 			struct history_item *c;
 			if (fread(&size, 4, 1, history_file) != 1)
-       size = 0;
-			if(0 == size)
+				size = 0;
+			if (0 == size)
 				break;
-      /* Malloc according to the size of the item */
-      c = (struct history_item *)g_malloc0(size+ 1);
-			end=size-(sizeof(struct history_item)+4);
-      
-      if (fread(c, sizeof(struct history_item), 1, history_file) !=1)
-      	g_fprintf(stderr,"history_read: Invalid type!");
-			if(c->len != end)
+			/* Malloc according to the size of the item */
+			c = (struct history_item *)g_malloc0(size + 1);
+			end = size-(sizeof(struct history_item) + 4);
+
+			if (fread(c, sizeof(struct history_item), 1, history_file) !=1)
+				g_fprintf(stderr,"history_read: Invalid type!");
+
+			if (c->len != end)
 				g_fprintf(stderr,"len check: invalid: ex %d got %d\n",end,c->len);
+
 			/* Read item and add ending character */
-			if ((x =fread(&c->text,end,1,history_file)) != 1){
+			if ((x =fread(&c->text,end,1,history_file)) != 1)
+			{
 				c->text[end] = 0;
 				g_fprintf(stderr,"history_read: Invalid text, code %ld!\n'%s'\n",(unsigned long)x,c->text);
-			}	else {
+			}
+			else
+			{
 				c->text[end] = 0;
 				c->len=validate_utf8_text(c->text,c->len);
-				if(dbg) g_fprintf(stderr,"len %d type %d '%s'\n",c->len,c->type,c->text); 
-				if(0 != c->len) /* Prepend item and read next size */
-	      	history_list = g_list_prepend(history_list, c);
-				else g_free(c);
+				if(dbg)
+					g_fprintf(stderr,"len %d type %d '%s'\n",c->len,c->type,c->text);
+				if (0 != c->len) /* Prepend item and read next size */
+			      	history_list = g_list_prepend(history_list, c);
+				else
+					g_free(c);
 			}
-      
-    }
+	    }
+
 done:
 		g_free(magic);
-    /* Close file and reverse the history to normal */
-    fclose(history_file);
-    history_list = g_list_reverse(history_list);
+		fclose(history_file);
+		history_list = g_list_reverse(history_list);
 		g_mutex_unlock(hist_lock);
-  }
-	if(dbg) g_printf("History read done\n");
+	}
+
+	if(dbg)
+		g_printf("History read done\n");
 }
 
 /* Saves history to ~/.local/share/<application>/history */
