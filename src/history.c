@@ -84,6 +84,8 @@ void read_history ()
 
 	if (history_file)
 	{
+		g_mutex_lock(hist_lock);
+
 		guint32 size=1, end;
 		if (fread(magic,HISTORY_MAGIC_SIZE , 1, history_file) != 1)
 		{
@@ -93,8 +95,6 @@ void read_history ()
 
 		if(dbg)
 			g_printf("History Magic OK. Reading\n");
-
-		g_mutex_lock(hist_lock);
 
 	    while (size)
 		{
