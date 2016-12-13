@@ -1250,7 +1250,6 @@ int main(int argc, char *argv[])
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	textdomain(GETTEXT_PACKAGE);
 
-	/* Initiate GTK+ */
 	gtk_init(&argc, &argv);
 
 	history_text_casefold_key = g_strdup_printf("Parcellite history_text_casefold_key %x%x",
@@ -1262,28 +1261,22 @@ int main(int argc, char *argv[])
 
 	read_preferences();
 
-  /* Parse options */
-	opts=parse_options(argc, argv);
-  if(NULL == opts)
-   	return 1;
-	if(opts->exit)
+	opts = parse_options(argc, argv);
+	if (!opts)
+		return 1;
+	if (opts->exit)
 		return 0;
 
-  /* Init Parcellite */
-  parcellite_init();
-  /*g_printf("Start main loop\n"); */
-  /* Run GTK+ loop */
-  gtk_main();
+	parcellite_init();
+	gtk_main();
 
-  /* Unbind keys */
-  keybinder_unbind(get_pref_string("history_key"), on_history_hotkey);
-  keybinder_unbind(get_pref_string("menu_key"), on_menu_hotkey);
-  /* Cleanup */
-	/**  
-  g_free(prefs.history_key);
-  g_free(prefs.menu_key);
+	keybinder_unbind(get_pref_string("history_key"), on_history_hotkey);
+	keybinder_unbind(get_pref_string("menu_key"), on_menu_hotkey);
+	/*
+	g_free(prefs.history_key);
+	g_free(prefs.menu_key);
 	*/
-  g_list_free(history_list);
-  /* Exit */
-  return 0;
+	g_list_free(history_list);
+
+	return 0;
 }
