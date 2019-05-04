@@ -3,6 +3,7 @@
 # -------------------------------------------------------------------------------
 AC_PREREQ(2.53)
 AC_INIT([rainbow-cm], 2.0.0-alpha)
+AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE
 
 #AC_CONFIG_MACRO_DIR([m4])
