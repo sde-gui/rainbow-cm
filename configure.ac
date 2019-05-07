@@ -2,7 +2,7 @@
 # Autoconf/automake.
 # -------------------------------------------------------------------------------
 AC_PREREQ(2.53)
-AC_INIT([rainbow-cm], 2.0.0-alpha)
+AC_INIT([rainbow-cm], 2.0.0-alpha, https://github.com/sde-gui/rainbow-cm)
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
