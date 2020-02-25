@@ -24,9 +24,6 @@ AM_GNU_GETTEXT([external])
 AC_SUBST([GETTEXT_PACKAGE], [rainbow-cm])
 AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], "$GETTEXT_PACKAGE", [Define to the gettext package name.])
 
-parcellitelocaledir='${prefix}/${DATADIRNAME}/locale'
-AC_SUBST(parcellitelocaledir)
-
 # -------------------------------------------------------------------------------
 # Main settings.
 # -------------------------------------------------------------------------------

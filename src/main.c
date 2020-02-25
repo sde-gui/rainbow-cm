@@ -1246,7 +1246,7 @@ int main(int argc, char *argv[])
 {
 	struct cmdline_opts *opts;
 	
-	bindtextdomain(GETTEXT_PACKAGE, PARCELLITELOCALEDIR);
+	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	textdomain(GETTEXT_PACKAGE);
 
