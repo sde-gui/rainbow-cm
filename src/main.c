@@ -57,7 +57,6 @@ static gchar * last_text = NULL; /**last text change, for either clipboard  */
 
 static GtkStatusIcon *status_icon=NULL; 
 GMutex *hist_lock=NULL;
-static int show_icon=0;
 
 static gchar * history_text_casefold_key = NULL;
 
@@ -1208,8 +1207,7 @@ static void parcellite_init(void)
 		g_fprintf(stderr,"g_thread not init!\n");
 	}
 	hist_lock= g_mutex_new();
-  
-  show_icon=!get_pref_int32("no_icon");
+
   /* Read history */
   if (get_pref_int32("save_history")){
 		gchar *x;
@@ -1238,7 +1236,7 @@ static void parcellite_init(void)
 		bind_itemkey(keylist[i].name,keylist[i].keyfunc);
   
   /* Create status icon */
-  if (show_icon)
+  if (!get_pref_int32("no_icon"))
   {
 		setup_icon();
   }
