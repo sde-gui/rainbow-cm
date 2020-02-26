@@ -9,7 +9,7 @@ DISTCLEANFILES = *.bak *.log *~ .deps/*.P
 rainbow_cm_SOURCES = main.c main.h \
                      utils.c utils.h \
                      rainbow-cm.h \
-                     parcellite-i18n.h\
+                     i18n.h \
                      history.c history.h \
                      keybinder.c keybinder.h \
                      preferences.c preferences.h \
