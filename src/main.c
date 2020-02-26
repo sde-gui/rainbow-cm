@@ -1259,7 +1259,8 @@ int main(int argc, char *argv[])
 
 	gtk_init(&argc, &argv);
 
-	history_text_casefold_key = g_strdup_printf("Parcellite history_text_casefold_key %x%x",
+	history_text_casefold_key = g_strdup_printf("%s history_text_casefold_key %x-%x",
+		APP_PROG_NAME,
 		(unsigned) g_random_int(), (unsigned) g_random_int());
 
 	/**this just maps to the static struct, prefs do not need to be loaded  */
