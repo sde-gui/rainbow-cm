@@ -27,7 +27,7 @@
 */ /************************************************************************
 */
 
-#include "parcellite.h"
+#include "rainbow-cm.h"
 /***************************************************************************/
 /** Get the underline on the given lable, or allocate new one.
 \n\b Arguments:

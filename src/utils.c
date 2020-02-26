@@ -19,7 +19,7 @@
  */
 
 
-#include "parcellite.h"
+#include "rainbow-cm.h"
 /**for our fifo interface  */
 #include <sys/types.h>
 #include <dirent.h> 

@@ -34,7 +34,7 @@
 #include <config.h>
 #endif
 
-#include "parcellite.h"
+#include "rainbow-cm.h"
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -438,7 +438,7 @@ static void clear_selected(GtkMenuItem *menu_item, gpointer user_data)
 		GTK_BUTTONS_OK_CANCEL,
 		_("Clear the history?"));
 
-	gtk_window_set_title((GtkWindow *) confirm_dialog, "Parcellite");
+	gtk_window_set_title((GtkWindow *) confirm_dialog, "Rainbow CM");
 
     if (gtk_dialog_run((GtkDialog *) confirm_dialog) != GTK_RESPONSE_OK) {
 		do_clear = 0;

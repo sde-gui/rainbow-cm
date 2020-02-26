@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parcellite.h"
+#include "rainbow-cm.h"
 #include <sys/wait.h>
 
 #define MAX_HISTORY 1000

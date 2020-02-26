@@ -21,7 +21,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "parcellite.h"
+#include "rainbow-cm.h"
 
 G_BEGIN_DECLS
 

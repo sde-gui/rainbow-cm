@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "parcellite.h"
+#include "rainbow-cm.h"
 
 
 /**This is now a gslist of   */

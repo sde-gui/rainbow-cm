@@ -17,8 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _PARCELLITE_H_
-#define _PARCELLITE_H_ 1
+
+#ifndef RAINBOW_CM_H
+#define RAINBOW_CM_H
+
 #include <glib.h>
 #include <glib/gprintf.h>
 #include <gtk/gtk.h>
@@ -36,5 +38,6 @@
 #include "keybinder.h"
 #include "parcellite-i18n.h"
 #include "attr_list.h"
-#endif
+
+#endif /* RAINBOW_CM_H */
 
