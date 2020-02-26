@@ -187,10 +187,6 @@ static GtkWidget * label_new_with_markup_and_mnemonic(const char * markup)
 
 /***************************************************************************/
 
-/** .
-\n\b Arguments:
-\n\b Returns: Structure of item
-****************************************************************************/
 struct pref_item* get_pref(char *name)
 {
 	int i;
@@ -202,11 +198,9 @@ struct pref_item* get_pref(char *name)
 	}	
 	return &dummy[0];
 }
+
 /***************************************************************************/
-/** Set an array that is updated every time the preferences are changed.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
 void pref_mapper (struct pref2int *m, int mode)
 {
 	int i;
@@ -220,11 +214,9 @@ void pref_mapper (struct pref2int *m, int mode)
 	}
 	
 }
+
 /***************************************************************************/
-/** Find first item in section.
-\n\b Arguments:
-\n\b Returns: index into struct where found, or end of list
-****************************************************************************/
+
 static int get_first_pref(int section)
 {
 	int i;
@@ -235,12 +227,10 @@ static int get_first_pref(int section)
 			
 	}	
 	return i;
-}                 
+}
+
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
 static int init_pref(void)
 {
 	GdkScreen *s;
@@ -258,11 +248,9 @@ static int init_pref(void)
 	align_hist_x.upper=sx-100;
 	return 0;
 }
+
 /***************************************************************************/
-/** get the char * value of string.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
 static GtkWidget *get_pref_widget (char *name)
 {
 	struct pref_item *p=get_pref(name);
@@ -270,11 +258,9 @@ static GtkWidget *get_pref_widget (char *name)
 		return dummy[0].w;
 	return p->w;
  }
+
 /***************************************************************************/
-/** Set the int value of name.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
 int set_pref_int32(char *name, gint32 val)
 {
 	struct pref_item *p=get_pref(name);
@@ -286,10 +272,7 @@ int set_pref_int32(char *name, gint32 val)
 }
 
 /***************************************************************************/
-/** get the int value of name.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
 gint32 get_pref_int32 (char *name)
 {
 	struct pref_item *p=get_pref(name);
@@ -297,11 +280,9 @@ gint32 get_pref_int32 (char *name)
 		return -1;
 	return p->val;
 }
+
 /***************************************************************************/
-/** set the char *value of string.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
 int set_pref_string (char *name, char *string)
 {
 	struct pref_item *p=get_pref(name);
@@ -314,10 +295,7 @@ int set_pref_string (char *name, char *string)
 }
 
 /***************************************************************************/
-/** get the char * value of string.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
 gchar *get_pref_string (char *name)
 {
 	struct pref_item *p=get_pref(name);
@@ -327,10 +305,7 @@ gchar *get_pref_string (char *name)
  }
 
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
 void unbind_itemkey(char *name, void *fhk )
 {
 	
@@ -345,10 +320,7 @@ void unbind_itemkey(char *name, void *fhk )
 }
 
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
 void bind_itemkey(char *name, void (fhk)(char *, gpointer) )
 {
 	struct pref_item *p=get_pref(name);
@@ -359,13 +331,9 @@ void bind_itemkey(char *name, void (fhk)(char *, gpointer) )
 		keybinder_bind(p->cval, fhk, NULL);
 }
 
-
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-void set_key_entry(gchar *name, gchar *val)
+
+static void set_key_entry(gchar *name, gchar *val)
 {
 	int i;
 	for (i=0;NULL != keylist[i].name; ++i){
@@ -380,11 +348,8 @@ void set_key_entry(gchar *name, gchar *val)
 }
 
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-void set_keys_from_prefs( void )
+
+static void set_keys_from_prefs(void)
 {
 	int i,l;
 	for (i=0;NULL != keylist[i].name; ++i){
@@ -410,12 +375,9 @@ void set_keys_from_prefs( void )
 	}	
 	
 }
+
 /***************************************************************************/
-/** .
-\n\b Arguments:
-mode - if 0, do not display helper missing dialog.
-\n\b Returns:
-****************************************************************************/
+
 static void check_sanity(void)
 {
 	gint32 x;
@@ -471,10 +433,7 @@ static void apply_preferences()
 
 
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
 static void save_preferences()
 {
 	int i;
@@ -587,11 +546,8 @@ static void check_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 }
 
 /***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
-int update_pref_widgets( void)
+
+static int update_pref_widgets(void)
 {
 	int i,rtn=0;
 	for (i=0;NULL !=myprefs[i].desc; ++i){
@@ -650,12 +606,8 @@ static void label_pair_from_markup(const gchar * markup, GtkWidget ** p_label1, 
 }
 
 /***************************************************************************/
-/** .
-\n\b Arguments:
-section is the section to add, parent is the box to put it in.
-\n\b Returns: -1 on error;
-****************************************************************************/
-int add_section(int sec, GtkWidget *parent)
+
+static int add_section(int sec, GtkWidget *parent)
 {
 	int i,rtn=0;
 	int single_st, single_is;
@@ -810,10 +762,10 @@ void show_preferences(gint tab)
 	init_pref();
   
   /* Create the dialog */
-  GtkWidget* dialog = gtk_dialog_new_with_buttons(_("Preferences"),     NULL,
-                                                   (GTK_DIALOG_MODAL  + GTK_DIALOG_NO_SEPARATOR),
-                                                    GTK_STOCK_CANCEL,   GTK_RESPONSE_REJECT,
-                                                    GTK_STOCK_OK,       GTK_RESPONSE_ACCEPT, NULL);
+  GtkWidget* dialog = gtk_dialog_new_with_buttons(_("Preferences"),    NULL,
+                                                   (GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR),
+                                                    GTK_STOCK_CANCEL,  GTK_RESPONSE_REJECT,
+                                                    GTK_STOCK_OK,      GTK_RESPONSE_ACCEPT, NULL);
   
   gtk_window_set_icon((GtkWindow*)dialog, gtk_widget_render_icon(dialog, GTK_STOCK_PREFERENCES, -1, NULL));
   gtk_window_set_resizable((GtkWindow*)dialog, FALSE);
