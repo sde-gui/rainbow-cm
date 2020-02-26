@@ -28,8 +28,8 @@ static gint dbg=0;
 #define HISTORY_MAGIC_SIZE 32
 #define HISTORY_VERSION     1 /**index (-1) into array below  */
 static gchar* history_magics[]={  
-																"1.0ParcelliteHistoryFile",
-																NULL,
+	"1.0RainbowCMHistoryFile",
+	NULL,
 };
 
 #define HISTORY_FILE0 HISTORY_FILE
