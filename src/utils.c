@@ -63,7 +63,6 @@ void check_dirs( void )
 				GError *e=NULL;
 				GFile *src=g_file_new_for_path(sysrc);
 				GFile *dst=g_file_new_for_path(rc_file);
-				g_fprintf(stderr,"Using parcelliterc from '%s', place in '%s'\n",sysrc,rc_file);
 				if(FALSE ==g_file_copy(src,dst,G_FILE_COPY_NONE,NULL,NULL,NULL,&e)){
 					g_fprintf(stderr,"Failed to copy. %s\n",e->message);
 				}

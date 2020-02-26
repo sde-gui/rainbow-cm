@@ -1194,9 +1194,9 @@ void on_menu_hotkey(char *keystring, gpointer user_data)
 	show_main_menu(status_icon, 0, 0, NULL);
 }
 
+/******************************************************************************/
 
-/* Startup calls and initializations */
-static void parcellite_init(void)
+static void application_init(void)
 {
 	int i;
 
@@ -1275,7 +1275,7 @@ int main(int argc, char *argv[])
 	if (opts->exit)
 		return 0;
 
-	parcellite_init();
+	application_init();
 	gtk_main();
 
 	keybinder_unbind(get_pref_string("history_key"), on_history_hotkey);

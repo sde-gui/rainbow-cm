@@ -474,11 +474,7 @@ static void save_preferences()
 
 
 /***************************************************************************/
-/** Read the parcelliterc file.
-\n\b Arguments:
-mode - 0 to not display missing helper warnings 
-\n\b Returns:
-****************************************************************************/
+
 void read_preferences(void)
 {
 	gchar *c,*rc_file = g_build_filename(g_get_user_config_dir(), PREFERENCES_FILE, NULL);
