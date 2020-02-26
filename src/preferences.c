@@ -100,80 +100,80 @@ static gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY};
 static struct pref_item myprefs[]={
 /**Behaviour  */	
 	/**Clipboards  */
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_CLIP,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Clipboard Management</b>",.tip=NULL,.val=0}, 
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_CLIP,.name=NULL,.type=PREF_TYPE_FRAME,.desc=N_("<b>Clipboard Management</b>"),.tip=NULL,.val=0},
 	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
 	 .name="enabled",.type=PREF_TYPE_TOGGLE,
-	 .desc="<b>Clipboard Managment _Enabled</b>",
-	 .tip="When unchecked, fully disables clipboard managment and clipboard tracking.\n\nThis option is useful to temporarely disable the Rainbow Clipboard Manager, if you encounter a conflict between the Manager and another application, or if you copy and paste confidential information that should not be visible in the clipboard history.",
+	 .desc=N_("<b>Clipboard Managment _Enabled</b>"),
+	 .tip=N_("When unchecked, fully disables clipboard managment and clipboard tracking.\n\nThis option is useful to temporarely disable the Rainbow Clipboard Manager, if you encounter a conflict between the Manager and another application, or if you copy and paste confidential information that should not be visible in the clipboard history."),
 	 .val=TRUE},
 	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
 	 .name="track_clipboard_selection",.type=PREF_TYPE_TOGGLE,
-	 .desc="Track the history of the <b>C_lipboard</b> buffer",
-	 .tip="If checked, Rainbow CM keeps track of changes in the clipboard (X11 CLIPBOARD SELECTION).",
+	 .desc=N_("Track the history of the <b>C_lipboard</b> buffer"),
+	 .tip=N_("If checked, Rainbow CM keeps track of changes in the clipboard (X11 CLIPBOARD SELECTION)."),
 	 .val=TRUE},
 	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
 	 .name="track_primary_selection",.type=PREF_TYPE_TOGGLE,
-	 .desc="Track the history of the <b>_Selected Text</b> buffer",
-	 .tip="If checked, Rainbow CM keeps track of changes in the selected text (X11 PRIMARY SELECTION).",
+	 .desc=N_("Track the history of the <b>_Selected Text</b> buffer"),
+	 .tip=N_("If checked, Rainbow CM keeps track of changes in the selected text (X11 PRIMARY SELECTION)."),
 	 .val=FALSE},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_CLIP,
 	 .name="synchronize",.type=PREF_TYPE_TOGGLE,
-	 .desc="Synchroni_ze clipboards",
-	 .tip="If checked, Rainbow CM forces the both buffers to keep the same data.",
+	 .desc=N_("Synchroni_ze clipboards"),
+	 .tip=N_("If checked, Rainbow CM forces the both buffers to keep the same data."),
 	 .val=DEF_SYNCHRONIZE},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_CLIP,
 	.name="restore_empty",.type=PREF_TYPE_TOGGLE,
-	.desc="Restore the contents of the e_mpty clipboard.",
-	.tip="Restore the contents of the clipboard when it gets empty.\n\nThe clipboard typically gets empty when an application that has held the clipboard contents is closed.",
+	.desc=N_("Restore the contents of the e_mpty clipboard."),
+	.tip=N_("Restore the contents of the clipboard when it gets empty.\n\nThe clipboard typically gets empty when an application that has held the clipboard contents is closed."),
 	.val=1},
 
   /**History  */	
-  {.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_HIST,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>History</b>",.tip=NULL,.val=0},
-  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="save_history",.type=PREF_TYPE_TOGGLE,.desc="Sa_ve history across sessions",.tip="Keep history in a file across sessions.",.val=DEF_SAVE_HISTORY},
-	{.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="history_limit",.type=PREF_TYPE_SPIN,.desc="History limit: {{}} entries",.tip="Maximum number of clipboard entries to keep",.val=DEF_HISTORY_LIMIT},
+  {.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_HIST,.name=NULL,.type=PREF_TYPE_FRAME,.desc=N_("<b>History</b>"),.tip=NULL,.val=0},
+  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="save_history",.type=PREF_TYPE_TOGGLE,.desc=N_("Sa_ve history across sessions"),.tip=N_("Keep history in a file across sessions."),.val=DEF_SAVE_HISTORY},
+	{.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="history_limit",.type=PREF_TYPE_SPIN,.desc=N_("History limit: {{}} entries"),.tip=N_("Maximum number of clipboard entries to keep"),.val=DEF_HISTORY_LIMIT},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
 
   /**Miscellaneous  */  
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Filtering</b>",.tip=NULL,.val=0},
-		{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc="Ignore whitespace strings",.tip="Ignore any clipboard data that contain only whitespace characters (space, tab, new line etc)."},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name=NULL,.type=PREF_TYPE_FRAME,.desc=N_("<b>Filtering</b>"),.tip=NULL,.val=0},
+		{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc=N_("Ignore whitespace strings"),.tip=N_("Ignore any clipboard data that contain only whitespace characters (space, tab, new line etc).")},
 	
 
 	/* Popup Page */
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_POPUP,.name=NULL,.type=PREF_TYPE_FRAME,
-	 .desc="<b>Settings of the History menu</b>",
+	 .desc=N_("<b>Settings of the History menu</b>"),
 	 .tip=NULL,.val=0
 	},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_POPUP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_POPUP,
 	 .name="type_search",.type=PREF_TYPE_TOGGLE,
-	 .desc="Search _As You Type",
-	 .tip="Enables Instant Search in the History menu.\n\nType a word when the History menu is shown to see only the entries that contains this word."
+	 .desc=N_("Search _As You Type"),
+	 .tip=N_("Enables Instant Search in the History menu.\n\nType a word when the History menu is shown to see only the entries that contains this word.")
 	},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_POPUP,
 	 .name="display_nonprinting_characters",.type=PREF_TYPE_TOGGLE,
-	 .desc="Display _non-printing characters",
-	 .tip="Enables displaying of non-printing characters:\n\n"
+	 .desc=N_("Display _non-printing characters"),
+	 .tip=N_("Enables displaying of non-printing characters:\n\n"
 	  "The horizontal tab character: → (rightwards arrow).\n"
 	  "The space character: ␣ (open box).\n"
-	  "The new line character: ¶ (paragraph sign).",
+	  "The new line character: ¶ (paragraph sign)."),
 	 .val=FALSE
 	},
 	{.adj=&align_line_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_POPUP,
 	 .name="item_length",.type=PREF_TYPE_SPIN,
-	 .desc="_Limit the History menu width to {{}} characters",
+	 .desc=N_("_Limit the History menu width to {{}} characters"),
 	 .tip=NULL,
 	 .val=DEF_ITEM_LENGTH},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_POPUP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,
 	 .name="ellipsize",.type=PREF_TYPE_COMBO,
-	 .desc="Omit characters in the:",
+	 .desc=N_("Omit characters in the:"),
 	 .tip=NULL,
 	 .val=DEF_ELLIPSIZE
 	},
 
 /**hotkeys  */
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc="Men_u key combination",.tip=NULL},	
-  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="history_key",.type=PREF_TYPE_ENTRY,.desc="_History key combination:",.tip=NULL},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc=N_("Men_u key combination"),.tip=NULL},	
+  {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_ACT,.name="history_key",.type=PREF_TYPE_ENTRY,.desc=N_("_History key combination:"),.tip=NULL},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name="no_icon",.val=FALSE},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name=NULL,.desc=NULL},
 };
@@ -629,7 +629,7 @@ static int add_section(int sec, GtkWidget *parent)
 					myprefs[i].w= gtk_frame_new(NULL);
 				  gtk_frame_set_shadow_type((GtkFrame*)	myprefs[i].w, GTK_SHADOW_NONE);
 				  label = gtk_label_new(NULL);							/**<b>myprefs[i].desc  */
-				  gtk_label_set_markup((GtkLabel*)label, myprefs[i].desc);
+				  gtk_label_set_markup((GtkLabel*)label, _(myprefs[i].desc));
 				  gtk_frame_set_label_widget((GtkFrame*)	myprefs[i].w, label);
 				  alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
 				  gtk_alignment_set_padding((GtkAlignment*)alignment, 12, 0, 12, 0);
