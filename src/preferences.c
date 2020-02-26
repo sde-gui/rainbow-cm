@@ -98,7 +98,7 @@ static gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY};
 static struct pref_item myprefs[]={
 /**Behaviour  */	
 	/**Clipboards  */
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_CLIP,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Clipboards</b>",.tip=NULL,.val=0}, 
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_CLIP,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Clipboard Management</b>",.tip=NULL,.val=0}, 
 	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
 	 .name="enabled",.type=PREF_TYPE_TOGGLE,
 	 .desc="<b>Clipboard Managment _Enabled</b>",
@@ -106,34 +106,34 @@ static struct pref_item myprefs[]={
 	 .val=TRUE},
 	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
 	 .name="track_clipboard_selection",.type=PREF_TYPE_TOGGLE,
-	 .desc="Track the history of the C_lipboard",
-	 .tip="If checked, Rainbow watches for changes in the Clipboard (X11 CLIPBOARD SELECTION) and saves them in the history.",
+	 .desc="Track the history of the <b>C_lipboard</b> buffer",
+	 .tip="If checked, Rainbow CM keeps track of changes in the clipboard (X11 CLIPBOARD SELECTION).",
 	 .val=TRUE},
 	{.adj=NULL,.cval=NULL,.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
 	 .name="track_primary_selection",.type=PREF_TYPE_TOGGLE,
-	 .desc="Track the history of the _selected text",
-	 .tip="If checked, Rainbow watches for changes of the selected text (X11 PRIMARY SELECTION) and saves them in the history.",
+	 .desc="Track the history of the <b>_Selected Text</b> buffer",
+	 .tip="If checked, Rainbow CM keeps track of changes in the selected text (X11 PRIMARY SELECTION).",
 	 .val=FALSE},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_CLIP,
 	 .name="synchronize",.type=PREF_TYPE_TOGGLE,
 	 .desc="Synchroni_ze clipboards",
-	 .tip="If checked, will keep both clipboards with the same content. If primary is pasted, then copy will have the same data.",
+	 .tip="If checked, Rainbow CM forces the both buffers to keep the same data.",
 	 .val=DEF_SYNCHRONIZE},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_CLIP,
 	.name="restore_empty",.type=PREF_TYPE_TOGGLE,
 	.desc="Restore the contents of the e_mpty clipboard.",
-	.tip="Restore the contents of the clipboard when it gets empty.\n\nThe clipboard typically gets empty when an apllication that has held the clipboard contents is closed.",
+	.tip="Restore the contents of the clipboard when it gets empty.\n\nThe clipboard typically gets empty when an application that has held the clipboard contents is closed.",
 	.val=1},
 
   /**History  */	
   {.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_HIST,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>History</b>",.tip=NULL,.val=0},
   {.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="save_history",.type=PREF_TYPE_TOGGLE,.desc="Sa_ve history across sessions",.tip="Keep history in a file across sessions.",.val=DEF_SAVE_HISTORY},
-	{.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="history_limit",.type=PREF_TYPE_SPIN,.desc="_Remember the last {{}} clipboards",.tip="Maximum number of clipboard entries to keep",.val=DEF_HISTORY_LIMIT},
+	{.adj=&align_hist_lim,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="history_limit",.type=PREF_TYPE_SPIN,.desc="History limit: {{}} entries",.tip="Maximum number of clipboard entries to keep",.val=DEF_HISTORY_LIMIT},
 	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_HIST,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
 
   /**Miscellaneous  */  
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Miscellaneous</b>",.tip=NULL,.val=0},
-		{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc="Ignore _Whitespace Only",.tip="If checked, will ignore any clipboard additions that contain only whitespace."},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.sfunc=NULL,.sec=PREF_SEC_MISC,.name=NULL,.type=PREF_TYPE_FRAME,.desc="<b>Filtering</b>",.tip=NULL,.val=0},
+		{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_MISC,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc="Ignore whitespace strings",.tip="Ignore any clipboard data that contain only whitespace characters (space, tab, new line etc)."},
 	
 
 	/* Popup Page */
