@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Parcellite\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-27 01:20+0700\n"
-"PO-Revision-Date: 2020-02-27 01:28+0700\n"
+"POT-Creation-Date: 2020-02-27 01:38+0700\n"
+"PO-Revision-Date: 2020-02-27 01:56+0700\n"
 "Last-Translator: Vadim Ushakov <igeekless@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -127,6 +127,166 @@ msgid ""
 "Report bugs to <igeekless@gmail.com>."
 msgstr ""
 
+#. *Behaviour
+#. *Clipboards
+#: ../src/preferences.c:103
+msgid "<b>Clipboard Management</b>"
+msgstr "<b>Управление буфером обмена</b>"
+
+#: ../src/preferences.c:106
+msgid "<b>Clipboard Managment _Enabled</b>"
+msgstr "<b>В_ключить управление буфером обмена</b>"
+
+#: ../src/preferences.c:107
+msgid ""
+"When unchecked, fully disables clipboard managment and clipboard tracking.\n"
+"\n"
+"This option is useful to temporarely disable the Rainbow Clipboard Manager, "
+"if you encounter a conflict between the Manager and another application, or "
+"if you copy and paste confidential information that should not be visible in "
+"the clipboard history."
+msgstr ""
+"Когда выключено, полностью отключает управление буфером обмена и "
+"отслеживание истории.\n"
+"\n"
+"Эта опция может быть полезна, чтобы временно отключить Rainbow CM, если вы "
+"обнаружили конфликт между менеджером буфера обмена и другим приложением, или "
+"если вы копируете конфиденциальную информацию, которая не должна "
+"отображаться в истории."
+
+#: ../src/preferences.c:111
+msgid "Track the history of the <b>C_lipboard</b> buffer"
+msgstr "Отслеживать историю буфера <b>обмена</b>"
+
+#: ../src/preferences.c:112
+msgid ""
+"If checked, Rainbow CM keeps track of changes in the clipboard (X11 "
+"CLIPBOARD SELECTION)."
+msgstr ""
+"Если включено, Rainbow CM отслеживает изменения в буфере обмена (X11 "
+"CLIPBOARD SELECTION)."
+
+#: ../src/preferences.c:116
+msgid "Track the history of the <b>_Selected Text</b> buffer"
+msgstr "Отслеживать историю буфера <b>выделенного текста</b>"
+
+#: ../src/preferences.c:117
+msgid ""
+"If checked, Rainbow CM keeps track of changes in the selected text (X11 "
+"PRIMARY SELECTION)."
+msgstr ""
+"Если включено, Rainbow CM отслеживает изменения в буфере выделенного текста "
+"(X11 PRIMARY SELECTION)."
+
+#: ../src/preferences.c:121
+msgid "Synchroni_ze clipboards"
+msgstr "Синхронизаци_я буферов обмена"
+
+#: ../src/preferences.c:122
+msgid "If checked, Rainbow CM forces the both buffers to keep the same data."
+msgstr ""
+"Если включено, Rainbow CM автоматически копирует данные между двумя буферами."
+
+#: ../src/preferences.c:126
+msgid "Restore the contents of the e_mpty clipboard."
+msgstr "Посстанавливать содержимое пустого буфера обмена"
+
+#: ../src/preferences.c:127
+msgid ""
+"Restore the contents of the clipboard when it gets empty.\n"
+"\n"
+"The clipboard typically gets empty when an application that has held the "
+"clipboard contents is closed."
+msgstr ""
+"Восстанавливать содержимое, когда буфер бмена становится пуст.\n"
+"\n"
+"Обычно это происходит, когда приложение, поместившее в буфер обмена данные, "
+"закрывается."
+
+#. *History
+#: ../src/preferences.c:131
+msgid "<b>History</b>"
+msgstr "<b>История</b>"
+
+#: ../src/preferences.c:132
+msgid "Sa_ve history across sessions"
+msgstr "Сохранять историю буфера обмена между сеансами"
+
+#: ../src/preferences.c:132
+msgid "Keep history in a file across sessions."
+msgstr "Хранить историю буфера обмена в файле между перезапусками программы."
+
+#: ../src/preferences.c:133
+msgid "History limit: {{}} entries"
+msgstr "Длина истории: {{}} записей"
+
+#: ../src/preferences.c:133
+msgid "Maximum number of clipboard entries to keep"
+msgstr "Макс. хранимое число записей буфера обмена"
+
+#. *Miscellaneous
+#: ../src/preferences.c:137
+msgid "<b>Filtering</b>"
+msgstr "<b>Фильтр</b>"
+
+#: ../src/preferences.c:138
+msgid "Ignore whitespace strings"
+msgstr "Игнорировать строки без видимых символов"
+
+#: ../src/preferences.c:138
+msgid ""
+"Ignore any clipboard data that contain only whitespace characters (space, "
+"tab, new line etc)."
+msgstr ""
+"Игнорировать данные в буфере обмена, состоящие из невидимых символов "
+"(пробел, перевод строки, табуляци и т.п.)."
+
+#: ../src/preferences.c:143
+msgid "<b>Settings of the History menu</b>"
+msgstr ""
+
+#: ../src/preferences.c:149
+msgid "Search _As You Type"
+msgstr "Искать по мере ввода"
+
+#: ../src/preferences.c:150
+msgid ""
+"Enables Instant Search in the History menu.\n"
+"\n"
+"Type a word when the History menu is shown to see only the entries that "
+"contains this word."
+msgstr ""
+
+#: ../src/preferences.c:154
+msgid "Display _non-printing characters"
+msgstr "Отображать непечатаемые символы"
+
+#: ../src/preferences.c:155
+msgid ""
+"Enables displaying of non-printing characters:\n"
+"\n"
+"The horizontal tab character: → (rightwards arrow).\n"
+"The space character: ␣ (open box).\n"
+"The new line character: ¶ (paragraph sign)."
+msgstr ""
+
+#: ../src/preferences.c:163
+msgid "_Limit the History menu width to {{}} characters"
+msgstr ""
+
+#: ../src/preferences.c:169
+msgid "Omit characters in the:"
+msgstr "Исключить элементы в:"
+
+#. *hotkeys
+#: ../src/preferences.c:175
+msgid "Men_u key combination"
+msgstr "Вызов основного меню"
+
+#: ../src/preferences.c:176
+msgid "_History key combination:"
+msgstr "Вызов истории буфера обмена"
+
 #. Create the dialog
 #: ../src/preferences.c:763
 msgid "Preferences"
@@ -191,9 +351,6 @@ msgstr "Менеджер буфера Rainbow"
 
 #~ msgid "Behavior"
 #~ msgstr "Поведение"
-
-#~ msgid "<b>History</b>"
-#~ msgstr "<b>История</b>"
 
 #~ msgid "<b>Items</b>"
 #~ msgstr "<b>Элементы</b>"
@@ -271,11 +428,13 @@ msgstr "Менеджер буфера Rainbow"
 #~ msgid "_History"
 #~ msgstr "_История"
 
-#~ msgid "History key combination:"
-#~ msgstr "Вызов истории "
-
-#~ msgid "If checked, does a search-as-you-type. Turns red if not found. Goes to top (Alt-E) line when no chars are entered for search"
-#~ msgstr "Если отмечено, поиск будет идти по мере набора. Если нет совпадений, становится красным. Переходит к верхней строке (Alt-E) если не введены буквы для поиска"
+#~ msgid ""
+#~ "If checked, does a search-as-you-type. Turns red if not found. Goes to "
+#~ "top (Alt-E) line when no chars are entered for search"
+#~ msgstr ""
+#~ "Если отмечено, поиск будет идти по мере набора. Если нет совпадений, "
+#~ "становится красным. Переходит к верхней строке (Alt-E) если не введены "
+#~ "буквы для поиска"
 
 #~ msgid "If checked, does case sensitive search"
 #~ msgstr "Если выбрано, поиск с учетом регистра"
@@ -283,53 +442,81 @@ msgstr "Менеджер буфера Rainbow"
 #~ msgid "If checked, edit the history item clicked on."
 #~ msgstr "Если выбрано, разрешено редактирование истории"
 
-#~ msgid "If checked, enables checking multiple concurrent user logic. Use if several different users are logged in at the same time."
-#~ msgstr "Если выбрано, включается многопользовательский режим. Используется если одновременно запущены программы от разных пользователей"
+#~ msgid ""
+#~ "If checked, enables checking multiple concurrent user logic. Use if "
+#~ "several different users are logged in at the same time."
+#~ msgstr ""
+#~ "Если выбрано, включается многопользовательский режим. Используется если "
+#~ "одновременно запущены программы от разных пользователей"
 
-#~ msgid "If checked, enables debug prints on clipboard update logic. This only takes effect when enabled at start up, and may be disabled at compile time."
-#~ msgstr "Если выбрано, включает режим отладки. Отладка будет включена при перезапуске программы, но возможно она отключена при компиляции"
+#~ msgid ""
+#~ "If checked, enables debug prints on clipboard update logic. This only "
+#~ "takes effect when enabled at start up, and may be disabled at compile "
+#~ "time."
+#~ msgstr ""
+#~ "Если выбрано, включает режим отладки. Отладка будет включена при "
+#~ "перезапуске программы, но возможно она отключена при компиляции"
 
 #~ msgid "If checked, enables the persistent history."
 #~ msgstr "Если выбрано, включается хранение истории"
 
-#~ msgid "If checked, places current clipboard entry at top of list. If not checked, history does not get sorted."
-#~ msgstr "Если выбрано, текущий буфер обмена показывается вверху списка. Если не выбрано, сортировка списка истории не производится"
+#~ msgid ""
+#~ "If checked, places current clipboard entry at top of list. If not "
+#~ "checked, history does not get sorted."
+#~ msgstr ""
+#~ "Если выбрано, текущий буфер обмена показывается вверху списка. Если не "
+#~ "выбрано, сортировка списка истории не производится"
 
-#~ msgid "If checked, puts the persistent history at the top of the history list."
+#~ msgid ""
+#~ "If checked, puts the persistent history at the top of the history list."
 #~ msgstr "Если выбрано, помещать записи истории вверху списка"
 
 #~ msgid "If checked, puts the persistent history in a new list."
 #~ msgstr "Если выбрано, помещать записи истории в новый список"
 
-#~ msgid "If checked, the current entry will be on the bottom instead of the top."
+#~ msgid ""
+#~ "If checked, the current entry will be on the bottom instead of the top."
 #~ msgstr "Если выбрано, текущая запись будет внизу а не в верху."
 
 #~ msgid "If checked, Use the clipboard, which is Ctrl-C, Ctrl-V"
 #~ msgstr "Если выбрано, использовать буфер обмена по Ctrl-C, Ctrl-V"
 
-#~ msgid "If checked, Use the primary clipboard (mouse highlight-copy, middle mouse button paste)"
-#~ msgstr "Если выбрано, использовать буфер обмена консоли (выделение мышью - копировать, средняя кнопка - вставить)"
+#~ msgid ""
+#~ "If checked, Use the primary clipboard (mouse highlight-copy, middle mouse "
+#~ "button paste)"
+#~ msgstr ""
+#~ "Если выбрано, использовать буфер обмена консоли (выделение мышью - "
+#~ "копировать, средняя кнопка - вставить)"
 
 #~ msgid "If checked, use X, Y to position the history list"
 #~ msgstr "Если выбрано, показывать список истории по координатам X и Y"
 
-#~ msgid "If checked, will display tabs with Right arrow (utf8,\\2192), newlines with pharagrph(\\204b), and spaces with square-u(\\2423)."
-#~ msgstr "Если выбрано, будут отображены вкладки со стрелкой вправо (utf8,\\2192), ввод строки с параграфом(\\204b), и пробелы с square-u(\\2423)."
+#~ msgid ""
+#~ "If checked, will display tabs with Right arrow (utf8,\\2192), newlines "
+#~ "with pharagrph(\\204b), and spaces with square-u(\\2423)."
+#~ msgstr ""
+#~ "Если выбрано, будут отображены вкладки со стрелкой вправо (utf8,\\2192), "
+#~ "ввод строки с параграфом(\\204b), и пробелы с square-u(\\2423)."
 
 #~ msgid "If checked, will emit the history entry via the keyboard entry."
-#~ msgstr "Если выбрано, будет создавать запись в истории посредством ввода с клавиатуры."
+#~ msgstr ""
+#~ "Если выбрано, будет создавать запись в истории посредством ввода с "
+#~ "клавиатуры."
 
-#~ msgid "If checked, will ignore any clipboard additions that contain only whitespace."
-#~ msgstr "Если выбрано, будут игнорироваться любые добавления в буфер обмена, которые содержат только пробелы."
-
-#~ msgid "If checked, will keep both clipboards with the same content. If primary is pasted, then copy will have the same data."
-#~ msgstr "Если выбрано, будет поддерживать в обоих буферах один контент. Если первый вставлен, тогда копия будет содержать те же данные."
+#~ msgid ""
+#~ "If checked, will keep both clipboards with the same content. If primary "
+#~ "is pasted, then copy will have the same data."
+#~ msgstr ""
+#~ "Если выбрано, будет поддерживать в обоих буферах один контент. Если "
+#~ "первый вставлен, тогда копия будет содержать те же данные."
 
 #~ msgid "If checked, will replace newlines with spaces."
 #~ msgstr "Если выбрано, ввод строки будет заменён пробелом."
 
 #~ msgid "If checked, will restore clipboard entry on application exit."
-#~ msgstr "Если выбрано, сохраняется состояние буфера обмена при выходе из приложения."
+#~ msgstr ""
+#~ "Если выбрано, сохраняется состояние буфера обмена при выходе из "
+#~ "приложения."
 
 #~ msgid "If checked, will trim whitespace from beginning and end of entry."
 #~ msgstr "Если выбрано, будут удалены пробелы в начале и в конце строки."
@@ -341,10 +528,8 @@ msgstr "Менеджер буфера Rainbow"
 #~ msgstr "Если выбрано, используется средняя кнопка мыши для вставки"
 
 #~ msgid "If checked, will use xdotool to paste wherever the mouse is."
-#~ msgstr "Если выбрано будет использован xdotool для вставки в место положения мыши."
-
-#~ msgid "Ignore Whitespace Only"
-#~ msgstr "Игнорировать только пробелы"
+#~ msgstr ""
+#~ "Если выбрано будет использован xdotool для вставки в место положения мыши."
 
 #~ msgid "Items in history:"
 #~ msgstr "Элементы в истории:"
@@ -361,20 +546,11 @@ msgstr "Менеджер буфера Rainbow"
 #~ msgid "Maximum data size of entire history list"
 #~ msgstr "Макс. размер для каждого списка истории"
 
-#~ msgid "Maximum number of clipboard entries to keep"
-#~ msgstr "Макс. хранимое число записей буфера обмена"
-
-#~ msgid "Menu key combination"
-#~ msgstr "Вызов основного меню"
-
 #~ msgid "Mouse"
 #~ msgstr "Мышь"
 
 #~ msgid "Multiuser"
 #~ msgstr "Многопользовательский режим"
-
-#~ msgid "Omit items in the:"
-#~ msgstr "Исключить элементы в:"
 
 #~ msgid "Paste All Entry Delimiter"
 #~ msgstr "Вставить разделитель всех записей"
@@ -415,11 +591,12 @@ msgstr "Менеджер буфера Rainbow"
 #~ msgid "Run as daemon"
 #~ msgstr "Запускать как службу"
 
-#~ msgid "Save History as a text file. Prepends xHIST_0000 to each entry. x is either P(persistent) or N (normal)"
-#~ msgstr "Хранить историю как простой текст. Разделитель xHIST_0000 для каждой записи. Где х это типа записи P(постоянная) или N (нормальная)"
-
-#~ msgid "Search As You Type"
-#~ msgstr "Искать по мере ввода"
+#~ msgid ""
+#~ "Save History as a text file. Prepends xHIST_0000 to each entry. x is "
+#~ "either P(persistent) or N (normal)"
+#~ msgstr ""
+#~ "Хранить историю как простой текст. Разделитель xHIST_0000 для каждой "
+#~ "записи. Где х это типа записи P(постоянная) или N (нормальная)"
 
 #~ msgid "Show in a single line"
 #~ msgstr "Показывать в одной строке."
@@ -429,9 +606,6 @@ msgstr "Менеджер буфера Rainbow"
 
 #~ msgid "> </span>"
 #~ msgstr "> </span>"
-
-#~ msgid "S_ynchronize clipboards"
-#~ msgstr "Синхронизация буферов обмена"
 
 #~ msgid ""
 #~ "This is the Action Name. \n"
@@ -467,7 +641,8 @@ msgstr "Менеджер буфера Rainbow"
 #~ "Вы должны получить копию Общей публичной лицензии\n"
 #~ "с этой программой. Если нет, см. <http://www.gnu.org/licenses/>.;"
 
-#~ msgid "This string will be inserted between each line of history for paste all."
+#~ msgid ""
+#~ "This string will be inserted between each line of history for paste all."
 #~ msgstr "Эта строка будет вставлена между каждой записью истории"
 
 #~ msgid "Trim Newlines"
@@ -482,8 +657,12 @@ msgstr "Менеджер буфера Rainbow"
 #~ msgid "Use _Copy (Ctrl-C)"
 #~ msgstr "Использовать _Копировать (Ctrl-C)"
 
-#~ msgid "Use %% if you want a literal %. See the man page for gnuC printf (man 2 printf) for more information."
-#~ msgstr "Используйте %% для символа %. См. справку по команде printf (man 2 printf) для подробной информации"
+#~ msgid ""
+#~ "Use %% if you want a literal %. See the man page for gnuC printf (man 2 "
+#~ "printf) for more information."
+#~ msgstr ""
+#~ "Используйте %% для символа %. См. справку по команде printf (man 2 "
+#~ "printf) для подробной информации"
 
 #~ msgid "Use _Primary (Selection)"
 #~ msgstr "_Использовать буфер выделения"
