@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Parcellite\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-27 10:12+0700\n"
-"PO-Revision-Date: 2020-02-27 10:14+0700\n"
+"PO-Revision-Date: 2020-02-27 12:46+0700\n"
 "Last-Translator: Vadim Ushakov <igeekless@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -183,7 +183,7 @@ msgstr ""
 
 #: ../src/preferences.c:126
 msgid "Restore the contents of the e_mpty clipboard."
-msgstr "Посстанавливать содержимое пустого буфера обмена"
+msgstr "Восстанавливать содержимое пустого буфера обмена"
 
 #: ../src/preferences.c:127
 msgid ""
