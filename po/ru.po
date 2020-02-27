@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Parcellite\n"
+"Project-Id-Version: Rainbow-cm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-27 10:12+0700\n"
 "PO-Revision-Date: 2020-02-27 12:46+0700\n"
@@ -46,7 +46,7 @@ msgstr "Rainbow CM"
 
 #: ../src/about.c:105
 msgid "Lightweight GTK+ clipboard manager."
-msgstr "Легковесный менеджер буфера обмена на основе GTK+."
+msgstr "Менеджер буфера обмена на основе GTK+."
 
 #: ../src/history.c:397
 msgid "Save Clipboard History"
@@ -183,7 +183,7 @@ msgstr ""
 
 #: ../src/preferences.c:126
 msgid "Restore the contents of the e_mpty clipboard."
-msgstr "Восстанавливать содержимое пустого буфера обмена"
+msgstr "Сохранять содержимое буфера обмена"
 
 #: ../src/preferences.c:127
 msgid ""
@@ -192,10 +192,10 @@ msgid ""
 "The clipboard typically gets empty when an application that has held the "
 "clipboard contents is closed."
 msgstr ""
-"Восстанавливать содержимое, когда буфер бмена становится пуст.\n"
+"Сохранять содержимое буфера, при закрытии приложения.\n"
 "\n"
-"Обычно это происходит, когда приложение, поместившее в буфер обмена данные, "
-"закрывается."
+"Содержимое буфера обмена будет сохранено даже если будет закрыто приложение "
+"поместившее в буфер обмена данные."
 
 #. *History
 #: ../src/preferences.c:131
@@ -237,7 +237,7 @@ msgstr ""
 
 #: ../src/preferences.c:143
 msgid "<b>Settings of the History menu</b>"
-msgstr ""
+msgstr "<b>Настройки истории буфера обмена<b>"
 
 #: ../src/preferences.c:149
 msgid "Search _As You Type"
@@ -250,6 +250,10 @@ msgid ""
 "Type a word when the History menu is shown to see only the entries that "
 "contains this word."
 msgstr ""
+"Включает поиск в истории по мере ввода.\n"
+"\n"
+"Начните вводить слово и в меню будет показаны записи содержащие "
+"данное слово."
 
 #: ../src/preferences.c:154
 msgid "Display _non-printing characters"
@@ -263,10 +267,15 @@ msgid ""
 "The space character: ␣ (open box).\n"
 "The new line character: ¶ (paragraph sign)."
 msgstr ""
+"Включает показ непечатаемых символов:\n"
+"\n"
+"Табуляция: → (стрелка вправо).\n"
+"Пробел: ␣ (open box).\n"
+"Начало абзаца: ¶ (paragraph sign)."
 
 #: ../src/preferences.c:163
 msgid "_Limit the History menu width to {{}} characters"
-msgstr ""
+msgstr "Ограничить ширину меню до {{}} символов"
 
 #: ../src/preferences.c:169
 msgid "Omit characters in the:"
