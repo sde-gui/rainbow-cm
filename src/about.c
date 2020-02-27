@@ -21,6 +21,10 @@
 #ifndef ABOUT_H
 #define ABOUT_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "about.h"
 #include "rainbow-cm.h"
 #include <gtk/gtk.h>
