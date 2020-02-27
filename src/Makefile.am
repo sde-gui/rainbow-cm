@@ -10,6 +10,7 @@ rainbow_cm_SOURCES = main.c main.h \
                      about.c about.h \
                      utils.c utils.h \
                      rainbow-cm.h \
+                     main-menu.c.h \
                      i18n.h \
                      history.c history.h \
                      keybinder.c keybinder.h \

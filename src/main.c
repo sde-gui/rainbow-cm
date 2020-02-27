@@ -415,65 +415,6 @@ static void history_item_right_click (struct history_info *h, GdkEventKey *e, gi
 	/*gtk_widget_grab_focus(menu);  */
 }
 
-static void on_save_history_menu_item_activated(GtkMenuItem *menu_item, gpointer user_data)
-{
-	history_save_as();
-}
-
-static void on_clear_history_menu_item_activated(GtkMenuItem *menu_item, gpointer user_data)
-{
-	int do_clear = 1;
-	GtkWidget * confirm_dialog = gtk_message_dialog_new(
-		NULL,
-		GTK_DIALOG_MODAL,
-		GTK_MESSAGE_QUESTION,
-		GTK_BUTTONS_OK_CANCEL,
-		_("Clear the history?"));
-
-	gtk_window_set_title((GtkWindow *) confirm_dialog, "Rainbow CM");
-
-    if (gtk_dialog_run((GtkDialog *) confirm_dialog) != GTK_RESPONSE_OK) {
-		do_clear = 0;
-	}
-	gtk_widget_destroy(confirm_dialog);
-
-	if (do_clear) {
-		struct history_info * h = (struct history_info *) user_data;
-		/* Clear history and free history-related variables */
-		remove_deleted_items(h); /**fix bug 92, Shift/ctrl right-click followed by clear segfaults/double free.  */	
-		clear_history();
-		/*g_printf("Clear hist done, h=%p, h->delete_list=%p\n",h, h->delete_list); */
-		update_clipboards(CLIPBOARD_ACTION_RESET, "");
-	}
-}
-
-static void on_enabled_menu_item_toggled(GtkCheckMenuItem * menu_item, gpointer user_data)
-{
-	set_pref_int32("enabled", gtk_check_menu_item_get_active(menu_item));
-}
-
-static void on_about_menu_item_activated(GtkMenuItem *menu_item, gpointer user_data)
-{
-	show_about_dialog();
-}
-
-static void on_preferences_menu_item_activated(GtkMenuItem *menu_item, gpointer user_data)
-{
-	/* FIXME: wrong way! */
-	/* This helps prevent multiple instances */
-	if (!gtk_grab_get_current()) {
-		show_preferences(0);
-	}
-}
-
-static void on_quit_menu_item_activated(GtkMenuItem *menu_item, gpointer user_data)
-{
-	/* Prevent quit with dialogs open */
-	if (!gtk_grab_get_current())
-		/* Quit the program */
-		gtk_main_quit();
-}
-
 /******************************************************************************/
 
 static gboolean selection_done(GtkMenuShell *menushell, gpointer user_data) 
@@ -987,88 +928,9 @@ static void show_history_menu(guint mouse_button, guint32 activate_time)
 
 /******************************************************************************/
 
-static GtkWidget * add_menu_item(GtkWidget * menu, const char * title, const char * tooltip, GCallback callback)
-{
-	GtkWidget * menu_item = gtk_image_menu_item_new_with_mnemonic(title);
-	g_signal_connect((GObject*)menu_item, "activate", callback, NULL);
-	if (tooltip)
-		gtk_widget_set_tooltip_text(menu_item, tooltip);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-	return menu_item;
-}
-
-static GtkWidget * add_check_menu_item(GtkWidget * menu, const char * title, const char * tooltip, GCallback callback, int checked)
-{
-	GtkWidget * menu_item = gtk_check_menu_item_new_with_mnemonic(title);
-	g_signal_connect((GObject*)menu_item, "toggled", callback, NULL);
-	if (tooltip)
-		gtk_widget_set_tooltip_text(menu_item, tooltip);
-	gtk_check_menu_item_set_active((GtkCheckMenuItem *) menu_item, checked);
-	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-	return menu_item;
-}
+#include "main-menu.c.h"
 
 /******************************************************************************/
-
-static GtkWidget * create_main_menu(void)
-{
-	GtkWidget * menu = gtk_menu_new();
-
-	add_menu_item(menu,
-		_("_Save History..."), _("Save the clipboard history in a text file."),
-		(GCallback) on_save_history_menu_item_activated);
-
-	add_menu_item(menu,
-		_("_Clear History"),
-		_("Erase all entries from the clipboard history."),
-		(GCallback) on_clear_history_menu_item_activated);
-
-	gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
-
-	{
-		const char * title = clipboard_management_enabled ?
-			_("_Enabled") :
-			_("Clipboard Management Disabled");
-
-		const char * tooltip = clipboard_management_enabled ?
-			_("Clipboard Management and History Tracking are enabled.") :
-			_("Clipboard Management and History Tracking are disabled.\nClick here to enable.");
-
-		add_check_menu_item(menu,
-			title,
-			tooltip,
-			(GCallback) on_enabled_menu_item_toggled,
-			clipboard_management_enabled);
-	}
-
-	add_menu_item(menu,
-		_("_Preferences"),
-		NULL,
-		(GCallback) on_preferences_menu_item_activated);
-
-	add_menu_item(menu,
-		_("_About"),
-		NULL,
-		(GCallback) on_about_menu_item_activated);
-
-	gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
-
-	add_menu_item(menu,
-		_("_Quit"),
-		NULL,
-		(GCallback) on_quit_menu_item_activated);
-
-	gtk_widget_show_all(menu);
-	return menu;
-}
-
-/* Called when status icon is right-clicked */
-static void  show_main_menu(GtkStatusIcon *status_icon, guint button, guint activate_time,  gpointer data)
-{
-	GtkWidget * menu = create_main_menu();
-	gtk_menu_popup((GtkMenu*)menu, NULL, NULL, NULL, NULL, button, activate_time);	
-}
-
 
 /* Called when status icon is left-clicked */
 static void status_icon_clicked(GtkStatusIcon *status_icon, gpointer user_data)
