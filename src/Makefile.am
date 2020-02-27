@@ -2,21 +2,25 @@ AM_CFLAGS = -I$(top_srcdir) -DPACKAGE_LOCALE_DIR=\""$(localedir)"\"
 INCLUDES = $(GTK_CFLAGS)
 LDADD = $(GTK_LIBS) -lX11 -lgdk-x11-2.0 -lpango-1.0 -lgobject-2.0 -lglib-2.0
 
+NULL = 
+
 bin_PROGRAMS = rainbow-cm
 
 DISTCLEANFILES = *.bak *.log *~ .deps/*.P
 
-rainbow_cm_SOURCES = main.c main.h \
-                     about.c about.h \
-                     utils.c utils.h \
-                     rainbow-cm.h \
-                     main-menu.c.h \
-                     i18n.h \
-                     history.c history.h \
-                     keybinder.c keybinder.h \
-                     preferences.c preferences.h \
-                     eggaccelerators.c eggaccelerators.h \
-                     attr_list.c attr_list.h
+rainbow_cm_SOURCES = \
+	about.c about.h \
+	attr_list.c attr_list.h \
+	eggaccelerators.c eggaccelerators.h \
+	history.c history.h \
+	i18n.h \
+	keybinder.c keybinder.h \
+	main.c main.h \
+	main-menu.c.h \
+	preferences.c preferences.h \
+	rainbow-cm.h \
+	utils.c utils.h \
+	$(NULL)
 
 
 CPPCHECK_FLAGS = -q --force --enable=all --std=posix --library=gtk --suppress=variableScope
