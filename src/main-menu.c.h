@@ -29,7 +29,6 @@
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 #include <ctype.h>
-#include <pthread.h>
 
 /******************************************************************************/
 

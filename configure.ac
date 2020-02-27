@@ -55,7 +55,7 @@ PKG_PROG_PKG_CONFIG(0.20)
 # -------------------------------------------------------------------------------
 # Checks for libraries.
 # -------------------------------------------------------------------------------
-# AC_CHECK_LIB(pthread, pthread_create)
+
 pkg_modules="gtk+-2.0 >= 2.24.0"
 PKG_CHECK_MODULES([GTK], [$pkg_modules])
 
@@ -64,7 +64,7 @@ AC_SUBST(X11_LIBS, -lX11)
 # -------------------------------------------------------------------------------
 # Checks for header files.
 # -------------------------------------------------------------------------------
-AC_CHECK_HEADERS([stdlib.h string.h pthread.h libintl.h])
+AC_CHECK_HEADERS([stdlib.h string.h libintl.h])
 
 # -------------------------------------------------------------------------------
 # Checks for typedefs, structures, and compiler characteristics.

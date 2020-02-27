@@ -41,7 +41,6 @@
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 #include <ctype.h>
-#include <pthread.h>
 
 #define DEFERRED_CHECK_INTERVAL 300
 
@@ -361,10 +360,6 @@ static void application_init(void)
 	selection_primary = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
 	selection_clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
 
-	/**check to see if optional helpers exist.  */
-	if(FALSE ==g_thread_supported()){
-		g_fprintf(stderr,"g_thread not init!\n");
-	}
 	hist_lock= g_mutex_new();
 
   /* Read history */
