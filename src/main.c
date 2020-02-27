@@ -45,11 +45,6 @@
 
 #define DEFERRED_CHECK_INTERVAL 300
 
-#define GDK_MODIFIER_MASK_MINE (GDK_CONTROL_MASK|GDK_META_MASK|GDK_SUPER_MASK) /*\
-                           GDK_MOD1_MASK|GDK_MOD2_MASK |GDK_MOD3_MASK|GDK_MOD4_MASK|GDK_MOD5_MASK|   \
-                           GDK_BUTTON1_MASK|GDK_BUTTON2_MASK|GDK_BUTTON3_MASK|GDK_BUTTON4_MASK|\
-                           GDK_BUTTON5_MASK)|GDK_HYPER_MASK) */
-
 static GtkClipboard * selection_primary;
 static GtkClipboard * selection_clipboard;
 static gchar * text_primary = NULL;
