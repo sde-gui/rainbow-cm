@@ -1,6 +1,7 @@
-src/history.c
-src/main.c
-src/utils.c
-src/preferences.c
 data/rainbow-cm.desktop.in
 data/rainbow-cm-startup.desktop.in
+src/about.c
+src/history.c
+src/main.c
+src/preferences.c
+src/utils.c
