@@ -13,6 +13,7 @@ rainbow_cm_SOURCES = \
 	attr_list.c attr_list.h \
 	eggaccelerators.c eggaccelerators.h \
 	history.c history.h \
+	history-menu.c.h \
 	i18n.h \
 	keybinder.c keybinder.h \
 	main.c main.h \
