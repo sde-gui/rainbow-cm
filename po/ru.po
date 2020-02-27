@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Parcellite\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-27 01:38+0700\n"
-"PO-Revision-Date: 2020-02-27 01:56+0700\n"
+"POT-Creation-Date: 2020-02-27 10:12+0700\n"
+"PO-Revision-Date: 2020-02-27 10:14+0700\n"
 "Last-Translator: Vadim Ushakov <igeekless@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -18,6 +18,36 @@ msgstr ""
 "X-Language: ru_RU\n"
 "X-Generator: Poedit 2.3\n"
 
+#: ../data/rainbow-cm.desktop.in.h:1 ../data/rainbow-cm-startup.desktop.in.h:1
+msgid "Rainbow Clipboard Manager"
+msgstr "Менеджер буфера Rainbow"
+
+#: ../data/rainbow-cm.desktop.in.h:2 ../data/rainbow-cm-startup.desktop.in.h:2
+#: ../src/main.c:1084
+msgid "Clipboard Manager"
+msgstr "Менеджер буфера обмена"
+
+#: ../src/about.c:49
+msgid "translator-credits"
+msgstr ""
+"Перевод на русский:\n"
+"Vadim Ushakov <vadim.ush@gmail.com>"
+
+#: ../src/about.c:68
+msgid ""
+"Copyright (C) 2015-2020 Vadim Ushakov\n"
+"Copyright (C) 2010-2013 Doug Springer\n"
+"Copyright (C) 2007, 2008 Gilberto \"Xyhthyx\" Miralla"
+msgstr ""
+
+#: ../src/about.c:96
+msgid "Rainbow CM"
+msgstr "Rainbow CM"
+
+#: ../src/about.c:105
+msgid "Lightweight GTK+ clipboard manager."
+msgstr "Легковесный менеджер буфера обмена на основе GTK+."
+
 #: ../src/history.c:397
 msgid "Save Clipboard History"
 msgstr "Сохранить историю буфера обмена"
@@ -26,63 +56,52 @@ msgstr "Сохранить историю буфера обмена"
 msgid "Clipboard History.txt"
 msgstr "История буфера обмена.txt"
 
-#: ../src/main.c:408
+#: ../src/main.c:396
 msgid "Unpin"
 msgstr "Открепить"
 
-#: ../src/main.c:410
+#: ../src/main.c:398
 msgid "Pin"
 msgstr "Прикрепить"
 
-#: ../src/main.c:439
+#: ../src/main.c:427
 msgid "Clear the history?"
 msgstr "Очистить историю?"
 
-#: ../src/main.c:494
-msgid "Lightweight GTK+ clipboard manager."
-msgstr "Легковесный менеджер буфера обмена на основе GTK+."
-
-#: ../src/main.c:499
-msgid ""
-"Copyright (C) 2015-2020 Vadim Ushakov\n"
-"Copyright (C) 2007, 2008 Gilberto \"Xyhthyx\" Miralla\n"
-"Copyright (C) 2010-2013 Doug Springer"
-msgstr ""
-
 #. Nothing in history so adding empty
-#: ../src/main.c:1027
+#: ../src/main.c:932
 msgid "Empty"
 msgstr "Пусто"
 
-#: ../src/main.c:1112
+#: ../src/main.c:1017
 msgid "_Save History..."
 msgstr "С_охранить историю..."
 
-#: ../src/main.c:1112
+#: ../src/main.c:1017
 msgid "Save the clipboard history in a text file."
 msgstr "Сохранить историю в текстовый файл."
 
-#: ../src/main.c:1116
+#: ../src/main.c:1021
 msgid "_Clear History"
 msgstr "Очи_стить историю"
 
-#: ../src/main.c:1117
+#: ../src/main.c:1022
 msgid "Erase all entries from the clipboard history."
 msgstr "Стереть историю буфера обмена."
 
-#: ../src/main.c:1124
+#: ../src/main.c:1029
 msgid "_Enabled"
 msgstr "_Включен"
 
-#: ../src/main.c:1125
+#: ../src/main.c:1030
 msgid "Clipboard Management Disabled"
 msgstr "Управление буфером обмена отключено"
 
-#: ../src/main.c:1128
+#: ../src/main.c:1033
 msgid "Clipboard Management and History Tracking are enabled."
 msgstr "Включено управление буфером обмена и отслеживание истории."
 
-#: ../src/main.c:1129
+#: ../src/main.c:1034
 msgid ""
 "Clipboard Management and History Tracking are disabled.\n"
 "Click here to enable."
@@ -90,42 +109,17 @@ msgstr ""
 "Управление буфером обмена и отслеживание истории отключено.\n"
 "Нажмите сюда, чтобы включить."
 
-#: ../src/main.c:1139
+#: ../src/main.c:1044
 msgid "_Preferences"
 msgstr "_Настройки"
 
-#: ../src/main.c:1144
+#: ../src/main.c:1049
 msgid "_About"
 msgstr "_О программе"
 
-#: ../src/main.c:1151
+#: ../src/main.c:1056
 msgid "_Quit"
 msgstr "В_ыход"
-
-#: ../src/main.c:1181 ../data/rainbow-cm.desktop.in.h:2
-#: ../data/rainbow-cm-startup.desktop.in.h:2
-msgid "Clipboard Manager"
-msgstr "Менеджер буфера обмена"
-
-#: ../src/utils.c:44 ../src/utils.c:51
-#, c-format
-msgid "Couldn't create directory: %s\n"
-msgstr "Не удается создать каталог: %s\n"
-
-#: ../src/utils.c:102
-msgid "Do not use status icon (Ctrl-Alt-P for menu)"
-msgstr "Не показывать иконку в трее (Ctrl-Alt-P для меню)"
-
-#: ../src/utils.c:109
-msgid "Display Version info"
-msgstr "Показать информацию о версии"
-
-#: ../src/utils.c:121
-msgid ""
-"Copyright (c) 2015 Vadim Ushakov.\n"
-"Copyright (c) 2007-2014 Gilberto \"Xyhthyx\" Miralla and Doug Springer.\n"
-"Report bugs to <igeekless@gmail.com>."
-msgstr ""
 
 #. *Behaviour
 #. *Clipboards
@@ -324,9 +318,25 @@ msgstr "Сочетания _клавиш"
 msgid "<b>Hotkeys</b>"
 msgstr "<b>Горячие клавиши</b>"
 
-#: ../data/rainbow-cm.desktop.in.h:1 ../data/rainbow-cm-startup.desktop.in.h:1
-msgid "Rainbow Clipboard Manager"
-msgstr "Менеджер буфера Rainbow"
+#: ../src/utils.c:44 ../src/utils.c:51
+#, c-format
+msgid "Couldn't create directory: %s\n"
+msgstr "Не удается создать каталог: %s\n"
+
+#: ../src/utils.c:102
+msgid "Do not use status icon (Ctrl-Alt-P for menu)"
+msgstr "Не показывать иконку в трее (Ctrl-Alt-P для меню)"
+
+#: ../src/utils.c:109
+msgid "Display Version info"
+msgstr "Показать информацию о версии"
+
+#: ../src/utils.c:121
+msgid ""
+"Copyright (c) 2015 Vadim Ushakov.\n"
+"Copyright (c) 2007-2014 Gilberto \"Xyhthyx\" Miralla and Doug Springer.\n"
+"Report bugs to <igeekless@gmail.com>."
+msgstr ""
 
 #~ msgid "Action"
 #~ msgstr "Действие"
