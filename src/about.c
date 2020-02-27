@@ -27,40 +27,45 @@
 
 void show_about_dialog()
 {
-  /* This helps prevent multiple instances */
-  if (!gtk_grab_get_current())
-  {
-    const gchar* authors[] = {
+	/* FIXME: meh! */
+	/* This helps prevent multiple instances */
+	if (gtk_grab_get_current())
+		return;
+
+	const gchar* authors[] = {
 		"Vadim Ushakov <vadim.ush@gmail.com>",
 		"Gilberto \"Xyhthyx\" Miralla <xyhthyx@gmail.com>",
 		"Doug Springer <gpib@rickyrockrat.net>",
-		NULL};
-    const gchar* license =
-      "This program is free software; you can redistribute it and/or modify\n"
-      "it under the terms of the GNU General Public License as published by\n"
-      "the Free Software Foundation; either version 3 of the License, or\n"
-      "(at your option) any later version.\n\n"
-      "This program is distributed in the hope that it will be useful,\n"
-      "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-      "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-      "GNU General Public License for more details.\n\n"
-      "You should have received a copy of the GNU General Public License\n"
-      "along with this program.  If not, see <http://www.gnu.org/licenses/>.";
+		NULL
+	};
 
-    /* Create the about dialog */
-    GtkWidget* about_dialog = gtk_about_dialog_new();
-    gtk_window_set_icon((GtkWindow*)about_dialog,
-                        gtk_widget_render_icon(about_dialog, GTK_STOCK_ABOUT, -1, NULL));
+	const gchar* license =
+		"This program is free software; you can redistribute it and/or modify\n"
+		"it under the terms of the GNU General Public License as published by\n"
+		"the Free Software Foundation; either version 3 of the License, or\n"
+		"(at your option) any later version.\n\n"
+		"This program is distributed in the hope that it will be useful,\n"
+		"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+		"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+		"GNU General Public License for more details.\n\n"
+		"You should have received a copy of the GNU General Public License\n"
+		"along with this program.  If not, see <http://www.gnu.org/licenses/>.";
 
-    gtk_about_dialog_set_name((GtkAboutDialog*)about_dialog, "Rainbow CM");
-    gtk_about_dialog_set_version((GtkAboutDialog*)about_dialog, VERSION);
-    gtk_about_dialog_set_comments((GtkAboutDialog*)about_dialog,
-                                _("Lightweight GTK+ clipboard manager."));
+	GtkWidget* about_dialog = gtk_about_dialog_new();
 
-    gtk_about_dialog_set_website((GtkAboutDialog*)about_dialog,
-                                 PACKAGE_BUGREPORT);
-    
-    gtk_about_dialog_set_copyright((GtkAboutDialog*)about_dialog, _("Copyright (C) 2015-2020 Vadim Ushakov\nCopyright (C) 2007, 2008 Gilberto \"Xyhthyx\" Miralla\nCopyright (C) 2010-2013 Doug Springer"));
+	gtk_window_set_icon((GtkWindow*)about_dialog,
+		gtk_widget_render_icon(about_dialog, GTK_STOCK_ABOUT, -1, NULL));
+
+	gtk_about_dialog_set_name((GtkAboutDialog*)about_dialog, "Rainbow CM");
+	gtk_about_dialog_set_version((GtkAboutDialog*)about_dialog, VERSION);
+	gtk_about_dialog_set_comments((GtkAboutDialog*)about_dialog, _("Lightweight GTK+ clipboard manager."));
+	gtk_about_dialog_set_website((GtkAboutDialog*)about_dialog, PACKAGE_BUGREPORT);
+
+	gtk_about_dialog_set_copyright((GtkAboutDialog*)about_dialog,_(
+		"Copyright (C) 2015-2020 Vadim Ushakov\n"
+		"Copyright (C) 2010-2013 Doug Springer\n"
+		"Copyright (C) 2007, 2008 Gilberto \"Xyhthyx\" Miralla"
+	));
     gtk_about_dialog_set_authors((GtkAboutDialog*)about_dialog, authors);
     gtk_about_dialog_set_translator_credits ((GtkAboutDialog*)about_dialog,
                                              "Miloš Koutný <milos.koutny@gmail.com>\n"
@@ -81,14 +86,12 @@ void show_about_dialog()
                                              "Hedef Türkçe <iletisim@hedefturkce.com>\n"
                                              "Lyman Li <lymanrb@gmail.com>\n"
                                              "Gilberto \"Xyhthyx\" Miralla <xyhthyx@gmail.com>");
-    
-    gtk_about_dialog_set_license((GtkAboutDialog*)about_dialog, license);
-	  gtk_about_dialog_set_logo_icon_name((GtkAboutDialog*)about_dialog, APP_ICON);
-    /* Run the about dialog */
-    gtk_dialog_run((GtkDialog*)about_dialog);
-    gtk_widget_destroy(about_dialog);
-  }
-}
 
+	gtk_about_dialog_set_license((GtkAboutDialog*)about_dialog, license);
+	gtk_about_dialog_set_logo_icon_name((GtkAboutDialog*)about_dialog, APP_ICON);
+
+	gtk_dialog_run((GtkDialog*)about_dialog);
+	gtk_widget_destroy(about_dialog);
+}
 
 #endif /* ABOUT_H */
