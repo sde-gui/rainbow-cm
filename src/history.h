@@ -52,7 +52,7 @@ void truncate_history();
 
 void clear_history(void);
 
-void history_save_as(GtkMenuItem *menu_item, gpointer user_data);
+void history_save_as(void);
 G_END_DECLS
 
 #endif

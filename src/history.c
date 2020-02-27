@@ -391,7 +391,7 @@ int save_history_as_text(gchar *path)
 \n\b Arguments:
 \n\b Returns:
 ****************************************************************************/
-void history_save_as(GtkMenuItem *menu_item, gpointer user_data)
+void history_save_as(void)
 {
 	GtkWidget *dialog;
 	dialog = gtk_file_chooser_dialog_new (_("Save Clipboard History"),

@@ -415,8 +415,12 @@ static void history_item_right_click (struct history_info *h, GdkEventKey *e, gi
 	/*gtk_widget_grab_focus(menu);  */
 }
 
-/* Called when Clear is selected from history menu */
-static void clear_selected(GtkMenuItem *menu_item, gpointer user_data)
+static void on_save_history_menu_item_activated(GtkMenuItem *menu_item, gpointer user_data)
+{
+	history_save_as();
+}
+
+static void on_clear_history_menu_item_activated(GtkMenuItem *menu_item, gpointer user_data)
 {
 	int do_clear = 1;
 	GtkWidget * confirm_dialog = gtk_message_dialog_new(
@@ -443,7 +447,7 @@ static void clear_selected(GtkMenuItem *menu_item, gpointer user_data)
 	}
 }
 
-static void on_enabled_toggled(GtkCheckMenuItem * menu_item, gpointer user_data)
+static void on_enabled_menu_item_toggled(GtkCheckMenuItem * menu_item, gpointer user_data)
 {
 	set_pref_int32("enabled", gtk_check_menu_item_get_active(menu_item));
 }
@@ -453,24 +457,21 @@ static void on_about_menu_item_activated(GtkMenuItem *menu_item, gpointer user_d
 	show_about_dialog();
 }
 
-/* Called when Preferences is selected from right-click menu */
-static void preferences_selected(GtkMenuItem *menu_item, gpointer user_data)
+static void on_preferences_menu_item_activated(GtkMenuItem *menu_item, gpointer user_data)
 {
-  /* This helps prevent multiple instances */
-  if (!gtk_grab_get_current()){
-		 /* Show the preferences dialog */
-    show_preferences(0);
+	/* FIXME: wrong way! */
+	/* This helps prevent multiple instances */
+	if (!gtk_grab_get_current()) {
+		show_preferences(0);
 	}
-
 }
 
-/* Called when Quit is selected from right-click menu */
-static void quit_selected(GtkMenuItem *menu_item, gpointer user_data)
+static void on_quit_menu_item_activated(GtkMenuItem *menu_item, gpointer user_data)
 {
-  /* Prevent quit with dialogs open */
-  if (!gtk_grab_get_current())
-    /* Quit the program */
-    gtk_main_quit();
+	/* Prevent quit with dialogs open */
+	if (!gtk_grab_get_current())
+		/* Quit the program */
+		gtk_main_quit();
 }
 
 /******************************************************************************/
@@ -999,7 +1000,7 @@ static GtkWidget * add_menu_item(GtkWidget * menu, const char * title, const cha
 static GtkWidget * add_check_menu_item(GtkWidget * menu, const char * title, const char * tooltip, GCallback callback, int checked)
 {
 	GtkWidget * menu_item = gtk_check_menu_item_new_with_mnemonic(title);
-	g_signal_connect((GObject*)menu_item, "activate", callback, NULL);
+	g_signal_connect((GObject*)menu_item, "toggled", callback, NULL);
 	if (tooltip)
 		gtk_widget_set_tooltip_text(menu_item, tooltip);
 	gtk_check_menu_item_set_active((GtkCheckMenuItem *) menu_item, checked);
@@ -1015,12 +1016,12 @@ static GtkWidget * create_main_menu(void)
 
 	add_menu_item(menu,
 		_("_Save History..."), _("Save the clipboard history in a text file."),
-		(GCallback) history_save_as);
+		(GCallback) on_save_history_menu_item_activated);
 
 	add_menu_item(menu,
 		_("_Clear History"),
 		_("Erase all entries from the clipboard history."),
-		(GCallback) clear_selected);
+		(GCallback) on_clear_history_menu_item_activated);
 
 	gtk_menu_shell_append((GtkMenuShell*)menu, gtk_separator_menu_item_new());
 
@@ -1036,14 +1037,14 @@ static GtkWidget * create_main_menu(void)
 		add_check_menu_item(menu,
 			title,
 			tooltip,
-			(GCallback) on_enabled_toggled,
+			(GCallback) on_enabled_menu_item_toggled,
 			clipboard_management_enabled);
 	}
 
 	add_menu_item(menu,
 		_("_Preferences"),
 		NULL,
-		(GCallback) preferences_selected);
+		(GCallback) on_preferences_menu_item_activated);
 
 	add_menu_item(menu,
 		_("_About"),
@@ -1055,7 +1056,7 @@ static GtkWidget * create_main_menu(void)
 	add_menu_item(menu,
 		_("_Quit"),
 		NULL,
-		(GCallback) quit_selected);
+		(GCallback) on_quit_menu_item_activated);
 
 	gtk_widget_show_all(menu);
 	return menu;
