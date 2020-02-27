@@ -73,19 +73,19 @@ typedef enum {
 	CLIPBOARD_ACTION_CHECK  /* see if there is new/lost contents */
 } CLIPBOARD_ACTION;
 
-/***************************************************************************/
+/******************************************************************************/
 
 typedef struct {
 	guint   mouse_button;
 	guint32 activate_time;
 } history_menu_query_t;
 
-/***************************************************************************/
+/******************************************************************************/
 
 static void schedule_deferred_clipboard_update(void);
 static void disable_deferred_clipboard_update(void);
 
-/***************************************************************************/
+/******************************************************************************/
 
 /**speed up pref to int lookup.  */
 static int
@@ -106,7 +106,7 @@ static struct pref2int pref2int_map[]={
 	{.val=NULL,.name=NULL},		
 };
 
-/***************************************************************************/
+/******************************************************************************/
 
 static gboolean should_text_be_saved(gchar * text)
 {
@@ -129,7 +129,7 @@ static gboolean should_text_be_saved(gchar * text)
 	return TRUE;
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static void save_and_set_clipboard_text(GtkClipboard * clip, gchar * text, int really_set)
 {
@@ -158,7 +158,7 @@ static void save_and_set_clipboard_text(GtkClipboard * clip, gchar * text, int r
 	last_text = *p_saved_text;
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static gboolean content_exists(GtkClipboard *clip)
 {
@@ -169,7 +169,7 @@ static gboolean content_exists(GtkClipboard *clip)
 	return contents;
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static gchar * get_clipboard_text(GtkClipboard * clip)
 {
@@ -178,7 +178,7 @@ static gchar * get_clipboard_text(GtkClipboard * clip)
 	return NULL;
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static gchar * update_clipboard(GtkClipboard * clipboard, CLIPBOARD_ACTION action, gchar * text_to_set)
 {
@@ -269,7 +269,7 @@ static gchar * update_clipboard(GtkClipboard * clipboard, CLIPBOARD_ACTION actio
 	return *p_saved_text;
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static void update_clipboards(CLIPBOARD_ACTION action, gchar * text_to_set)
 {
@@ -278,7 +278,7 @@ static void update_clipboards(CLIPBOARD_ACTION action, gchar * text_to_set)
 	update_clipboard(selection_clipboard, action, text_to_set);
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static void check_clipboards(void)
 {
@@ -301,7 +301,7 @@ static void check_clipboards(void)
 	}
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static gboolean check_clipboards_tic(gpointer data)
 {
@@ -326,19 +326,15 @@ static void disable_deferred_clipboard_update(void)
 	}
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static void on_clipboard_owner_change(GtkClipboard * clipboard, GdkEvent * event, gpointer user_data)
 {
 	check_clipboards();
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
 static gboolean  handle_history_item_right_click (int i, gpointer data)
 {
 	/* we passed the view as userdata when we connected the signal */
@@ -366,24 +362,16 @@ static gboolean history_item_right_click_on_cancel (GtkWidget *menuitem, gpointe
 	return handle_history_item_right_click(HIST_MOVE_TO_CANCEL,data);
 }
 
-/***************************************************************************/
-/** Fixes the right-click history being up when history is deactiviated.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+/******************************************************************************/
+
 static void destroy_right_click_history_cb(GtkWidget *attach_widget, GtkMenu *menu)
 {
 	/*g_printf("%s:\n",__func__); */
 	gtk_widget_destroy	((GtkWidget *) attach_widget);
 }
-/***************************************************************************/
-/** Display the right-click menu. h->menu contains the top-level history window
-\n\b Arguments:
-\n\b Returns:
-if (event->type == GDK_BUTTON_PRESS  &&  event->button == 3)
-	view_popup_menu(treeview, event, userdata);
-	h->wi.index contains the element of the item clicked on.
-****************************************************************************/
+
+/******************************************************************************/
+
 static void history_item_right_click (struct history_info *h, GdkEventKey *e, gint index)
 {
   GtkWidget *menu, *menuitem;
@@ -546,11 +534,8 @@ static void quit_selected(GtkMenuItem *menu_item, gpointer user_data)
     gtk_main_quit();
 }
 
-/***************************************************************************/
-/** Called just before destroying history menu.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+/******************************************************************************/
+
 static gboolean selection_done(GtkMenuShell *menushell, gpointer user_data) 
 {
 	struct history_info * h = (struct history_info *) user_data;
@@ -572,7 +557,7 @@ done:
 	return FALSE;
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static void on_history_menu_position(GtkMenu * menu, gint * px, gint * py, gboolean * push_in, gpointer user_data)
 {
@@ -600,7 +585,7 @@ static void on_history_menu_position(GtkMenu * menu, gint * px, gint * py, gbool
 	*py = y;
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static void apply_search_string_cb(GtkWidget * widget, gpointer user_data)
 {
@@ -627,7 +612,7 @@ static void apply_search_string_cb(GtkWidget * widget, gpointer user_data)
 	}
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static void apply_search_string(struct history_info * h)
 {
@@ -637,7 +622,7 @@ static void apply_search_string(struct history_info * h)
 	gtk_container_foreach((GtkContainer *) h->menu, apply_search_string_cb, h);
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static void on_history_menu_im_context_commit(GtkIMContext * context, gchar * str, gpointer user_data)
 {
@@ -665,7 +650,7 @@ static void on_history_menu_im_context_commit(GtkIMContext * context, gchar * st
 	apply_search_string(h);
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static gboolean key_release_cb (GtkWidget *w,GdkEventKey *e, gpointer user)
 {
@@ -695,11 +680,8 @@ static gboolean key_release_cb (GtkWidget *w,GdkEventKey *e, gpointer user)
 	return FALSE;
 }
 
-/***************************************************************************/
-/** Set clipboard from history list.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+/******************************************************************************/
+
 static void set_clipboard_text_from_item(struct history_info *h, GList *element)
 {
 	gchar *txt=NULL;
@@ -715,11 +697,8 @@ static void set_clipboard_text_from_item(struct history_info *h, GList *element)
 }
 
 
-/***************************************************************************/
-/** This handles the events for each item in the history menu.
-\n\b Arguments:	 user is element number
-\n\b Returns:
-****************************************************************************/
+/******************************************************************************/
+
 static gboolean my_item_event (GtkWidget *w,GdkEventKey *e, gpointer user)
 {
 	static struct history_info *h=NULL;
@@ -776,11 +755,8 @@ static gboolean my_item_event (GtkWidget *w,GdkEventKey *e, gpointer user)
 	return FALSE;
 }
 
-/***************************************************************************/
-/** Attempt to handle enter key behaviour.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+/******************************************************************************/
+
 static void item_selected(GtkMenuItem *menu_item, gpointer user_data)
 {
 	static struct history_info *h=NULL;
@@ -798,11 +774,8 @@ static void item_selected(GtkMenuItem *menu_item, gpointer user_data)
 	}
 }	
 
-/***************************************************************************/
-/** Write the elements to the menu.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+/******************************************************************************/
+
 static void write_history_menu_items(GList *list, GtkWidget *menu)
 {
 	GList *element;
@@ -812,7 +785,7 @@ static void write_history_menu_items(GList *list, GtkWidget *menu)
 			gtk_menu_shell_append((GtkMenuShell*)menu,element->data);	
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static GString* convert_nonprinting_characters(GString* s)
 {
@@ -838,23 +811,16 @@ static GString* convert_nonprinting_characters(GString* s)
 	return s;
 }
 
-/***************************************************************************/
-/** .
-\n\b Arguments:
-u is history.
-\n\b Returns:
-****************************************************************************/
+/******************************************************************************/
+
 static void destroy_history_menu(GtkMenuShell *menu, gpointer u)
 {
 	/*g_printf("%s:\n",__func__); */
 	selection_done(menu,u);	/**allow deleted items to be deleted.  */
 	gtk_widget_destroy((GtkWidget *)menu);
 }
-/***************************************************************************/
-/**  Called when status icon is left-clicked or action key hit.
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
+/******************************************************************************/
 
 static gboolean do_show_history_menu(gpointer data)
 {
@@ -1062,7 +1028,7 @@ end:
 	return FALSE;
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static void show_history_menu(guint mouse_button, guint32 activate_time)
 {
@@ -1079,7 +1045,7 @@ static void show_history_menu(guint mouse_button, guint32 activate_time)
 	g_timeout_add(POPUP_DELAY, do_show_history_menu, query);
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static GtkWidget * add_menu_item(GtkWidget * menu, const char * title, const char * tooltip, GCallback callback)
 {
@@ -1102,7 +1068,7 @@ static GtkWidget * add_check_menu_item(GtkWidget * menu, const char * title, con
 	return menu_item;
 }
 
-/***************************************************************************/
+/******************************************************************************/
 
 static GtkWidget * create_main_menu(void)
 {
@@ -1169,11 +1135,9 @@ static void status_icon_clicked(GtkStatusIcon *status_icon, gpointer user_data)
 {
   show_history_menu(1, GDK_CURRENT_TIME);
 }
-/***************************************************************************/
-/** .
-\n\b Arguments:
-\n\b Returns:
-****************************************************************************/
+
+/******************************************************************************/
+
 static void setup_icon( void )
 {
 	if(NULL == status_icon){
@@ -1246,11 +1210,8 @@ static void application_init(void)
   }
 }
 
-/***************************************************************************/
-	/** .
-	\n\b Arguments:
-	\n\b Returns:
-	****************************************************************************/
+/******************************************************************************/
+
 int main(int argc, char *argv[])
 {
 	struct cmdline_opts *opts;
