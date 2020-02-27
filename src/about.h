@@ -18,27 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAINBOW_CM_H
-#define RAINBOW_CM_H
+#ifndef ABOUT_H
+#define ABOUT_H
 
-#include <glib.h>
-#include <glib/gprintf.h>
-#include <gtk/gtk.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
+void show_about_dialog();
 
-#define APP_PROG_NAME "rainbow-cm"
-#define APP_ICON APP_PROG_NAME
-
-#include "about.h"
-#include "utils.h"
-#include "preferences.h"
-#include "history.h"
-#include "main.h"
-#include "keybinder.h"
-#include "i18n.h"
-#include "attr_list.h"
-
-#endif /* RAINBOW_CM_H */
-
+#endif /* ABOUT_H */

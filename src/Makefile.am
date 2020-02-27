@@ -7,6 +7,7 @@ bin_PROGRAMS = rainbow-cm
 DISTCLEANFILES = *.bak *.log *~ .deps/*.P
 
 rainbow_cm_SOURCES = main.c main.h \
+                     about.c about.h \
                      utils.c utils.h \
                      rainbow-cm.h \
                      i18n.h \
