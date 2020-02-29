@@ -754,111 +754,101 @@ static int add_section(int sec, GtkWidget *parent)
 /* Shows the preferences dialog on the given tab */
 void show_preferences(gint tab)
 {
-  /* Declare some variables */
-  GtkWidget *frame,*label,*alignment,*hbox, *vbox;
+	GtkWidget *frame,*label,*alignment,*hbox, *vbox;
 	struct pref_item *p;
 	init_pref();
-  
-  /* Create the dialog */
-  GtkWidget* dialog = gtk_dialog_new_with_buttons(_("Preferences"),    NULL,
-                                                   (GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR),
-                                                    GTK_STOCK_CANCEL,  GTK_RESPONSE_REJECT,
-                                                    GTK_STOCK_OK,      GTK_RESPONSE_ACCEPT, NULL);
-  
-  gtk_window_set_icon((GtkWindow*)dialog, gtk_widget_render_icon(dialog, GTK_STOCK_PREFERENCES, -1, NULL));
-  gtk_window_set_resizable((GtkWindow*)dialog, FALSE);
-  
-  /* Create notebook */
-  GtkWidget* notebook = gtk_notebook_new();
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area (GTK_DIALOG(dialog))), notebook, TRUE, TRUE, 2);
-  
-/* Build the behavior page */  
-  GtkWidget* page_behavior = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-  gtk_alignment_set_padding((GtkAlignment*)page_behavior, 12, 6, 12, 6);
-  gtk_notebook_append_page((GtkNotebook*)notebook, page_behavior, label_new_with_markup_and_mnemonic(_("_General")));
-  GtkWidget* vbox_behavior = gtk_vbox_new(FALSE, 12);
-  gtk_container_add((GtkContainer*)page_behavior, vbox_behavior);
-  
-  /* Build the clipboards frame & copy section */
-	add_section(PREF_SEC_CLIP,vbox_behavior);
-	/* Build the history frame */
-	add_section(PREF_SEC_HIST,vbox_behavior);
-  /* Build the miscellaneous frame */
-	add_section(PREF_SEC_MISC,vbox_behavior);
-  
-  /* Build the display page */
-  GtkWidget* page_display = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-  gtk_alignment_set_padding((GtkAlignment*)page_display, 12, 6, 12, 6);
-  gtk_notebook_append_page((GtkNotebook*)notebook, page_display, label_new_with_markup_and_mnemonic(_("_Popup")));
-  GtkWidget* vbox_display = gtk_vbox_new(FALSE, 12);
-  gtk_container_add((GtkContainer*)page_display, vbox_display);
-  
-  /* Build the items frame */
+
+	/* Create the dialog */
+	GtkWidget* dialog = gtk_dialog_new_with_buttons(
+		_("Preferences"), NULL,
+		(GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR),
+		GTK_STOCK_CANCEL,
+		GTK_RESPONSE_REJECT,
+		GTK_STOCK_OK,
+		GTK_RESPONSE_ACCEPT,
+		NULL
+	);
+
+	gtk_window_set_icon((GtkWindow*)dialog, gtk_widget_render_icon(dialog, GTK_STOCK_PREFERENCES, -1, NULL));
+	gtk_window_set_resizable((GtkWindow*)dialog, FALSE);
+
+	GtkWidget* notebook = gtk_notebook_new();
+	gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area (GTK_DIALOG(dialog))), notebook, TRUE, TRUE, 2);
+
+	GtkWidget* page_behavior = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
+	gtk_alignment_set_padding((GtkAlignment*)page_behavior, 12, 6, 12, 6);
+	gtk_notebook_append_page((GtkNotebook*)notebook, page_behavior,
+		label_new_with_markup_and_mnemonic(_("_General")));
+	GtkWidget* vbox_behavior = gtk_vbox_new(FALSE, 12);
+	gtk_container_add((GtkContainer*)page_behavior, vbox_behavior);
+
+	add_section(PREF_SEC_CLIP, vbox_behavior);
+	add_section(PREF_SEC_HIST, vbox_behavior);
+	add_section(PREF_SEC_MISC, vbox_behavior);
+
+	GtkWidget* page_display = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
+	gtk_alignment_set_padding((GtkAlignment*)page_display, 12, 6, 12, 6);
+	gtk_notebook_append_page((GtkNotebook*)notebook, page_display, label_new_with_markup_and_mnemonic(_("_Popup")));
+	GtkWidget* vbox_display = gtk_vbox_new(FALSE, 12);
+	gtk_container_add((GtkContainer*)page_display, vbox_display);
+
 	add_section(PREF_SEC_POPUP,vbox_display);
 	
-  /* Build the omitting frame */
-  frame = gtk_frame_new(NULL);
-  gtk_frame_set_shadow_type((GtkFrame*)frame, GTK_SHADOW_NONE);
-  label = gtk_label_new(NULL);
-  gtk_label_set_markup((GtkLabel*)label, _("<b>Omitting</b>"));
-  gtk_frame_set_label_widget((GtkFrame*)frame, label);
-  alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-  gtk_alignment_set_padding((GtkAlignment*)alignment, 12, 0, 12, 0);
-  gtk_container_add((GtkContainer*)frame, alignment);
-  vbox = gtk_vbox_new(FALSE, 2);
-  gtk_container_add((GtkContainer*)alignment, vbox);
-	
-	
-  hbox = gtk_hbox_new(FALSE, 4);
-  gtk_box_pack_start((GtkBox*)vbox, hbox, FALSE, FALSE, 0);
+	frame = gtk_frame_new(NULL);
+	gtk_frame_set_shadow_type((GtkFrame*)frame, GTK_SHADOW_NONE);
+	label = gtk_label_new(NULL);
+	gtk_label_set_markup((GtkLabel*)label, _("<b>Omitting</b>"));
+	gtk_frame_set_label_widget((GtkFrame*)frame, label);
+	alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
+	gtk_alignment_set_padding((GtkAlignment*)alignment, 12, 0, 12, 0);
+	gtk_container_add((GtkContainer*)frame, alignment);
+	vbox = gtk_vbox_new(FALSE, 2);
+	gtk_container_add((GtkContainer*)alignment, vbox);
+
+	hbox = gtk_hbox_new(FALSE, 4);
+	gtk_box_pack_start((GtkBox*)vbox, hbox, FALSE, FALSE, 0);
 	p=get_pref("ellipsize");
-  label = gtk_label_new(_(p->desc));
-  gtk_misc_set_alignment((GtkMisc*)label, 0.0, 0.50);
-  gtk_box_pack_start((GtkBox*)hbox, label, FALSE, FALSE, 0);
-  p->w = gtk_combo_box_new_text();
-  gtk_combo_box_append_text((GtkComboBox*)p->w, _("Beginning"));
-  gtk_combo_box_append_text((GtkComboBox*)p->w, _("Middle"));
-  gtk_combo_box_append_text((GtkComboBox*)p->w, _("End"));
-  gtk_box_pack_start((GtkBox*)hbox, p->w, FALSE, FALSE, 0);
-  gtk_box_pack_start((GtkBox*)vbox_display, frame, FALSE, FALSE, 0);
+	label = gtk_label_new(_(p->desc));
+	gtk_misc_set_alignment((GtkMisc*)label, 0.0, 0.50);
+	gtk_box_pack_start((GtkBox*)hbox, label, FALSE, FALSE, 0);
+	p->w = gtk_combo_box_new_text();
+	gtk_combo_box_append_text((GtkComboBox*)p->w, _("Beginning"));
+	gtk_combo_box_append_text((GtkComboBox*)p->w, _("Middle"));
+	gtk_combo_box_append_text((GtkComboBox*)p->w, _("End"));
+	gtk_box_pack_start((GtkBox*)hbox, p->w, FALSE, FALSE, 0);
+	gtk_box_pack_start((GtkBox*)vbox_display, frame, FALSE, FALSE, 0);
 	
-	/* Build the misc Display frame */
 	add_section(PREF_SEC_XMISC,vbox_display);
 
+	GtkWidget* page_extras = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
+	gtk_alignment_set_padding((GtkAlignment*)page_extras, 12, 6, 12, 6);
+	gtk_notebook_append_page((GtkNotebook*)notebook, page_extras, label_new_with_markup_and_mnemonic(_("_Hotkeys")));
+	GtkWidget* vbox_extras = gtk_vbox_new(FALSE, 12);
+	gtk_container_add((GtkContainer*)page_extras, vbox_extras);
 
-  /* Build the hotkeys page */
-  GtkWidget* page_extras = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-  gtk_alignment_set_padding((GtkAlignment*)page_extras, 12, 6, 12, 6);
-  gtk_notebook_append_page((GtkNotebook*)notebook, page_extras, label_new_with_markup_and_mnemonic(_("_Hotkeys")));
-  GtkWidget* vbox_extras = gtk_vbox_new(FALSE, 12);
-  gtk_container_add((GtkContainer*)page_extras, vbox_extras);
-  
-  /* Build the hotkeys frame */
-  frame = gtk_frame_new(NULL);
-  gtk_frame_set_shadow_type((GtkFrame*)frame, GTK_SHADOW_NONE);
-  label = gtk_label_new(NULL);
-  gtk_label_set_markup((GtkLabel*)label, _("<b>Hotkeys</b>"));
-  gtk_frame_set_label_widget((GtkFrame*)frame, label);
-  alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-  gtk_alignment_set_padding((GtkAlignment*)alignment, 12, 0, 12, 0);
-  gtk_container_add((GtkContainer*)frame, alignment);
-  vbox = gtk_vbox_new(FALSE, 2);
-  gtk_container_add((GtkContainer*)alignment, vbox);
+	frame = gtk_frame_new(NULL);
+	gtk_frame_set_shadow_type((GtkFrame*)frame, GTK_SHADOW_NONE);
+	label = gtk_label_new(NULL);
+	gtk_label_set_markup((GtkLabel*)label, _("<b>Hotkeys</b>"));
+	gtk_frame_set_label_widget((GtkFrame*)frame, label);
+	alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
+	gtk_alignment_set_padding((GtkAlignment*)alignment, 12, 0, 12, 0);
+	gtk_container_add((GtkContainer*)frame, alignment);
+	vbox = gtk_vbox_new(FALSE, 2);
+	gtk_container_add((GtkContainer*)alignment, vbox);
 	add_section(PREF_SEC_ACT,vbox);
 	gtk_box_pack_start((GtkBox*)vbox_extras,frame,FALSE,FALSE,0);
-  
-  /* Make widgets reflect current preferences */
+
 	update_pref_widgets();
 
-  /* Run the dialog */
-  gtk_widget_show_all(dialog);
-  gtk_notebook_set_current_page((GtkNotebook*)notebook, tab);
-  if (gtk_dialog_run((GtkDialog*)dialog) == GTK_RESPONSE_ACCEPT)
-  {
-    /* Apply and save preferences */
-    apply_preferences();
-    save_preferences();
-  }
-  gtk_widget_destroy(dialog);
+	gtk_widget_show_all(dialog);
+	gtk_notebook_set_current_page((GtkNotebook*)notebook, tab);
+	if (gtk_dialog_run((GtkDialog*)dialog) == GTK_RESPONSE_ACCEPT)
+	{
+		/* Apply and save preferences */
+		apply_preferences();
+		save_preferences();
+	}
+	gtk_widget_destroy(dialog);
 }
 
