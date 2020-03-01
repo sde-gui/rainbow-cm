@@ -175,7 +175,11 @@ static struct pref_item myprefs[]={
 	{.section=PREF_SECTION_HOTKEYS,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc=N_("Men_u key combination"),.tooltip=NULL},
 	{.section=PREF_SECTION_HOTKEYS,.name="history_key",.type=PREF_TYPE_ENTRY,.desc=N_("_History key combination:"),.tooltip=NULL},
 
-	{.section=PREF_SECTION_NONE,.name="no_icon",.val=FALSE},
+	{.section=PREF_SECTION_MISC,.type=PREF_TYPE_FRAME,.desc=N_("<b>Miscellaneous</b>")},
+	{.section=PREF_SECTION_MISC,.name="display_status_icon",.val=TRUE,
+	 .type=PREF_TYPE_TOGGLE,
+	 .desc=N_("Displa_y the status icon"),
+	 .tooltip=N_("Display the status icon the notification area for accessing the application"),},
 
 	{.adj=NULL,.cval=NULL,.sig=NULL,.section=PREF_SECTION_NONE,.name=NULL,.desc=NULL},
 };
@@ -206,7 +210,6 @@ static preferences_layout_t preferences_layout = (preferences_layout_t){
 			{.type=LAYOUT_SECTION,.section=PREF_SECTION_CLIP},
 			{.type=LAYOUT_SECTION,.section=PREF_SECTION_HISTORY},
 			{.type=LAYOUT_SECTION,.section=PREF_SECTION_FILTERING},
-			{.type=LAYOUT_SECTION,.section=PREF_SECTION_MISC},
 			{}
 		}},
 		{.type=LAYOUT_PAGE,.title=N_("History _Popup"),.children = (const preferences_layout_t[]) {
@@ -215,6 +218,10 @@ static preferences_layout_t preferences_layout = (preferences_layout_t){
 		}},
 		{.type=LAYOUT_PAGE,.title=N_("_Hotkeys"),.children = (const preferences_layout_t[]) {
 			{.type=LAYOUT_SECTION,.section=PREF_SECTION_HOTKEYS},
+			{}
+		}},
+		{.type=LAYOUT_PAGE,.title=N_("_Miscellaneous"),.children = (const preferences_layout_t[]) {
+			{.type=LAYOUT_SECTION,.section=PREF_SECTION_MISC},
 			{}
 		}},
 		{}
@@ -444,12 +451,12 @@ static void check_sanity(void)
 static void apply_preferences()
 {
 	int i;
-  /* Unbind the keys before binding new ones */
+	/* Unbind the keys before binding new ones */
 	for (i=0;NULL != keylist[i].name; ++i)
-	  unbind_itemkey(keylist[i].name,keylist[i].keyfunc);
+		unbind_itemkey(keylist[i].name,keylist[i].keyfunc);
 	
 	
-  for (i=0;NULL != myprefs[i].desc; ++i){
+	for (i=0;NULL != myprefs[i].desc; ++i){
 		if(NULL == myprefs[i].name)
 			continue;
 		switch(myprefs[i].type){
@@ -469,11 +476,13 @@ static void apply_preferences()
 				break;
 		}
 	}
-  check_sanity();
-  /* Bind keys and apply the new history limit */
+	check_sanity();
+
 	for (i=0;NULL != keylist[i].name; ++i)
-	  bind_itemkey(keylist[i].name,keylist[i].keyfunc);	
-  truncate_history();
+		bind_itemkey(keylist[i].name,keylist[i].keyfunc);
+
+	truncate_history();
+	update_status_icon();
 	pref_mapper(NULL, PM_UPDATE);
 }
 

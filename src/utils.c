@@ -96,10 +96,17 @@ struct cmdline_opts *parse_options(int argc, char* argv[])
     GOptionEntry main_entries[] =
     {
         {
-            "no-icon", 'n',
+            "hide-status-icon", 0,
             0,
             G_OPTION_ARG_NONE,
-            &opts->icon, _("Do not use status icon (Ctrl-Alt-P for menu)"),
+            &opts->hide_status_icon, _("Do not display status icon"),
+            NULL
+        },
+        {
+            "show-status-icon", 0,
+            0,
+            G_OPTION_ARG_NONE,
+            &opts->show_status_icon, _("Display status icon"),
             NULL
         },
         {
@@ -126,10 +133,11 @@ struct cmdline_opts *parse_options(int argc, char* argv[])
     g_option_context_parse(context, &argc, &argv, NULL);
     g_option_context_free(context);
 
-    if (opts->icon)
-        set_pref_int32("no_icon",TRUE);
-    else
-        set_pref_int32("no_icon",FALSE);
+    if (opts->hide_status_icon)
+        set_pref_int32("display_status_icon", FALSE);
+
+    if (opts->show_status_icon)
+        set_pref_int32("display_status_icon", TRUE);
 
     if (opts->version) {
         gchar *v;

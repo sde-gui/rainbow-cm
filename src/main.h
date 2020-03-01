@@ -54,6 +54,8 @@ struct history_info{
 void on_history_hotkey(char *keystring, gpointer user_data);
 void on_menu_hotkey(char *keystring, gpointer user_data);
 
+void update_status_icon(void);
+
 G_END_DECLS
 
 #endif

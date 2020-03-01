@@ -29,7 +29,8 @@ G_BEGIN_DECLS
 #define DATA_DIR    APP_PROG_NAME
 
 struct cmdline_opts {
-	gboolean icon;
+	gboolean hide_status_icon;
+	gboolean show_status_icon;
 	gboolean exit;
 	gboolean version;
 };

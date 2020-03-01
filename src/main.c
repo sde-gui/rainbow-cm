@@ -328,15 +328,25 @@ static void status_icon_clicked(GtkStatusIcon *status_icon, gpointer user_data)
 
 /******************************************************************************/
 
-static void setup_icon( void )
+void update_status_icon(void)
 {
-	if(NULL == status_icon){
-		status_icon = gtk_status_icon_new_from_icon_name(APP_ICON);
-		gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
-		g_signal_connect((GObject*)status_icon, "activate", (GCallback)status_icon_clicked, NULL);
-		g_signal_connect((GObject*)status_icon, "popup-menu", (GCallback)show_main_menu, NULL);	
-	}	else {
-		gtk_status_icon_set_from_icon_name(status_icon,APP_ICON);
+	if (get_pref_int32("display_status_icon"))
+	{
+		if (!status_icon)
+		{
+			status_icon = gtk_status_icon_new_from_icon_name(APP_ICON);
+			gtk_status_icon_set_tooltip((GtkStatusIcon*)status_icon, _("Clipboard Manager"));
+			g_signal_connect((GObject*)status_icon, "activate", (GCallback)status_icon_clicked, NULL);
+			g_signal_connect((GObject*)status_icon, "popup-menu", (GCallback)show_main_menu, NULL);
+		}
+		gtk_status_icon_set_visible((GtkStatusIcon*)status_icon, TRUE);
+	}
+	else
+	{
+		if (status_icon)
+		{
+			gtk_status_icon_set_visible((GtkStatusIcon*)status_icon, FALSE);
+		}
 	}
 }
 
@@ -388,12 +398,8 @@ static void application_init(void)
   keybinder_init();
 	for (i=0;NULL != keylist[i].name; ++i)
 		bind_itemkey(keylist[i].name,keylist[i].keyfunc);
-  
-  /* Create status icon */
-  if (!get_pref_int32("no_icon"))
-  {
-		setup_icon();
-  }
+
+	update_status_icon();
 }
 
 /******************************************************************************/
