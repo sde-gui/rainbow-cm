@@ -171,12 +171,54 @@ static struct pref_item myprefs[]={
 	 .combo_values=ellipsize_values
 	},
 
+	{.section=PREF_SECTION_HOTKEYS,.type=PREF_TYPE_FRAME,.desc=N_("<b>Hotkeys</b>")},
 	{.section=PREF_SECTION_HOTKEYS,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc=N_("Men_u key combination"),.tooltip=NULL},
 	{.section=PREF_SECTION_HOTKEYS,.name="history_key",.type=PREF_TYPE_ENTRY,.desc=N_("_History key combination:"),.tooltip=NULL},
 
 	{.section=PREF_SECTION_NONE,.name="no_icon",.val=FALSE},
 
 	{.adj=NULL,.cval=NULL,.sig=NULL,.section=PREF_SECTION_NONE,.name=NULL,.desc=NULL},
+};
+
+/***************************************************************************/
+
+typedef enum {
+	LAYOUT_NONE,
+	LAYOUT_NOTEBOOK,
+	LAYOUT_PAGE,
+	LAYOUT_SECTION
+} preferences_layout_type_t;
+
+typedef struct _preferences_layout preferences_layout_t;
+struct _preferences_layout {
+	preferences_layout_type_t type;
+	const char * title;
+	const preferences_layout_t * children;
+	pref_section_t section;
+};
+
+/***************************************************************************/
+
+static preferences_layout_t preferences_layout = (preferences_layout_t){
+	.type = LAYOUT_NOTEBOOK,
+	.children = (const preferences_layout_t[]) {
+		{.type=LAYOUT_PAGE,.title=N_("_General"),.children = (const preferences_layout_t[]) {
+			{.type=LAYOUT_SECTION,.section=PREF_SECTION_CLIP},
+			{.type=LAYOUT_SECTION,.section=PREF_SECTION_HISTORY},
+			{.type=LAYOUT_SECTION,.section=PREF_SECTION_FILTERING},
+			{.type=LAYOUT_SECTION,.section=PREF_SECTION_MISC},
+			{}
+		}},
+		{.type=LAYOUT_PAGE,.title=N_("History _Popup"),.children = (const preferences_layout_t[]) {
+			{.type=LAYOUT_SECTION,.section=PREF_SECTION_POPUP},
+			{}
+		}},
+		{.type=LAYOUT_PAGE,.title=N_("_Hotkeys"),.children = (const preferences_layout_t[]) {
+			{.type=LAYOUT_SECTION,.section=PREF_SECTION_HOTKEYS},
+			{}
+		}},
+		{}
+	}
 };
 
 /***************************************************************************/
@@ -744,10 +786,69 @@ static void add_section(pref_section_t sec, GtkWidget *parent)
 
 }
 
+void add_layout(const preferences_layout_t * layout, GtkWidget * parent)
+{
+	switch (layout->type)
+	{
+		case LAYOUT_NOTEBOOK:
+		{
+			GtkWidget * notebook = gtk_notebook_new();
+
+			GtkBox * parent_box = NULL;
+			if (GTK_IS_DIALOG(parent))
+				parent_box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(parent)));
+			else if (GTK_IS_BOX(parent))
+				parent_box = GTK_BOX(parent);
+
+			gtk_box_pack_start(parent_box, notebook, TRUE, TRUE, 2);
+
+			for (int i = 0; layout->children && layout->children[i].type; i++)
+			{
+				const preferences_layout_t * child_layout = &layout->children[i];
+				if (child_layout->type != LAYOUT_PAGE)
+				{
+					g_print("wrong layout type: %d (%d expected)\n", (int) child_layout->type, (int) LAYOUT_PAGE);
+					continue;
+				}
+				add_layout(child_layout, notebook);
+			}
+			break;
+		}
+
+		case LAYOUT_PAGE:
+		{
+			GtkWidget* page = gtk_alignment_new(0.50, 0.0, 1.0, 0.0);
+			gtk_alignment_set_padding((GtkAlignment*)page, 12, 6, 12, 6);
+			gtk_notebook_append_page((GtkNotebook*)parent, page,
+				label_new_with_markup_and_mnemonic(_(layout->title)));
+			GtkWidget* vbox = gtk_vbox_new(FALSE, 12);
+			gtk_container_add((GtkContainer*)page, vbox);
+
+			for (int i = 0; layout->children && layout->children[i].type; i++)
+			{
+				const preferences_layout_t * child_layout = &layout->children[i];
+				add_layout(child_layout, vbox);
+			}
+			break;
+		}
+
+		case LAYOUT_SECTION:
+		{
+			add_section(layout->section, parent);
+			break;
+		}
+
+		case LAYOUT_NONE:
+		{
+			break;
+		}
+
+	}
+}
+
 /* Shows the preferences dialog on the given tab */
 void show_preferences(gint tab)
 {
-	GtkWidget *frame,*label,*alignment,*vbox;
 	init_pref();
 
 	/* Create the dialog */
@@ -764,52 +865,12 @@ void show_preferences(gint tab)
 	gtk_window_set_icon((GtkWindow*)dialog, gtk_widget_render_icon(dialog, GTK_STOCK_PREFERENCES, -1, NULL));
 	gtk_window_set_resizable((GtkWindow*)dialog, FALSE);
 
-	GtkWidget* notebook = gtk_notebook_new();
-	gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area (GTK_DIALOG(dialog))), notebook, TRUE, TRUE, 2);
-
-	GtkWidget* page_behavior = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-	gtk_alignment_set_padding((GtkAlignment*)page_behavior, 12, 6, 12, 6);
-	gtk_notebook_append_page((GtkNotebook*)notebook, page_behavior,
-		label_new_with_markup_and_mnemonic(_("_General")));
-	GtkWidget* vbox_behavior = gtk_vbox_new(FALSE, 12);
-	gtk_container_add((GtkContainer*)page_behavior, vbox_behavior);
-
-	add_section(PREF_SECTION_CLIP, vbox_behavior);
-	add_section(PREF_SECTION_HISTORY, vbox_behavior);
-	add_section(PREF_SECTION_FILTERING, vbox_behavior);
-	add_section(PREF_SECTION_MISC,vbox_behavior);
-
-	GtkWidget* page_display = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-	gtk_alignment_set_padding((GtkAlignment*)page_display, 12, 6, 12, 6);
-	gtk_notebook_append_page((GtkNotebook*)notebook, page_display, label_new_with_markup_and_mnemonic(_("_Popup")));
-	GtkWidget* vbox_display = gtk_vbox_new(FALSE, 12);
-	gtk_container_add((GtkContainer*)page_display, vbox_display);
-
-	add_section(PREF_SECTION_POPUP,vbox_display);
-
-	GtkWidget* page_extras = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-	gtk_alignment_set_padding((GtkAlignment*)page_extras, 12, 6, 12, 6);
-	gtk_notebook_append_page((GtkNotebook*)notebook, page_extras, label_new_with_markup_and_mnemonic(_("_Hotkeys")));
-	GtkWidget* vbox_extras = gtk_vbox_new(FALSE, 12);
-	gtk_container_add((GtkContainer*)page_extras, vbox_extras);
-
-	frame = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type((GtkFrame*)frame, GTK_SHADOW_NONE);
-	label = gtk_label_new(NULL);
-	gtk_label_set_markup((GtkLabel*)label, _("<b>Hotkeys</b>"));
-	gtk_frame_set_label_widget((GtkFrame*)frame, label);
-	alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-	gtk_alignment_set_padding((GtkAlignment*)alignment, 12, 0, 12, 0);
-	gtk_container_add((GtkContainer*)frame, alignment);
-	vbox = gtk_vbox_new(FALSE, 2);
-	gtk_container_add((GtkContainer*)alignment, vbox);
-	add_section(PREF_SECTION_HOTKEYS,vbox);
-	gtk_box_pack_start((GtkBox*)vbox_extras,frame,FALSE,FALSE,0);
+	add_layout(&preferences_layout, dialog);
 
 	update_pref_widgets();
 
 	gtk_widget_show_all(dialog);
-	gtk_notebook_set_current_page((GtkNotebook*)notebook, tab);
+	//gtk_notebook_set_current_page((GtkNotebook*)notebook, tab);
 	if (gtk_dialog_run((GtkDialog*)dialog) == GTK_RESPONSE_ACCEPT)
 	{
 		/* Apply and save preferences */
