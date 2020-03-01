@@ -29,7 +29,6 @@
 #define DEF_SYNCHRONIZE       FALSE
 #define DEF_SAVE_HISTORY      TRUE
 #define DEF_HISTORY_LIMIT     25
-#define DEF_HYPERLINKS_ONLY   FALSE
 #define DEF_ITEM_LENGTH       50
 #define DEF_ITEM_LENGTH_MAX   200
 #define DEF_ELLIPSIZE         2
