@@ -37,15 +37,14 @@
 #define DEF_NO_ICON           FALSE
 
 /**allow lower nibble to become the number of items of this type  */
-#define PREF_TYPE_TOGGLE 0x10
-#define PREF_TYPE_SPIN   0x20
-#define PREF_TYPE_COMBO  0x30
-#define PREF_TYPE_ENTRY  0x40 /**gchar *  */
-#define PREF_TYPE_ALIGN  0x50 /**label, then align box  */
-#define PREF_TYPE_FRAME  0x70 /**frame for each section  */
-#define PREF_TYPE_MASK	 0xF0 
-#define PREF_TYPE_NMASK	 0xF
-#define PREF_TYPE_SINGLE_LINE 1
+typedef enum {
+	PREF_TYPE_NONE,
+	PREF_TYPE_TOGGLE,
+	PREF_TYPE_SPIN,
+	PREF_TYPE_COMBO,
+	PREF_TYPE_ENTRY,
+	PREF_TYPE_FRAME
+} pref_type_t;
 
 typedef enum {
 	PREF_SECTION_NONE,
@@ -80,13 +79,13 @@ static const char * ellipsize_values[] = {
 };
 
 struct pref_item {
-	gchar *name;     /** name/id to find pref  */
-	gint32 val;      /** int/bool value*/
-	gchar *cval;     /** string value  */
-	GtkWidget *w;    /** widget in menu  */
-	gint type;       /** PREF_TYPE_  */
-	gchar *desc;     /** name in GUI */
-	gchar *tooltip;  /** tooltip in GUI */
+	gchar *name;      /** name/id to find pref  */
+	gint32 val;       /** int/bool value*/
+	gchar *cval;      /** string value  */
+	GtkWidget *w;     /** widget in menu  */
+	pref_type_t type; /** the widget type */
+	gchar *desc;      /** name in GUI */
+	gchar *tooltip;   /** tooltip in GUI */
 	pref_section_t section; /** section in GUI */
 	gchar *sig;      /** signal, if any  */
 	GCallback sfunc; /** function to call  */
@@ -411,7 +410,7 @@ static void apply_preferences()
   for (i=0;NULL != myprefs[i].desc; ++i){
 		if(NULL == myprefs[i].name)
 			continue;
-		switch(myprefs[i].type&PREF_TYPE_MASK){
+		switch(myprefs[i].type){
 			case PREF_TYPE_TOGGLE:
 				myprefs[i].val=gtk_toggle_button_get_active((GtkToggleButton*)myprefs[i].w);
 				break;
@@ -449,7 +448,7 @@ static void save_preferences()
 		if (NULL == myprefs[i].name)
 			continue;
 
-		switch(myprefs[i].type&PREF_TYPE_MASK)
+		switch(myprefs[i].type)
 		{
 			case PREF_TYPE_TOGGLE:
 				g_key_file_set_boolean(rc_key, "rc", myprefs[i].name, myprefs[i].val);
@@ -497,7 +496,7 @@ void read_preferences(void)
 			if (NULL == myprefs[i].name)
 				continue;
 			err=NULL;
-			switch (myprefs[i].type&PREF_TYPE_MASK)
+			switch (myprefs[i].type)
 			{
 				case PREF_TYPE_TOGGLE:
 					z = g_key_file_get_boolean(rc_key, "rc", myprefs[i].name, &err);
@@ -559,7 +558,7 @@ static int update_pref_widgets(void)
 	int i,rtn=0;
 	for (i=0;NULL !=myprefs[i].desc; ++i){
 		if(NULL != myprefs[i].name){
-			switch (myprefs[i].type&PREF_TYPE_MASK){
+			switch (myprefs[i].type){
 				case PREF_TYPE_TOGGLE:
 					gtk_toggle_button_set_active((GtkToggleButton*)myprefs[i].w, myprefs[i].val);
 					break;
@@ -619,7 +618,7 @@ static void add_section(pref_section_t sec, GtkWidget *parent)
 	for (int i=get_first_pref(sec);sec==myprefs[i].section; ++i)
 	{
 		GtkWidget * pref_box = NULL;
-		switch (myprefs[i].type & PREF_TYPE_MASK){
+		switch (myprefs[i].type){
 			case PREF_TYPE_FRAME:/**must be first in section, since it sets vbox.  */
 			{
 				myprefs[i].w= gtk_frame_new(NULL);
@@ -666,7 +665,7 @@ static void add_section(pref_section_t sec, GtkWidget *parent)
 						gtk_widget_set_tooltip_text(label1, _(myprefs[i].tooltip));
 				}
 
-				if ((myprefs[i].type & PREF_TYPE_MASK) == PREF_TYPE_SPIN)
+				if (myprefs[i].type == PREF_TYPE_SPIN)
 				{
 					myprefs[i].w = gtk_spin_button_new(
 						(GtkAdjustment*)gtk_adjustment_new (
@@ -681,13 +680,13 @@ static void add_section(pref_section_t sec, GtkWidget *parent)
 					gtk_box_pack_start((GtkBox*)hbox, myprefs[i].w, TRUE, TRUE, 0);
 					gtk_spin_button_set_update_policy((GtkSpinButton*)myprefs[i].w, GTK_UPDATE_IF_VALID);
 				}
-				else if ((myprefs[i].type & PREF_TYPE_MASK) == PREF_TYPE_ENTRY)
+				else if (myprefs[i].type == PREF_TYPE_ENTRY)
 				{
 					myprefs[i].w = gtk_entry_new();
 					gtk_entry_set_width_chars((GtkEntry*)myprefs[i].w, 10);
 					gtk_box_pack_start((GtkBox*)hbox,myprefs[i].w, TRUE, TRUE, 0);
 				}
-				else if ((myprefs[i].type & PREF_TYPE_MASK) == PREF_TYPE_COMBO)
+				else if (myprefs[i].type == PREF_TYPE_COMBO)
 				{
 					myprefs[i].w = gtk_combo_box_new_text();
 					for (int i_value = 0; myprefs[i].combo_values && myprefs[i].combo_values[i_value]; i_value++)
