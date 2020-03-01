@@ -350,6 +350,8 @@ void update_status_icon(void)
 	}
 }
 
+/******************************************************************************/
+
 void on_history_hotkey(char *keystring, gpointer user_data)
 {
 	show_history_menu(0, GDK_CURRENT_TIME);
@@ -359,6 +361,11 @@ void on_menu_hotkey(char *keystring, gpointer user_data)
 {
 	show_main_menu(status_icon, 0, 0, NULL);
 }
+
+/******************************************************************************/
+
+void on_enable_cm_hotkey(char *keystring, gpointer user_data) { set_pref_int32("enabled", TRUE); }
+void on_disable_cm_hotkey(char *keystring, gpointer user_data) { set_pref_int32("enabled", FALSE); }
 
 /******************************************************************************/
 

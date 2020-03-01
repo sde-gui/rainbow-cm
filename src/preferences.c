@@ -34,6 +34,8 @@
 #define DEF_ELLIPSIZE         2
 #define DEF_HISTORY_KEY       "<Mod4>Insert"
 #define DEF_MENU_KEY          "<Mod4><Ctrl>Insert"
+#define DEF_ENABLE_CM_KEY     "<Mod4>plus"
+#define DEF_DISABLE_CM_KEY    "<Mod4>minus"
 #define DEF_NO_ICON           FALSE
 
 /**allow lower nibble to become the number of items of this type  */
@@ -89,6 +91,7 @@ struct pref_item {
 	pref_section_t section; /** section in GUI */
 	gchar *sig;      /** signal, if any  */
 	GCallback sfunc; /** function to call  */
+	gboolean value_set; /** == TRUE if value was set at least once */
 	struct myadj *adj;
 	const char **combo_values;
 };
@@ -100,10 +103,13 @@ static struct pref2int *pref2int_mapper=NULL;
 static struct keys keylist[]={
 	{.name="menu_key",.keyval=DEF_MENU_KEY,.keyfunc=(void *)on_menu_hotkey},
 	{.name="history_key",.keyval=DEF_HISTORY_KEY,.keyfunc=(void *)on_history_hotkey},
-	{.name=NULL,.keyval=NULL,.keyfunc=(void *)0},
+	{.name="enable_cm_key",.keyval=DEF_ENABLE_CM_KEY,.keyfunc=(void *)on_enable_cm_hotkey},
+	{.name="disable_cm_key",.keyval=DEF_DISABLE_CM_KEY,.keyfunc=(void *)on_disable_cm_hotkey},
+	{},
 };
+
 /**must be in same order as above struct array  */
-static gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY};
+static gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY, DEF_ENABLE_CM_KEY, DEF_DISABLE_CM_KEY};
 static struct pref_item myprefs[]={
 
 	{.section=PREF_SECTION_CLIP,.type=PREF_TYPE_FRAME,.desc=N_("<b>Clipboard Management</b>")},
@@ -172,8 +178,10 @@ static struct pref_item myprefs[]={
 	},
 
 	{.section=PREF_SECTION_HOTKEYS,.type=PREF_TYPE_FRAME,.desc=N_("<b>Hotkeys</b>")},
-	{.section=PREF_SECTION_HOTKEYS,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc=N_("Men_u key combination"),.tooltip=NULL},
-	{.section=PREF_SECTION_HOTKEYS,.name="history_key",.type=PREF_TYPE_ENTRY,.desc=N_("_History key combination:"),.tooltip=NULL},
+	{.section=PREF_SECTION_HOTKEYS,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc=N_("Display the Main Men_u"),.tooltip=NULL},
+	{.section=PREF_SECTION_HOTKEYS,.name="history_key",.type=PREF_TYPE_ENTRY,.desc=N_("Display the _History Menu"),.tooltip=NULL},
+	{.section=PREF_SECTION_HOTKEYS,.name="enable_cm_key",.type=PREF_TYPE_ENTRY,.desc=N_("_Enable Clipboard Management"),.tooltip=NULL},
+	{.section=PREF_SECTION_HOTKEYS,.name="disable_cm_key",.type=PREF_TYPE_ENTRY,.desc=N_("_Disable Clipboard Management"),.tooltip=NULL},
 
 	{.section=PREF_SECTION_MISC,.type=PREF_TYPE_FRAME,.desc=N_("<b>Miscellaneous</b>")},
 	{.section=PREF_SECTION_MISC,.name="display_status_icon",.val=TRUE,
@@ -319,6 +327,7 @@ int set_pref_int32(char *name, gint32 val)
 	if(NULL == p)
 		return -1;
 	p->val=val;
+	p->value_set = TRUE;
 	pref_mapper(NULL, PM_UPDATE);
 	return 0;
 }
@@ -343,6 +352,7 @@ int set_pref_string (char *name, char *string)
 	if(p->cval != NULL)
 		g_free(p->cval);
 	p->cval=g_strdup(string);
+	p->value_set = TRUE;
 	return 0;
 }
 
@@ -564,36 +574,46 @@ void read_preferences(void)
 			{
 				case PREF_TYPE_TOGGLE:
 					z = g_key_file_get_boolean(rc_key, "rc", myprefs[i].name, &err);
-					if (NULL == err)
+					if (!err)
+					{
 						myprefs[i].val = z;
+						myprefs[i].value_set = TRUE;
+					}
 					break;
 				case PREF_TYPE_COMBO:
 				case PREF_TYPE_SPIN:
 					z = g_key_file_get_integer(rc_key, "rc", myprefs[i].name, &err);
-					if (NULL ==err)
+					if (!err)
+					{
 						myprefs[i].val = z;
+						myprefs[i].value_set = TRUE;
+					}
 					break;
 				case PREF_TYPE_ENTRY:
 					c=g_key_file_get_string(rc_key, "rc", myprefs[i].name, &err);
-					if (NULL == err)
+					if (!err)
+					{
 						myprefs[i].cval=c;
+						myprefs[i].value_set = TRUE;
+					}
 					break;
 				default: 
 					continue;
 					break;
 			}
 
-			if (NULL != err)
-				g_printf("Unable to load pref '%s'\n", myprefs[i].name);
+			/*if (NULL != err)
+				g_printf("Unable to load pref '%s'\n", myprefs[i].name);*/
 		}
 		/* Check for errors and set default values if any */
 		check_sanity();
 	}
-	else
+
+	/* Load default key values */
+	for (int i = 0; keylist[i].name; i++)
 	{
-		/* Init default keys on error */
-		int i;
-		for (i = 0; NULL != keylist[i].name; ++i)
+		struct pref_item * pref = get_pref(keylist[i].name);
+		if (pref && !pref->value_set)
 			set_pref_string(keylist[i].name, def_keyvals[i]);
 	}
 
