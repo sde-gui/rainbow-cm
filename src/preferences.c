@@ -129,7 +129,6 @@ static struct pref_item myprefs[]={
 	{.section=PREF_SECTION_HISTORY,.type=PREF_TYPE_FRAME,.desc=N_("<b>History</b>")},
 	{.section=PREF_SECTION_HISTORY,.name="save_history",.type=PREF_TYPE_TOGGLE,.desc=N_("Sa_ve history across sessions"),.tooltip=N_("Keep history in a file across sessions."),.val=DEF_SAVE_HISTORY},
 	{.adj=&align_hist_lim,.section=PREF_SECTION_HISTORY,.name="history_limit",.type=PREF_TYPE_SPIN,.desc=N_("History limit: {{}} entries"),.tooltip=N_("Maximum number of clipboard entries to keep"),.val=DEF_HISTORY_LIMIT},
-	{.section=PREF_SECTION_HISTORY,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tooltip=NULL},
 
 	{.section=PREF_SECTION_FILTERING,.type=PREF_TYPE_FRAME,.desc=N_("<b>Filtering</b>")},
 	{.section=PREF_SECTION_FILTERING,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc=N_("Ignore whitespace strings"),.tooltip=N_("Ignore any clipboard data that contain only whitespace characters (space, tab, new line etc).")},
@@ -138,7 +137,6 @@ static struct pref_item myprefs[]={
 	 .desc=N_("<b>Settings of the History menu</b>"),
 	 .tooltip=NULL,.val=0
 	},
-	{.section=PREF_SECTION_POPUP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tooltip=NULL},
 	{.section=PREF_SECTION_POPUP,
 	 .name="type_search",.type=PREF_TYPE_TOGGLE,
 	 .desc=N_("Search _As You Type"),
@@ -158,7 +156,6 @@ static struct pref_item myprefs[]={
 	 .desc=N_("_Limit the History menu width to {{}} characters"),
 	 .tooltip=NULL,
 	 .val=DEF_ITEM_LENGTH},
-	{.section=PREF_SECTION_POPUP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tooltip=NULL},
 	{.section=PREF_SECTION_NONE,
 	 .name="ellipsize",.type=PREF_TYPE_COMBO,
 	 .desc=N_("Omit characters in the:"),
