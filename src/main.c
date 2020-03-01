@@ -394,10 +394,8 @@ static void application_init(void)
 	g_signal_connect(selection_primary, "owner-change", (GCallback) on_clipboard_owner_change, NULL);
 	g_signal_connect(selection_clipboard, "owner-change", (GCallback) on_clipboard_owner_change, NULL);
 
-  /* Bind global keys */
-  keybinder_init();
-	for (i=0;NULL != keylist[i].name; ++i)
-		bind_itemkey(keylist[i].name,keylist[i].keyfunc);
+	keybinder_init();
+	bind_keys();
 
 	update_status_icon();
 }
@@ -429,8 +427,8 @@ int main(int argc, char *argv[])
 	application_init();
 	gtk_main();
 
-	keybinder_unbind(get_pref_string("history_key"), on_history_hotkey);
-	keybinder_unbind(get_pref_string("menu_key"), on_menu_hotkey);
+	unbind_keys();
+
 	/*
 	g_free(prefs.history_key);
 	g_free(prefs.menu_key);

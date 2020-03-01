@@ -39,14 +39,16 @@ struct pref2int {
 #define PM_INIT 0
 #define PM_UPDATE 1
 
-extern struct keys keylist[];
 /*struct pref_item* get_pref(char *name); */
 void pref_mapper (struct pref2int *m, int mode);
 gint32 set_pref_int32(char *name, gint32 val);
 gint32 get_pref_int32 (char *name);
 int set_pref_string (char *name, char *string);
 gchar *get_pref_string (char *name);
-void bind_itemkey(char *name, void (fhk)(char *, gpointer) );
+
+void bind_keys(void);
+void unbind_keys(void);
+
 void read_preferences(void);
 
 void show_preferences(void);

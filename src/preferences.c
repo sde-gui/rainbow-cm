@@ -97,7 +97,7 @@ static void check_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 static struct pref2int *pref2int_mapper=NULL;
 
 /**hot key list, mainly for easy sanity checks.  */
-struct keys keylist[]={
+static struct keys keylist[]={
 	{.name="menu_key",.keyval=DEF_MENU_KEY,.keyfunc=(void *)on_menu_hotkey},
 	{.name="history_key",.keyval=DEF_HISTORY_KEY,.keyfunc=(void *)on_history_hotkey},
 	{.name=NULL,.keyval=NULL,.keyfunc=(void *)0},
@@ -358,7 +358,7 @@ gchar *get_pref_string (char *name)
 
 /***************************************************************************/
 
-void unbind_itemkey(char *name, void *fhk )
+static void unbind_itemkey(char *name, void *fhk )
 {
 	
 	struct pref_item *p=get_pref(name);
@@ -373,7 +373,7 @@ void unbind_itemkey(char *name, void *fhk )
 
 /***************************************************************************/
 
-void bind_itemkey(char *name, void (fhk)(char *, gpointer) )
+static void bind_itemkey(char *name, void (fhk)(char *, gpointer) )
 {
 	struct pref_item *p=get_pref(name);
 	if(NULL ==p){
@@ -381,6 +381,22 @@ void bind_itemkey(char *name, void (fhk)(char *, gpointer) )
 	}
 	if(NULL != p->cval && 0 != p->cval)
 		keybinder_bind(p->cval, fhk, NULL);
+}
+
+/***************************************************************************/
+
+void bind_keys(void)
+{
+	for (int i = 0; keylist[i].name; i++)
+		bind_itemkey(keylist[i].name, keylist[i].keyfunc);
+}
+
+/***************************************************************************/
+
+void unbind_keys(void)
+{
+	for (int i = 0; keylist[i].name; i++)
+		unbind_itemkey(keylist[i].name, keylist[i].keyfunc);
 }
 
 /***************************************************************************/
@@ -451,10 +467,9 @@ static void check_sanity(void)
 static void apply_preferences()
 {
 	int i;
+
 	/* Unbind the keys before binding new ones */
-	for (i=0;NULL != keylist[i].name; ++i)
-		unbind_itemkey(keylist[i].name,keylist[i].keyfunc);
-	
+	unbind_keys();
 	
 	for (i=0;NULL != myprefs[i].desc; ++i){
 		if(NULL == myprefs[i].name)
@@ -478,9 +493,7 @@ static void apply_preferences()
 	}
 	check_sanity();
 
-	for (i=0;NULL != keylist[i].name; ++i)
-		bind_itemkey(keylist[i].name,keylist[i].keyfunc);
-
+	bind_keys();
 	truncate_history();
 	update_status_icon();
 	pref_mapper(NULL, PM_UPDATE);
