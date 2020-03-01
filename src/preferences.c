@@ -42,7 +42,6 @@
 #define PREF_TYPE_COMBO  0x30
 #define PREF_TYPE_ENTRY  0x40 /**gchar *  */
 #define PREF_TYPE_ALIGN  0x50 /**label, then align box  */
-#define PREF_TYPE_SPACER 0x60
 #define PREF_TYPE_FRAME  0x70 /**frame for each section  */
 #define PREF_TYPE_MASK	 0xF0 
 #define PREF_TYPE_NMASK	 0xF
@@ -415,8 +414,6 @@ static void apply_preferences()
 			case PREF_TYPE_ENTRY:
 				myprefs[i].cval=g_strdup(gtk_entry_get_text((GtkEntry*)myprefs[i].w ));
 				break;
-			case PREF_TYPE_SPACER:
-				break;
 			default:
 				break;
 		}
@@ -453,8 +450,6 @@ static void save_preferences()
 				break;
 			case PREF_TYPE_ENTRY:
 				g_key_file_set_string(rc_key, "rc", myprefs[i].name, myprefs[i].cval);
-				break;
-			case PREF_TYPE_SPACER:
 				break;
 			default:
 				break;
@@ -509,8 +504,6 @@ void read_preferences(void)
 					c=g_key_file_get_string(rc_key, "rc", myprefs[i].name, &err);
 					if (NULL == err)
 						myprefs[i].cval=c;
-					break;
-				case PREF_TYPE_SPACER:
 					break;
 				default: 
 					continue;
@@ -568,8 +561,6 @@ static int update_pref_widgets(void)
 					break;
 				case PREF_TYPE_ENTRY:
 					gtk_entry_set_text((GtkEntry*)myprefs[i].w, myprefs[i].cval);
-					break;
-				case PREF_TYPE_SPACER:
 					break;
 				default: 
 					rtn=-1;
@@ -715,13 +706,7 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 			case PREF_TYPE_COMBO: /**handled in show_preferences, only one so  */
 				continue;
 				break;
-			case PREF_TYPE_SPACER:
-				packit=myprefs[i].w=gtk_menu_item_new_with_label("");
-				child=gtk_bin_get_child((GtkBin *)packit);
-				gtk_misc_set_padding((GtkMisc *)child,0,0);
-				gtk_label_set_markup ((GtkLabel *)child, "<span size=\"0\"> </span>");
-				break;
-			
+
 			default: 
 				rtn=-1;
 				continue;
