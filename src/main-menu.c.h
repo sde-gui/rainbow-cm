@@ -87,7 +87,7 @@ static void on_preferences_menu_item_activated(GtkMenuItem *menu_item, gpointer 
 	/* FIXME: wrong way! */
 	/* This helps prevent multiple instances */
 	if (!gtk_grab_get_current()) {
-		show_preferences(0);
+		show_preferences();
 	}
 }
 

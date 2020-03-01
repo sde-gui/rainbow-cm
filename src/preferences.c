@@ -855,8 +855,7 @@ void add_layout(const preferences_layout_t * layout, GtkWidget * parent)
 	}
 }
 
-/* Shows the preferences dialog on the given tab */
-void show_preferences(gint tab)
+void show_preferences(void)
 {
 	init_pref();
 

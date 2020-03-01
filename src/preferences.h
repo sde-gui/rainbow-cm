@@ -49,7 +49,7 @@ gchar *get_pref_string (char *name);
 void bind_itemkey(char *name, void (fhk)(char *, gpointer) );
 void read_preferences(void);
 
-void show_preferences(gint tab);
+void show_preferences(void);
 
 G_END_DECLS
 
