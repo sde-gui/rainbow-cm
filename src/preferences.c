@@ -36,7 +36,6 @@
 #define DEF_MENU_KEY          "<Mod4><Ctrl>Insert"
 #define DEF_ENABLE_CM_KEY     "<Mod4>plus"
 #define DEF_DISABLE_CM_KEY    "<Mod4>minus"
-#define DEF_NO_ICON           FALSE
 
 /**allow lower nibble to become the number of items of this type  */
 typedef enum {
