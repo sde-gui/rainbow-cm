@@ -71,6 +71,14 @@ struct myadj align_hist_y={1,100,1,10};
 struct myadj align_data_lim={0,1000000,1,10};
 struct myadj align_hist_lim={5, MAX_HISTORY, 1, 10};
 struct myadj align_line_lim={5, DEF_ITEM_LENGTH_MAX, 1, 5};
+
+static const char * ellipsize_values[] = {
+	N_("beginning"),
+	N_("middle"),
+	N_("end"),
+	NULL
+};
+
 struct pref_item {
 	gchar *name;     /** name/id to find pref  */
 	gint32 val;      /** int/bool value*/
@@ -83,6 +91,7 @@ struct pref_item {
 	gchar *sig;      /** signal, if any  */
 	GCallback sfunc; /** function to call  */
 	struct myadj *adj;
+	const char **combo_values;
 };
 static struct pref_item dummy[2];
 static void check_toggled(GtkToggleButton *togglebutton, gpointer user_data);
@@ -155,11 +164,12 @@ static struct pref_item myprefs[]={
 	 .desc=N_("_Limit the History menu width to {{}} characters"),
 	 .tooltip=NULL,
 	 .val=DEF_ITEM_LENGTH},
-	{.section=PREF_SECTION_NONE,
+	{.section=PREF_SECTION_POPUP,
 	 .name="ellipsize",.type=PREF_TYPE_COMBO,
-	 .desc=N_("Omit characters in the:"),
+	 .desc=N_("Omit characters at the {{}} of the line"),
 	 .tooltip=NULL,
-	 .val=DEF_ELLIPSIZE
+	 .val=DEF_ELLIPSIZE,
+	 .combo_values=ellipsize_values
 	},
 
 	{.section=PREF_SECTION_HOTKEYS,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc=N_("Men_u key combination"),.tooltip=NULL},
@@ -641,6 +651,7 @@ static void add_section(pref_section_t sec, GtkWidget *parent)
 			
 			case PREF_TYPE_SPIN:
 			case PREF_TYPE_ENTRY:
+			case PREF_TYPE_COMBO:
 			{
 				GtkWidget * label1;
 				GtkWidget * label2;
@@ -676,6 +687,15 @@ static void add_section(pref_section_t sec, GtkWidget *parent)
 					gtk_entry_set_width_chars((GtkEntry*)myprefs[i].w, 10);
 					gtk_box_pack_start((GtkBox*)hbox,myprefs[i].w, TRUE, TRUE, 0);
 				}
+				else if ((myprefs[i].type & PREF_TYPE_MASK) == PREF_TYPE_COMBO)
+				{
+					myprefs[i].w = gtk_combo_box_new_text();
+					for (int i_value = 0; myprefs[i].combo_values && myprefs[i].combo_values[i_value]; i_value++)
+					{
+						gtk_combo_box_append_text((GtkComboBox*)myprefs[i].w, myprefs[i].combo_values[i_value]);
+					}
+					gtk_box_pack_start((GtkBox*)hbox, myprefs[i].w, TRUE, TRUE, 0);
+				}
 
 				if (label1)
 					gtk_label_set_mnemonic_widget((GtkLabel *) label1, myprefs[i].w);
@@ -692,10 +712,8 @@ static void add_section(pref_section_t sec, GtkWidget *parent)
 
 				break;
 			}
-			case PREF_TYPE_COMBO: /**handled in show_preferences, only one so  */
-				continue;
 
-			default: 
+			default:
 				continue;
 		}
 		
@@ -730,8 +748,7 @@ static void add_section(pref_section_t sec, GtkWidget *parent)
 /* Shows the preferences dialog on the given tab */
 void show_preferences(gint tab)
 {
-	GtkWidget *frame,*label,*alignment,*hbox, *vbox;
-	struct pref_item *p;
+	GtkWidget *frame,*label,*alignment,*vbox;
 	init_pref();
 
 	/* Create the dialog */
@@ -761,6 +778,7 @@ void show_preferences(gint tab)
 	add_section(PREF_SECTION_CLIP, vbox_behavior);
 	add_section(PREF_SECTION_HISTORY, vbox_behavior);
 	add_section(PREF_SECTION_FILTERING, vbox_behavior);
+	add_section(PREF_SECTION_MISC,vbox_behavior);
 
 	GtkWidget* page_display = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
 	gtk_alignment_set_padding((GtkAlignment*)page_display, 12, 6, 12, 6);
@@ -769,32 +787,6 @@ void show_preferences(gint tab)
 	gtk_container_add((GtkContainer*)page_display, vbox_display);
 
 	add_section(PREF_SECTION_POPUP,vbox_display);
-	
-	frame = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type((GtkFrame*)frame, GTK_SHADOW_NONE);
-	label = gtk_label_new(NULL);
-	gtk_label_set_markup((GtkLabel*)label, _("<b>Omitting</b>"));
-	gtk_frame_set_label_widget((GtkFrame*)frame, label);
-	alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-	gtk_alignment_set_padding((GtkAlignment*)alignment, 12, 0, 12, 0);
-	gtk_container_add((GtkContainer*)frame, alignment);
-	vbox = gtk_vbox_new(FALSE, 2);
-	gtk_container_add((GtkContainer*)alignment, vbox);
-
-	hbox = gtk_hbox_new(FALSE, 4);
-	gtk_box_pack_start((GtkBox*)vbox, hbox, FALSE, FALSE, 0);
-	p=get_pref("ellipsize");
-	label = gtk_label_new(_(p->desc));
-	gtk_misc_set_alignment((GtkMisc*)label, 0.0, 0.50);
-	gtk_box_pack_start((GtkBox*)hbox, label, FALSE, FALSE, 0);
-	p->w = gtk_combo_box_new_text();
-	gtk_combo_box_append_text((GtkComboBox*)p->w, _("Beginning"));
-	gtk_combo_box_append_text((GtkComboBox*)p->w, _("Middle"));
-	gtk_combo_box_append_text((GtkComboBox*)p->w, _("End"));
-	gtk_box_pack_start((GtkBox*)hbox, p->w, FALSE, FALSE, 0);
-	gtk_box_pack_start((GtkBox*)vbox_display, frame, FALSE, FALSE, 0);
-	
-	add_section(PREF_SECTION_MISC,vbox_display);
 
 	GtkWidget* page_extras = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
 	gtk_alignment_set_padding((GtkAlignment*)page_extras, 12, 6, 12, 6);
