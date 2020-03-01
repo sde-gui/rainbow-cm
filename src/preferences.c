@@ -615,14 +615,12 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 {
 	int i,rtn=0;
 	int single_st, single_is;
-	gint connect;
 	GtkWidget *hbox, *label, *child, *vbox, *alignment;
 	GtkWidget* packit;
 	vbox=parent;
 	single_st=single_is=0;
 	for (i=get_first_pref(sec);sec==myprefs[i].section; ++i)
 	{
-		connect = 1;
 		single_st=(myprefs[i].type&(PREF_TYPE_NMASK|PREF_TYPE_SINGLE_LINE)); /**deterimine if we are in single line  */
 		
 		if(single_st && !single_is){ /**start of single line  */
@@ -733,8 +731,24 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 		/**tooltips are set on the label of the spin box, not the widget and are handled above */
 		if (PREF_TYPE_SPIN != myprefs[i].type && NULL != myprefs[i].tooltip)
 			gtk_widget_set_tooltip_text(myprefs[i].w, _(myprefs[i].tooltip));
-		
-		if (NULL != myprefs[i].sig && connect)
+
+		if (myprefs[i].sig && !myprefs[i].sfunc)
+		{
+			const char * name = myprefs[i].name;
+			if (!name)
+				name = "(NULL)";
+			g_print("warning: pref \"%s\": no callback handler is set for the signal \"%s\"\n", name, myprefs[i].sig);
+		}
+
+		if (!myprefs[i].sig && myprefs[i].sfunc)
+		{
+			const char * name = myprefs[i].name;
+			if (!name)
+				name = "(NULL)";
+			g_print("warning: pref \"%s\": the callback handler is set, but the signal name is empty\n", name);
+		}
+
+		if (myprefs[i].sig && myprefs[i].sfunc)
 			g_signal_connect((GObject*)myprefs[i].w, myprefs[i].sig, (GCallback)myprefs[i].sfunc, myprefs[i].w);
 		
 		if (single_is)
