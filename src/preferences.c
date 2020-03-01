@@ -602,33 +602,22 @@ static void label_pair_from_markup(const gchar * markup, GtkWidget ** p_label1, 
 
 /***************************************************************************/
 
-static int add_section(pref_section_t sec, GtkWidget *parent)
+static void add_section(pref_section_t sec, GtkWidget *parent)
 {
-	int i,rtn=0;
-	int single_st, single_is;
-	GtkWidget *hbox, *label, *vbox, *alignment;
-	GtkWidget* packit;
-	vbox=parent;
-	single_st=single_is=0;
-	for (i=get_first_pref(sec);sec==myprefs[i].section; ++i)
+	GtkWidget * vbox = parent;
+
+	for (int i=get_first_pref(sec);sec==myprefs[i].section; ++i)
 	{
-		single_st=(myprefs[i].type&(PREF_TYPE_NMASK|PREF_TYPE_SINGLE_LINE)); /**deterimine if we are in single line  */
-		
-		if(single_st && !single_is){ /**start of single line  */
-			hbox = gtk_hbox_new(FALSE, 2);  /**create hbox  */
-			/*g_printf("alloc %p hbox\n",hbox); */
-			single_is=1;
-		}
-		
+		GtkWidget * pref_box = NULL;
 		switch (myprefs[i].type & PREF_TYPE_MASK){
 			case PREF_TYPE_FRAME:/**must be first in section, since it sets vbox.  */
 			{
 				myprefs[i].w= gtk_frame_new(NULL);
 				gtk_frame_set_shadow_type((GtkFrame*)	myprefs[i].w, GTK_SHADOW_NONE);
-				label = gtk_label_new(NULL);							/**<b>myprefs[i].desc  */
+				GtkWidget * label = gtk_label_new(NULL);
 				gtk_label_set_markup((GtkLabel*)label, _(myprefs[i].desc));
 				gtk_frame_set_label_widget((GtkFrame*)	myprefs[i].w, label);
-				alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
+				GtkWidget * alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
 				gtk_alignment_set_padding((GtkAlignment*)alignment, 12, 0, 12, 0);
 				gtk_container_add((GtkContainer*)	myprefs[i].w, alignment);
 				vbox = gtk_vbox_new(FALSE, 2);
@@ -646,7 +635,7 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 
 				gtk_label_set_mnemonic_widget((GtkLabel *) label1, myprefs[i].w);
 
-				packit = myprefs[i].w;
+				pref_box = myprefs[i].w;
 				break;
 			}
 			
@@ -657,8 +646,7 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 				GtkWidget * label2;
 				label_pair_from_markup(_(myprefs[i].desc), &label1, &label2);
 
-				if(!single_is)
-					hbox = gtk_hbox_new(label2 == NULL, 4);
+				GtkWidget * hbox = gtk_hbox_new(label2 == NULL, 4);
 
 				if (label1) {
 					gtk_misc_set_alignment((GtkMisc *) label1, 0.0, 0.50);
@@ -688,7 +676,6 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 					gtk_entry_set_width_chars((GtkEntry*)myprefs[i].w, 10);
 					gtk_box_pack_start((GtkBox*)hbox,myprefs[i].w, TRUE, TRUE, 0);
 				}
-				packit = hbox;
 
 				if (label1)
 					gtk_label_set_mnemonic_widget((GtkLabel *) label1, myprefs[i].w);
@@ -701,16 +688,15 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 					gtk_label_set_mnemonic_widget((GtkLabel *) label2, myprefs[i].w);
 				}
 
+				pref_box = hbox;
+
 				break;
 			}
 			case PREF_TYPE_COMBO: /**handled in show_preferences, only one so  */
 				continue;
-				break;
 
 			default: 
-				rtn=-1;
 				continue;
-				break;
 		}
 		
 		/**tooltips are set on the label of the spin box, not the widget and are handled above */
@@ -736,30 +722,9 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 		if (myprefs[i].sig && myprefs[i].sfunc)
 			g_signal_connect((GObject*)myprefs[i].w, myprefs[i].sig, (GCallback)myprefs[i].sfunc, myprefs[i].w);
 		
-		if (single_is)
-		{
-			if(packit != hbox)
-			{
-				/*g_printf("Packed a slwidget %p<-%p\n",hbox, myprefs[i].w); */
-				gtk_box_pack_start((GtkBox*)hbox,myprefs[i].w , FALSE, FALSE, 0);	
-			}
-			/**else already packed above.  */
-		}
-		else
-		{
-			gtk_box_pack_start((GtkBox*)vbox, packit, TRUE, TRUE, 0);
-		}
-		/**check for end of single line.  */
-		single_st=(myprefs[i+1].type&(PREF_TYPE_NMASK|PREF_TYPE_SINGLE_LINE)); /**deterimine if we are in single line  */
-		if(single_is && !single_st) /**end of single line  */
-		{
-			/**exp fill padding  */
-			gtk_box_pack_start((GtkBox*)vbox, hbox, TRUE, TRUE, 0);		/**pack the hbox into parent  */
-			/*g_printf("pack %p<-%p hbox\n",vbox,hbox); */
-			single_is=0;
-		}
+		gtk_box_pack_start((GtkBox*)vbox, pref_box, TRUE, TRUE, 0);
 	}
-	return rtn;
+
 }
 
 /* Shows the preferences dialog on the given tab */
