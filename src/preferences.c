@@ -48,16 +48,15 @@
 #define PREF_TYPE_NMASK	 0xF
 #define PREF_TYPE_SINGLE_LINE 1
 
-enum {
-	PREF_SEC_NONE,
-	PREF_SEC_CLIP,
-	PREF_SEC_HISTORY,
-	PREF_SEC_FILTERING,
-	PREF_SEC_POPUP,
-	PREF_SEC_HOTKEYS,
-	PREF_SEC_MISC
-};
-
+typedef enum {
+	PREF_SECTION_NONE,
+	PREF_SECTION_CLIP,
+	PREF_SECTION_HISTORY,
+	PREF_SECTION_FILTERING,
+	PREF_SECTION_POPUP,
+	PREF_SECTION_HOTKEYS,
+	PREF_SECTION_MISC
+} pref_section_t;
 
 #define RC_VERSION_NAME "RCVersion"
 #define RC_VERSION      1
@@ -74,16 +73,16 @@ struct myadj align_data_lim={0,1000000,1,10};
 struct myadj align_hist_lim={5, MAX_HISTORY, 1, 10};
 struct myadj align_line_lim={5, DEF_ITEM_LENGTH_MAX, 1, 5};
 struct pref_item {
-	gchar *name;		/**name/id to find pref  */
-	gint32 val;			/**int val  */
-	gchar *cval;	 /**char val  */
-	GtkWidget *w;	 /**widget in menu  */
-	gint type;		/**PREF_TYPE_  */
-	gchar *desc; /**shows up in menu  */
-	gchar *tip; /**tooltip */
-	gint sec;	/**clipboard,history, misc,display,hotkeys  */
-	gchar *sig;			 /**signal, if any  */
-	GCallback sfunc; /**function to call  */
+	gchar *name;     /** name/id to find pref  */
+	gint32 val;      /** int/bool value*/
+	gchar *cval;     /** string value  */
+	GtkWidget *w;    /** widget in menu  */
+	gint type;       /** PREF_TYPE_  */
+	gchar *desc;     /** name in GUI */
+	gchar *tooltip;  /** tooltip in GUI */
+	pref_section_t section; /** section in GUI */
+	gchar *sig;      /** signal, if any  */
+	GCallback sfunc; /** function to call  */
 	struct myadj *adj;
 };
 static struct pref_item dummy[2];
@@ -100,79 +99,79 @@ struct keys keylist[]={
 static gchar *def_keyvals[]={ DEF_MENU_KEY,DEF_HISTORY_KEY};
 static struct pref_item myprefs[]={
 
-	{.sec=PREF_SEC_CLIP,.type=PREF_TYPE_FRAME,.desc=N_("<b>Clipboard Management</b>")},
-	{.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
+	{.section=PREF_SECTION_CLIP,.type=PREF_TYPE_FRAME,.desc=N_("<b>Clipboard Management</b>")},
+	{.sig="toggled",.sfunc=(GCallback)check_toggled,.section=PREF_SECTION_CLIP,
 	 .name="enabled",.type=PREF_TYPE_TOGGLE,
 	 .desc=N_("<b>Clipboard Managment _Enabled</b>"),
-	 .tip=N_("When unchecked, fully disables clipboard managment and clipboard tracking.\n\nThis option is useful to temporarely disable the Rainbow Clipboard Manager, if you encounter a conflict between the Manager and another application, or if you copy and paste confidential information that should not be visible in the clipboard history."),
+	 .tooltip=N_("When unchecked, fully disables clipboard managment and clipboard tracking.\n\nThis option is useful to temporarely disable the Rainbow Clipboard Manager, if you encounter a conflict between the Manager and another application, or if you copy and paste confidential information that should not be visible in the clipboard history."),
 	 .val=TRUE},
-	{.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
+	{.sig="toggled",.sfunc=(GCallback)check_toggled,.section=PREF_SECTION_CLIP,
 	 .name="track_clipboard_selection",.type=PREF_TYPE_TOGGLE,
 	 .desc=N_("Track the history of the <b>C_lipboard</b> buffer"),
-	 .tip=N_("If checked, Rainbow CM keeps track of changes in the clipboard (X11 CLIPBOARD SELECTION)."),
+	 .tooltip=N_("If checked, Rainbow CM keeps track of changes in the clipboard (X11 CLIPBOARD SELECTION)."),
 	 .val=TRUE},
-	{.sig="toggled",.sfunc=(GCallback)check_toggled,.sec=PREF_SEC_CLIP,
+	{.sig="toggled",.sfunc=(GCallback)check_toggled,.section=PREF_SECTION_CLIP,
 	 .name="track_primary_selection",.type=PREF_TYPE_TOGGLE,
 	 .desc=N_("Track the history of the <b>_Selected Text</b> buffer"),
-	 .tip=N_("If checked, Rainbow CM keeps track of changes in the selected text (X11 PRIMARY SELECTION)."),
+	 .tooltip=N_("If checked, Rainbow CM keeps track of changes in the selected text (X11 PRIMARY SELECTION)."),
 	 .val=FALSE},
-	{.sec=PREF_SEC_CLIP,
+	{.section=PREF_SECTION_CLIP,
 	 .name="synchronize",.type=PREF_TYPE_TOGGLE,
 	 .desc=N_("Synchroni_ze clipboards"),
-	 .tip=N_("If checked, Rainbow CM forces the both buffers to keep the same data."),
+	 .tooltip=N_("If checked, Rainbow CM forces the both buffers to keep the same data."),
 	 .val=DEF_SYNCHRONIZE},
-	{.sec=PREF_SEC_CLIP,
+	{.section=PREF_SECTION_CLIP,
 	.name="restore_empty",.type=PREF_TYPE_TOGGLE,
 	.desc=N_("Restore the contents of the e_mpty clipboard."),
-	.tip=N_("Restore the contents of the clipboard when it gets empty.\n\nThe clipboard typically gets empty when an application that has held the clipboard contents is closed."),
+	.tooltip=N_("Restore the contents of the clipboard when it gets empty.\n\nThe clipboard typically gets empty when an application that has held the clipboard contents is closed."),
 	.val=1},
 
-	{.sec=PREF_SEC_HISTORY,.type=PREF_TYPE_FRAME,.desc=N_("<b>History</b>")},
-	{.sec=PREF_SEC_HISTORY,.name="save_history",.type=PREF_TYPE_TOGGLE,.desc=N_("Sa_ve history across sessions"),.tip=N_("Keep history in a file across sessions."),.val=DEF_SAVE_HISTORY},
-	{.adj=&align_hist_lim,.sec=PREF_SEC_HISTORY,.name="history_limit",.type=PREF_TYPE_SPIN,.desc=N_("History limit: {{}} entries"),.tip=N_("Maximum number of clipboard entries to keep"),.val=DEF_HISTORY_LIMIT},
-	{.sec=PREF_SEC_HISTORY,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
+	{.section=PREF_SECTION_HISTORY,.type=PREF_TYPE_FRAME,.desc=N_("<b>History</b>")},
+	{.section=PREF_SECTION_HISTORY,.name="save_history",.type=PREF_TYPE_TOGGLE,.desc=N_("Sa_ve history across sessions"),.tooltip=N_("Keep history in a file across sessions."),.val=DEF_SAVE_HISTORY},
+	{.adj=&align_hist_lim,.section=PREF_SECTION_HISTORY,.name="history_limit",.type=PREF_TYPE_SPIN,.desc=N_("History limit: {{}} entries"),.tooltip=N_("Maximum number of clipboard entries to keep"),.val=DEF_HISTORY_LIMIT},
+	{.section=PREF_SECTION_HISTORY,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tooltip=NULL},
 
-	{.sec=PREF_SEC_FILTERING,.type=PREF_TYPE_FRAME,.desc=N_("<b>Filtering</b>")},
-	{.sec=PREF_SEC_FILTERING,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc=N_("Ignore whitespace strings"),.tip=N_("Ignore any clipboard data that contain only whitespace characters (space, tab, new line etc).")},
+	{.section=PREF_SECTION_FILTERING,.type=PREF_TYPE_FRAME,.desc=N_("<b>Filtering</b>")},
+	{.section=PREF_SECTION_FILTERING,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc=N_("Ignore whitespace strings"),.tooltip=N_("Ignore any clipboard data that contain only whitespace characters (space, tab, new line etc).")},
 
-	{.sec=PREF_SEC_POPUP,.type=PREF_TYPE_FRAME,
+	{.section=PREF_SECTION_POPUP,.type=PREF_TYPE_FRAME,
 	 .desc=N_("<b>Settings of the History menu</b>"),
-	 .tip=NULL,.val=0
+	 .tooltip=NULL,.val=0
 	},
-	{.sec=PREF_SEC_POPUP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
-	{.sec=PREF_SEC_POPUP,
+	{.section=PREF_SECTION_POPUP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tooltip=NULL},
+	{.section=PREF_SECTION_POPUP,
 	 .name="type_search",.type=PREF_TYPE_TOGGLE,
 	 .desc=N_("Search _As You Type"),
-	 .tip=N_("Enables Instant Search in the History menu.\n\nType a word when the History menu is shown to see only the entries that contains this word.")
+	 .tooltip=N_("Enables Instant Search in the History menu.\n\nType a word when the History menu is shown to see only the entries that contains this word.")
 	},
-	{.sec=PREF_SEC_POPUP,
+	{.section=PREF_SECTION_POPUP,
 	 .name="display_nonprinting_characters",.type=PREF_TYPE_TOGGLE,
 	 .desc=N_("Display _non-printing characters"),
-	 .tip=N_("Enables displaying of non-printing characters:\n\n"
+	 .tooltip=N_("Enables displaying of non-printing characters:\n\n"
 	  "The horizontal tab character: → (rightwards arrow).\n"
 	  "The space character: ␣ (open box).\n"
 	  "The new line character: ¶ (paragraph sign)."),
 	 .val=FALSE
 	},
-	{.adj=&align_line_lim,.sec=PREF_SEC_POPUP,
+	{.adj=&align_line_lim,.section=PREF_SECTION_POPUP,
 	 .name="item_length",.type=PREF_TYPE_SPIN,
 	 .desc=N_("_Limit the History menu width to {{}} characters"),
-	 .tip=NULL,
+	 .tooltip=NULL,
 	 .val=DEF_ITEM_LENGTH},
-	{.sec=PREF_SEC_POPUP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tip=NULL},
-	{.sec=PREF_SEC_NONE,
+	{.section=PREF_SECTION_POPUP,.name="nop",.type=PREF_TYPE_SPACER,.desc=" ",.tooltip=NULL},
+	{.section=PREF_SECTION_NONE,
 	 .name="ellipsize",.type=PREF_TYPE_COMBO,
 	 .desc=N_("Omit characters in the:"),
-	 .tip=NULL,
+	 .tooltip=NULL,
 	 .val=DEF_ELLIPSIZE
 	},
 
-	{.sec=PREF_SEC_HOTKEYS,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc=N_("Men_u key combination"),.tip=NULL},
-	{.sec=PREF_SEC_HOTKEYS,.name="history_key",.type=PREF_TYPE_ENTRY,.desc=N_("_History key combination:"),.tip=NULL},
+	{.section=PREF_SECTION_HOTKEYS,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc=N_("Men_u key combination"),.tooltip=NULL},
+	{.section=PREF_SECTION_HOTKEYS,.name="history_key",.type=PREF_TYPE_ENTRY,.desc=N_("_History key combination:"),.tooltip=NULL},
 
-	{.sec=PREF_SEC_NONE,.name="no_icon",.val=FALSE},
+	{.section=PREF_SECTION_NONE,.name="no_icon",.val=FALSE},
 
-	{.adj=NULL,.cval=NULL,.sig=NULL,.sec=PREF_SEC_NONE,.name=NULL,.desc=NULL},
+	{.adj=NULL,.cval=NULL,.sig=NULL,.section=PREF_SECTION_NONE,.name=NULL,.desc=NULL},
 };
 
 /***************************************************************************/
@@ -216,11 +215,11 @@ void pref_mapper (struct pref2int *m, int mode)
 
 /***************************************************************************/
 
-static int get_first_pref(int section)
+static int get_first_pref(pref_section_t section)
 {
 	int i;
 	for (i=0;NULL != myprefs[i].desc; ++i){
-		if(section == myprefs[i].sec){
+		if(section == myprefs[i].section){
 			return i;
 		}
 			
@@ -240,9 +239,9 @@ static int init_pref(void)
 	dummy[0].cval="dummy String";
 	dummy[0].w=NULL;
 	dummy[0].desc="Dummy desc";
-	dummy[0].tip="Dummy tip";
+	dummy[0].tooltip="Dummy tip";
 	dummy[1].name=NULL;
-	dummy[1].sec=PREF_SEC_NONE;
+	dummy[1].section=PREF_SECTION_NONE;
 	align_hist_y.upper=sy-100;
 	align_hist_x.upper=sx-100;
 	return 0;
@@ -615,7 +614,7 @@ static void label_pair_from_markup(const gchar * markup, GtkWidget ** p_label1, 
 
 /***************************************************************************/
 
-static int add_section(int sec, GtkWidget *parent)
+static int add_section(pref_section_t sec, GtkWidget *parent)
 {
 	int i,rtn=0;
 	int single_st, single_is;
@@ -624,7 +623,7 @@ static int add_section(int sec, GtkWidget *parent)
 	GtkWidget* packit;
 	vbox=parent;
 	single_st=single_is=0;
-	for (i=get_first_pref(sec);sec==myprefs[i].sec; ++i){
+	for (i=get_first_pref(sec);sec==myprefs[i].section; ++i){
 		connect=1;
 		single_st=(myprefs[i].type&(PREF_TYPE_NMASK|PREF_TYPE_SINGLE_LINE)); /**deterimine if we are in single line  */
 		
@@ -676,8 +675,8 @@ static int add_section(int sec, GtkWidget *parent)
 				if (label1) {
 					gtk_misc_set_alignment((GtkMisc *) label1, 0.0, 0.50);
 					gtk_box_pack_start((GtkBox *) hbox, label1, label2 == NULL, label2 == NULL, 0);
-					if (NULL != myprefs[i].tip)
-						gtk_widget_set_tooltip_text(label1, _(myprefs[i].tip));
+					if (NULL != myprefs[i].tooltip)
+						gtk_widget_set_tooltip_text(label1, _(myprefs[i].tooltip));
 				}
 
 				if ((myprefs[i].type & PREF_TYPE_MASK) == PREF_TYPE_SPIN)
@@ -709,8 +708,8 @@ static int add_section(int sec, GtkWidget *parent)
 				if (label2) {
 					gtk_misc_set_alignment((GtkMisc *) label2, 0.0, 0.50);
 					gtk_box_pack_start((GtkBox *) hbox, label2, FALSE, FALSE, 0);
-					if (NULL != myprefs[i].tip)
-						gtk_widget_set_tooltip_text(label2, _(myprefs[i].tip));
+					if (NULL != myprefs[i].tooltip)
+						gtk_widget_set_tooltip_text(label2, _(myprefs[i].tooltip));
 					gtk_label_set_mnemonic_widget((GtkLabel *) label2, myprefs[i].w);
 				}
 
@@ -733,8 +732,8 @@ static int add_section(int sec, GtkWidget *parent)
 		}
 		
 		/**tooltips are set on the label of the spin box, not the widget and are handled above */
-		if(PREF_TYPE_SPIN != myprefs[i].type && NULL != myprefs[i].tip)
-		  gtk_widget_set_tooltip_text(myprefs[i].w, _(myprefs[i].tip));
+		if(PREF_TYPE_SPIN != myprefs[i].type && NULL != myprefs[i].tooltip)
+		  gtk_widget_set_tooltip_text(myprefs[i].w, _(myprefs[i].tooltip));
 		
 		if(NULL != myprefs[i].sig && connect)
 			g_signal_connect((GObject*)myprefs[i].w, myprefs[i].sig, (GCallback)myprefs[i].sfunc, myprefs[i].w);
@@ -792,9 +791,9 @@ void show_preferences(gint tab)
 	GtkWidget* vbox_behavior = gtk_vbox_new(FALSE, 12);
 	gtk_container_add((GtkContainer*)page_behavior, vbox_behavior);
 
-	add_section(PREF_SEC_CLIP, vbox_behavior);
-	add_section(PREF_SEC_HISTORY, vbox_behavior);
-	add_section(PREF_SEC_FILTERING, vbox_behavior);
+	add_section(PREF_SECTION_CLIP, vbox_behavior);
+	add_section(PREF_SECTION_HISTORY, vbox_behavior);
+	add_section(PREF_SECTION_FILTERING, vbox_behavior);
 
 	GtkWidget* page_display = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
 	gtk_alignment_set_padding((GtkAlignment*)page_display, 12, 6, 12, 6);
@@ -802,7 +801,7 @@ void show_preferences(gint tab)
 	GtkWidget* vbox_display = gtk_vbox_new(FALSE, 12);
 	gtk_container_add((GtkContainer*)page_display, vbox_display);
 
-	add_section(PREF_SEC_POPUP,vbox_display);
+	add_section(PREF_SECTION_POPUP,vbox_display);
 	
 	frame = gtk_frame_new(NULL);
 	gtk_frame_set_shadow_type((GtkFrame*)frame, GTK_SHADOW_NONE);
@@ -828,7 +827,7 @@ void show_preferences(gint tab)
 	gtk_box_pack_start((GtkBox*)hbox, p->w, FALSE, FALSE, 0);
 	gtk_box_pack_start((GtkBox*)vbox_display, frame, FALSE, FALSE, 0);
 	
-	add_section(PREF_SEC_MISC,vbox_display);
+	add_section(PREF_SECTION_MISC,vbox_display);
 
 	GtkWidget* page_extras = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
 	gtk_alignment_set_padding((GtkAlignment*)page_extras, 12, 6, 12, 6);
@@ -846,7 +845,7 @@ void show_preferences(gint tab)
 	gtk_container_add((GtkContainer*)frame, alignment);
 	vbox = gtk_vbox_new(FALSE, 2);
 	gtk_container_add((GtkContainer*)alignment, vbox);
-	add_section(PREF_SEC_HOTKEYS,vbox);
+	add_section(PREF_SECTION_HOTKEYS,vbox);
 	gtk_box_pack_start((GtkBox*)vbox_extras,frame,FALSE,FALSE,0);
 
 	update_pref_widgets();
