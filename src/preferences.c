@@ -594,9 +594,9 @@ static void label_pair_from_markup(const gchar * markup, GtkWidget ** p_label1, 
 
 	gchar ** pair = g_strsplit(markup, "{{}}", 2);
 
-	if (pair && pair[0])
+	if (pair)
 	{
-		if (p_label1) {
+		if (pair[0] && p_label1) {
 			*p_label1 = label_new_with_markup_and_mnemonic(pair[0]);
 		}
 
@@ -620,8 +620,9 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 	GtkWidget* packit;
 	vbox=parent;
 	single_st=single_is=0;
-	for (i=get_first_pref(sec);sec==myprefs[i].section; ++i){
-		connect=1;
+	for (i=get_first_pref(sec);sec==myprefs[i].section; ++i)
+	{
+		connect = 1;
 		single_st=(myprefs[i].type&(PREF_TYPE_NMASK|PREF_TYPE_SINGLE_LINE)); /**deterimine if we are in single line  */
 		
 		if(single_st && !single_is){ /**start of single line  */
@@ -632,19 +633,20 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 		
 		switch (myprefs[i].type & PREF_TYPE_MASK){
 			case PREF_TYPE_FRAME:/**must be first in section, since it sets vbox.  */
-					myprefs[i].w= gtk_frame_new(NULL);
-				  gtk_frame_set_shadow_type((GtkFrame*)	myprefs[i].w, GTK_SHADOW_NONE);
-				  label = gtk_label_new(NULL);							/**<b>myprefs[i].desc  */
-				  gtk_label_set_markup((GtkLabel*)label, _(myprefs[i].desc));
-				  gtk_frame_set_label_widget((GtkFrame*)	myprefs[i].w, label);
-				  alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
-				  gtk_alignment_set_padding((GtkAlignment*)alignment, 12, 0, 12, 0);
-				  gtk_container_add((GtkContainer*)	myprefs[i].w, alignment);
-				  vbox = gtk_vbox_new(FALSE, 2);
-				  gtk_container_add((GtkContainer*)alignment, vbox);
-					gtk_box_pack_start((GtkBox*)parent,	myprefs[i].w,FALSE,FALSE,0);	
+			{
+				myprefs[i].w= gtk_frame_new(NULL);
+				gtk_frame_set_shadow_type((GtkFrame*)	myprefs[i].w, GTK_SHADOW_NONE);
+				label = gtk_label_new(NULL);							/**<b>myprefs[i].desc  */
+				gtk_label_set_markup((GtkLabel*)label, _(myprefs[i].desc));
+				gtk_frame_set_label_widget((GtkFrame*)	myprefs[i].w, label);
+				alignment = gtk_alignment_new(0.50, 0.50, 1.0, 1.0);
+				gtk_alignment_set_padding((GtkAlignment*)alignment, 12, 0, 12, 0);
+				gtk_container_add((GtkContainer*)	myprefs[i].w, alignment);
+				vbox = gtk_vbox_new(FALSE, 2);
+				gtk_container_add((GtkContainer*)alignment, vbox);
+				gtk_box_pack_start((GtkBox*)parent,	myprefs[i].w,FALSE,FALSE,0);
 				continue;
-				break;
+			}
 			case PREF_TYPE_TOGGLE:
 			{
 				GtkWidget * label1;
@@ -729,32 +731,36 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 		}
 		
 		/**tooltips are set on the label of the spin box, not the widget and are handled above */
-		if(PREF_TYPE_SPIN != myprefs[i].type && NULL != myprefs[i].tooltip)
-		  gtk_widget_set_tooltip_text(myprefs[i].w, _(myprefs[i].tooltip));
+		if (PREF_TYPE_SPIN != myprefs[i].type && NULL != myprefs[i].tooltip)
+			gtk_widget_set_tooltip_text(myprefs[i].w, _(myprefs[i].tooltip));
 		
-		if(NULL != myprefs[i].sig && connect)
+		if (NULL != myprefs[i].sig && connect)
 			g_signal_connect((GObject*)myprefs[i].w, myprefs[i].sig, (GCallback)myprefs[i].sfunc, myprefs[i].w);
 		
-		if(single_is){
-			if(packit != hbox){
+		if (single_is)
+		{
+			if(packit != hbox)
+			{
 				/*g_printf("Packed a slwidget %p<-%p\n",hbox, myprefs[i].w); */
 				gtk_box_pack_start((GtkBox*)hbox,myprefs[i].w , FALSE, FALSE, 0);	
 			}
 			/**else already packed above.  */
-		}	else
-																							/**espand fill padding  */
+		}
+		else
+		{
 			gtk_box_pack_start((GtkBox*)vbox, packit, TRUE, TRUE, 0);
-	/**check for end of single line.  */
+		}
+		/**check for end of single line.  */
 		single_st=(myprefs[i+1].type&(PREF_TYPE_NMASK|PREF_TYPE_SINGLE_LINE)); /**deterimine if we are in single line  */
-		if(single_is && !single_st){/**end of single line  */
-																							/**exp fill padding  */
+		if(single_is && !single_st) /**end of single line  */
+		{
+			/**exp fill padding  */
 			gtk_box_pack_start((GtkBox*)vbox, hbox, TRUE, TRUE, 0);		/**pack the hbox into parent  */
 			/*g_printf("pack %p<-%p hbox\n",vbox,hbox); */
 			single_is=0;
 		}
 	}
 	return rtn;
-	
 }
 
 /* Shows the preferences dialog on the given tab */
