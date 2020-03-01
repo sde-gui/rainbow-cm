@@ -383,15 +383,18 @@ static void set_keys_from_prefs(void)
 static void check_sanity(void)
 {
 	gint32 x;
- 	x=get_pref_int32("history_limit");
-  if ((!x) || (x > MAX_HISTORY) || (x < 0))
-    set_pref_int32("history_limit",DEF_HISTORY_LIMIT);
-	x=get_pref_int32("item_length");
-  if ((!x) || (x > DEF_ITEM_LENGTH_MAX) || (x < 0))
-    set_pref_int32("item_length",DEF_ITEM_LENGTH);
-	x=get_pref_int32("ellipsize");
-  if ((!x) || (x > 3) || (x < 0))
-     set_pref_int32("ellipsize",DEF_ELLIPSIZE);
+	x = get_pref_int32("history_limit");
+	if ((!x) || (x > MAX_HISTORY) || (x < 0))
+		set_pref_int32("history_limit",DEF_HISTORY_LIMIT);
+
+	x = get_pref_int32("item_length");
+	if ((!x) || (x > DEF_ITEM_LENGTH_MAX) || (x < 0))
+		set_pref_int32("item_length",DEF_ITEM_LENGTH);
+
+	x = get_pref_int32("ellipsize");
+	if ((!x) || (x > 3) || (x < 0))
+		set_pref_int32("ellipsize",DEF_ELLIPSIZE);
+
 	set_keys_from_prefs();
 }
 /* Apply the new preferences */
@@ -438,15 +441,16 @@ static void apply_preferences()
 
 static void save_preferences()
 {
-	int i;
-  /* Create key */
-  GKeyFile* rc_key = g_key_file_new();
+	GKeyFile* rc_key = g_key_file_new();
 	g_key_file_set_integer(rc_key, "rc", RC_VERSION_NAME, RC_VERSION);
-  /* Add values */
-	for (i=0;NULL != myprefs[i].desc; ++i){
-		if(NULL == myprefs[i].name)
+
+	for (int i = 0; NULL != myprefs[i].desc; ++i)
+	{
+		if (NULL == myprefs[i].name)
 			continue;
-		switch(myprefs[i].type&PREF_TYPE_MASK){
+
+		switch(myprefs[i].type&PREF_TYPE_MASK)
+		{
 			case PREF_TYPE_TOGGLE:
 				g_key_file_set_boolean(rc_key, "rc", myprefs[i].name, myprefs[i].val);
 				break;
@@ -463,13 +467,13 @@ static void save_preferences()
 				break;
 		}
 	}
-  /* Check config and data directories */
-  check_dirs();
-  /* Save key to file */
-  gchar* rc_file = g_build_filename(g_get_user_config_dir(), PREFERENCES_FILE, NULL);
-  g_key_file_save_to_file(rc_key, rc_file, NULL);
-  g_key_file_free(rc_key);
-  g_free(rc_file);
+
+	check_dirs();
+
+	gchar* rc_file = g_build_filename(g_get_user_config_dir(), PREFERENCES_FILE, NULL);
+	g_key_file_save_to_file(rc_key, rc_file, NULL);
+	g_key_file_free(rc_key);
+	g_free(rc_file);
 }
 
 
@@ -478,57 +482,66 @@ static void save_preferences()
 void read_preferences(void)
 {
 	gchar *c,*rc_file = g_build_filename(g_get_user_config_dir(), PREFERENCES_FILE, NULL);
-  gint32 z;
-  GError *err=NULL;
+
+	gint32 z;
+	GError *err=NULL;
+
 	init_pref();
-  /* Create key */
-  GKeyFile* rc_key = g_key_file_new();
-  if (g_key_file_load_from_file(rc_key, rc_file, G_KEY_FILE_NONE, NULL)) {
+
+	GKeyFile* rc_key = g_key_file_new();
+	if (g_key_file_load_from_file(rc_key, rc_file, G_KEY_FILE_NONE, NULL))
+	{
 		int i;
-		i=g_key_file_get_integer(rc_key, "rc", RC_VERSION_NAME,&err); /**this begins in 1.1.8  */
-		/* Load values */
-		for (i=0;NULL != myprefs[i].desc; ++i){
-			if(NULL == myprefs[i].name)
+		i=g_key_file_get_integer(rc_key, "rc", RC_VERSION_NAME,&err);
+
+		for (i = 0; NULL != myprefs[i].desc; ++i)
+		{
+			if (NULL == myprefs[i].name)
 				continue;
-		  err=NULL;
-			switch(myprefs[i].type&PREF_TYPE_MASK){
+			err=NULL;
+			switch (myprefs[i].type&PREF_TYPE_MASK)
+			{
 				case PREF_TYPE_TOGGLE:
-				  z=g_key_file_get_boolean(rc_key, "rc", myprefs[i].name,&err);
-				  if( NULL ==err)
-							myprefs[i].val=z;
+					z = g_key_file_get_boolean(rc_key, "rc", myprefs[i].name, &err);
+					if (NULL == err)
+						myprefs[i].val = z;
 					break;
 				case PREF_TYPE_COMBO:
 				case PREF_TYPE_SPIN:
-				  z=g_key_file_get_integer(rc_key, "rc", myprefs[i].name,&err);
-				  if( NULL ==err)
-							myprefs[i].val=z;
+					z = g_key_file_get_integer(rc_key, "rc", myprefs[i].name, &err);
+					if (NULL ==err)
+						myprefs[i].val = z;
 					break;
 				case PREF_TYPE_ENTRY:
-				  c=g_key_file_get_string(rc_key, "rc", myprefs[i].name, &err);
-				  if( NULL ==err)
+					c=g_key_file_get_string(rc_key, "rc", myprefs[i].name, &err);
+					if (NULL == err)
 						myprefs[i].cval=c;
 					break;
 				case PREF_TYPE_SPACER:
-				break;
+					break;
 				default: 
 					continue;
 					break;
 			}
-			if(NULL != err)
-				g_printf("Unable to load pref '%s'\n",myprefs[i].name);
+
+			if (NULL != err)
+				g_printf("Unable to load pref '%s'\n", myprefs[i].name);
 		}
-    /* Check for errors and set default values if any */
-    check_sanity();
-  }
-  else  { /* Init default keys on error */
-	  int i;
-		
-		for (i=0;NULL != keylist[i].name; ++i)
-			set_pref_string(keylist[i].name,def_keyvals[i]);
-  }
+		/* Check for errors and set default values if any */
+		check_sanity();
+	}
+	else
+	{
+		/* Init default keys on error */
+		int i;
+		for (i = 0; NULL != keylist[i].name; ++i)
+			set_pref_string(keylist[i].name, def_keyvals[i]);
+	}
+
 	pref_mapper(NULL, PM_UPDATE);
-  g_key_file_free(rc_key);
-  g_free(rc_file);
+
+	g_key_file_free(rc_key);
+	g_free(rc_file);
 }
 
 /* Called when clipboard checks are pressed */
