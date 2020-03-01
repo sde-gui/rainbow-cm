@@ -606,7 +606,7 @@ static int add_section(pref_section_t sec, GtkWidget *parent)
 {
 	int i,rtn=0;
 	int single_st, single_is;
-	GtkWidget *hbox, *label, *child, *vbox, *alignment;
+	GtkWidget *hbox, *label, *vbox, *alignment;
 	GtkWidget* packit;
 	vbox=parent;
 	single_st=single_is=0;
