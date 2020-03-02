@@ -7,8 +7,7 @@ DISTCLEANFILES = *.bak *.log *~
 EXTRA_DIST = \
 	m4 \
 	autogen.sh \
-	config.rpath \
-	m4/ChangeLog \
+	ChangeLog \
 	$(desktop_DATA) \
 	$(autostart_DATA) \
 	intltool-merge.in \
