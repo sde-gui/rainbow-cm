@@ -189,7 +189,7 @@ static struct pref_item myprefs[]={
 	{.section=PREF_SECTION_MISC,.name="display_status_icon",.val=TRUE,
 	 .type=PREF_TYPE_TOGGLE,
 	 .desc=N_("Displa_y the status icon"),
-	 .tooltip=N_("Display the status icon the notification area for accessing the application"),},
+	 .tooltip=N_("Display the status icon in the notification area for accessing the application"),},
 
 	{.adj=NULL,.cval=NULL,.sig=NULL,.section=PREF_SECTION_NONE,.name=NULL,.desc=NULL},
 };
