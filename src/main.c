@@ -369,6 +369,64 @@ void on_disable_cm_hotkey(char *keystring, gpointer user_data) { set_pref_int32(
 
 /******************************************************************************/
 
+void on_run_command_hotkey(char *keystring, gpointer user_data)
+{
+	gint argc = 0;
+	gchar **argv = NULL;
+	GError *error = NULL;
+
+	gchar * text = get_clipboard_text(selection_primary);
+	if (!text)
+		goto out;
+
+	if (!g_shell_parse_argv(text, &argc, &argv, &error))
+	{
+		goto out;
+	}
+
+	if (!g_spawn_async(
+			g_get_tmp_dir(),
+			argv,
+			NULL, /* env */
+			G_SPAWN_SEARCH_PATH,
+			NULL, /* child_setup */
+			NULL, /* user_data */
+			NULL, /* child_pid */
+			&error
+	))
+	{
+		goto out;
+	}
+
+out:
+	if (error)
+	{
+		GtkWidget * dialog = gtk_message_dialog_new (
+			NULL,
+			GTK_DIALOG_DESTROY_WITH_PARENT,
+			GTK_MESSAGE_ERROR,
+			GTK_BUTTONS_CLOSE,
+			"Error running the command:\n"
+			"%s\n"
+			"\n"
+			"%s\n",
+			text,
+			error->message
+		);
+		gtk_dialog_run (GTK_DIALOG (dialog));
+		gtk_widget_destroy (dialog);
+	}
+
+	if (error)
+		g_error_free(error);
+	if (argv)
+		g_strfreev(argv);
+	if (text)
+		g_free(text);
+}
+
+/******************************************************************************/
+
 static void application_init(void)
 {
 	int i;
