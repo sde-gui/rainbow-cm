@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rainbow-cm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-02 09:09+0700\n"
-"PO-Revision-Date: 2020-03-02 09:29+0700\n"
+"PO-Revision-Date: 2020-03-02 09:34+0700\n"
 "Last-Translator: Vadim Ushakov <igeekless@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -310,7 +310,7 @@ msgstr "Выключить управление буфером обмена"
 
 #: ../src/preferences.c:185
 msgid "<b>Miscellaneous</b>"
-msgstr "<b>Исключения</b>"
+msgstr "<b>Разное</b>"
 
 #: ../src/preferences.c:188
 msgid "Displa_y the status icon"
