@@ -890,12 +890,25 @@ void add_layout(const preferences_layout_t * layout, GtkWidget * parent)
 	}
 }
 
+static GtkWidget * preferences_dialog = NULL;
+
 void show_preferences(void)
 {
+	if (preferences_dialog)
+	{
+		/*
+			FIXME:
+				This doesn't bring the window to the current desktop,
+				contrary to what the gtk2 documentation states.
+		*/
+		gtk_window_present(GTK_WINDOW(preferences_dialog));
+		return;
+	}
+
 	init_pref();
 
 	/* Create the dialog */
-	GtkWidget* dialog = gtk_dialog_new_with_buttons(
+	GtkWidget * dialog = gtk_dialog_new_with_buttons(
 		_("Preferences"), NULL,
 		(GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR),
 		GTK_STOCK_CANCEL,
@@ -912,6 +925,8 @@ void show_preferences(void)
 
 	update_pref_widgets();
 
+	preferences_dialog = dialog;
+
 	gtk_widget_show_all(dialog);
 	//gtk_notebook_set_current_page((GtkNotebook*)notebook, tab);
 	if (gtk_dialog_run((GtkDialog*)dialog) == GTK_RESPONSE_ACCEPT)
@@ -920,6 +935,8 @@ void show_preferences(void)
 		apply_preferences();
 		save_preferences();
 	}
+
+	preferences_dialog = NULL;
+
 	gtk_widget_destroy(dialog);
 }
-

@@ -119,12 +119,15 @@ static const char * get_website_url(void)
 
 /******************************************************************************/
 
+static GtkWidget * about_dialog_ = NULL;
+
 void show_about_dialog()
 {
-	/* FIXME: meh! */
-	/* This helps prevent multiple instances */
-	if (gtk_grab_get_current())
+	if (about_dialog_)
+	{
+		gtk_window_present(GTK_WINDOW(about_dialog_));
 		return;
+	}
 
 	GtkWidget* about_dialog = gtk_about_dialog_new();
 
@@ -146,7 +149,10 @@ void show_about_dialog()
 	gtk_about_dialog_set_license((GtkAboutDialog*)about_dialog, get_licence());
 	gtk_about_dialog_set_logo_icon_name((GtkAboutDialog*)about_dialog, APP_ICON);
 
+	about_dialog_ = about_dialog;
 	gtk_dialog_run((GtkDialog*)about_dialog);
+	about_dialog_ = NULL;
+
 	gtk_widget_destroy(about_dialog);
 }
 
