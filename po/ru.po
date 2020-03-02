@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Parcellite\n"
+"Project-Id-Version: rainbow-cm\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-27 10:12+0700\n"
-"PO-Revision-Date: 2020-02-27 12:46+0700\n"
+"POT-Creation-Date: 2020-03-02 09:09+0700\n"
+"PO-Revision-Date: 2020-03-02 09:29+0700\n"
 "Last-Translator: Vadim Ushakov <igeekless@gmail.com>\n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -23,7 +23,7 @@ msgid "Rainbow Clipboard Manager"
 msgstr "Менеджер буфера Rainbow"
 
 #: ../data/rainbow-cm.desktop.in.h:2 ../data/rainbow-cm-startup.desktop.in.h:2
-#: ../src/main.c:1084
+#: ../src/main.c:338
 msgid "Clipboard Manager"
 msgstr "Менеджер буфера обмена"
 
@@ -56,52 +56,52 @@ msgstr "Сохранить историю буфера обмена"
 msgid "Clipboard History.txt"
 msgstr "История буфера обмена.txt"
 
-#: ../src/main.c:396
+#: ../src/history-menu.c.h:118
 msgid "Unpin"
 msgstr "Открепить"
 
-#: ../src/main.c:398
+#: ../src/history-menu.c.h:120
 msgid "Pin"
 msgstr "Прикрепить"
 
-#: ../src/main.c:427
-msgid "Clear the history?"
-msgstr "Очистить историю?"
-
 #. Nothing in history so adding empty
-#: ../src/main.c:932
+#: ../src/history-menu.c.h:596
 msgid "Empty"
 msgstr "Пусто"
 
-#: ../src/main.c:1017
+#: ../src/main-menu.c.h:50
+msgid "Clear the history?"
+msgstr "Очистить историю?"
+
+#: ../src/main-menu.c.h:134
 msgid "_Save History..."
 msgstr "С_охранить историю..."
 
-#: ../src/main.c:1017
+#: ../src/main-menu.c.h:134
 msgid "Save the clipboard history in a text file."
 msgstr "Сохранить историю в текстовый файл."
 
-#: ../src/main.c:1021
+#: ../src/main-menu.c.h:138
 msgid "_Clear History"
 msgstr "Очи_стить историю"
 
-#: ../src/main.c:1022
+#: ../src/main-menu.c.h:139
 msgid "Erase all entries from the clipboard history."
 msgstr "Стереть историю буфера обмена."
 
-#: ../src/main.c:1029
+#: ../src/main-menu.c.h:146
 msgid "_Enabled"
 msgstr "_Включен"
 
-#: ../src/main.c:1030
+#: ../src/main-menu.c.h:147
 msgid "Clipboard Management Disabled"
 msgstr "Управление буфером обмена отключено"
 
-#: ../src/main.c:1033
+#: ../src/main-menu.c.h:150
 msgid "Clipboard Management and History Tracking are enabled."
 msgstr "Включено управление буфером обмена и отслеживание истории."
 
-#: ../src/main.c:1034
+#: ../src/main-menu.c.h:151
 msgid ""
 "Clipboard Management and History Tracking are disabled.\n"
 "Click here to enable."
@@ -109,29 +109,39 @@ msgstr ""
 "Управление буфером обмена и отслеживание истории отключено.\n"
 "Нажмите сюда, чтобы включить."
 
-#: ../src/main.c:1044
+#: ../src/main-menu.c.h:161
 msgid "_Preferences"
 msgstr "_Настройки"
 
-#: ../src/main.c:1049
+#: ../src/main-menu.c.h:166
 msgid "_About"
 msgstr "_О программе"
 
-#: ../src/main.c:1056
+#: ../src/main-menu.c.h:173
 msgid "_Quit"
 msgstr "В_ыход"
 
-#. *Behaviour
-#. *Clipboards
-#: ../src/preferences.c:103
+#: ../src/preferences.c:76
+msgid "beginning"
+msgstr "начале"
+
+#: ../src/preferences.c:77
+msgid "middle"
+msgstr "середине"
+
+#: ../src/preferences.c:78
+msgid "end"
+msgstr "конце"
+
+#: ../src/preferences.c:114
 msgid "<b>Clipboard Management</b>"
 msgstr "<b>Управление буфером обмена</b>"
 
-#: ../src/preferences.c:106
+#: ../src/preferences.c:117
 msgid "<b>Clipboard Managment _Enabled</b>"
 msgstr "<b>В_ключить управление буфером обмена</b>"
 
-#: ../src/preferences.c:107
+#: ../src/preferences.c:118
 msgid ""
 "When unchecked, fully disables clipboard managment and clipboard tracking.\n"
 "\n"
@@ -148,11 +158,11 @@ msgstr ""
 "если вы копируете конфиденциальную информацию, которая не должна "
 "отображаться в истории."
 
-#: ../src/preferences.c:111
+#: ../src/preferences.c:122
 msgid "Track the history of the <b>C_lipboard</b> buffer"
 msgstr "Отслеживать историю буфера <b>обмена</b>"
 
-#: ../src/preferences.c:112
+#: ../src/preferences.c:123
 msgid ""
 "If checked, Rainbow CM keeps track of changes in the clipboard (X11 "
 "CLIPBOARD SELECTION)."
@@ -160,11 +170,11 @@ msgstr ""
 "Если включено, Rainbow CM отслеживает изменения в буфере обмена (X11 "
 "CLIPBOARD SELECTION)."
 
-#: ../src/preferences.c:116
+#: ../src/preferences.c:127
 msgid "Track the history of the <b>_Selected Text</b> buffer"
 msgstr "Отслеживать историю буфера <b>выделенного текста</b>"
 
-#: ../src/preferences.c:117
+#: ../src/preferences.c:128
 msgid ""
 "If checked, Rainbow CM keeps track of changes in the selected text (X11 "
 "PRIMARY SELECTION)."
@@ -172,62 +182,60 @@ msgstr ""
 "Если включено, Rainbow CM отслеживает изменения в буфере выделенного текста "
 "(X11 PRIMARY SELECTION)."
 
-#: ../src/preferences.c:121
+#: ../src/preferences.c:132
 msgid "Synchroni_ze clipboards"
 msgstr "Синхронизаци_я буферов обмена"
 
-#: ../src/preferences.c:122
+#: ../src/preferences.c:133
 msgid "If checked, Rainbow CM forces the both buffers to keep the same data."
 msgstr ""
 "Если включено, Rainbow CM автоматически копирует данные между двумя буферами."
 
-#: ../src/preferences.c:126
+#: ../src/preferences.c:137
 msgid "Restore the contents of the e_mpty clipboard."
-msgstr "Восстанавливать содержимое пустого буфера обмена"
+msgstr "Восстанавливать содержимое пустого буфера обмена."
 
-#: ../src/preferences.c:127
+#: ../src/preferences.c:138
 msgid ""
 "Restore the contents of the clipboard when it gets empty.\n"
 "\n"
 "The clipboard typically gets empty when an application that has held the "
 "clipboard contents is closed."
 msgstr ""
-"Восстанавливать содержимое, когда буфер бмена становится пуст.\n"
+"Восстанавливать содержимое, когда буфер обмена становится пуст.\n"
 "\n"
 "Обычно это происходит, когда приложение, поместившее в буфер обмена данные, "
 "закрывается."
 
-#. *History
-#: ../src/preferences.c:131
+#: ../src/preferences.c:141
 msgid "<b>History</b>"
 msgstr "<b>История</b>"
 
-#: ../src/preferences.c:132
+#: ../src/preferences.c:142
 msgid "Sa_ve history across sessions"
 msgstr "Сохранять историю буфера обмена между сеансами"
 
-#: ../src/preferences.c:132
+#: ../src/preferences.c:142
 msgid "Keep history in a file across sessions."
 msgstr "Хранить историю буфера обмена в файле между перезапусками программы."
 
-#: ../src/preferences.c:133
+#: ../src/preferences.c:143
 msgid "History limit: {{}} entries"
 msgstr "Длина истории: {{}} записей"
 
-#: ../src/preferences.c:133
+#: ../src/preferences.c:143
 msgid "Maximum number of clipboard entries to keep"
 msgstr "Макс. хранимое число записей буфера обмена"
 
-#. *Miscellaneous
-#: ../src/preferences.c:137
+#: ../src/preferences.c:145
 msgid "<b>Filtering</b>"
 msgstr "<b>Фильтр</b>"
 
-#: ../src/preferences.c:138
+#: ../src/preferences.c:146
 msgid "Ignore whitespace strings"
 msgstr "Игнорировать строки без видимых символов"
 
-#: ../src/preferences.c:138
+#: ../src/preferences.c:146
 msgid ""
 "Ignore any clipboard data that contain only whitespace characters (space, "
 "tab, new line etc)."
@@ -235,27 +243,30 @@ msgstr ""
 "Игнорировать данные в буфере обмена, состоящие из невидимых символов "
 "(пробел, перевод строки, табуляци и т.п.)."
 
-#: ../src/preferences.c:143
-msgid "<b>Settings of the History menu</b>"
-msgstr ""
-
 #: ../src/preferences.c:149
+msgid "<b>The History Popup Menu</b>"
+msgstr "<b>Всплывающее меню истории</b>"
+
+#: ../src/preferences.c:154
 msgid "Search _As You Type"
 msgstr "Искать по мере ввода"
 
-#: ../src/preferences.c:150
+#: ../src/preferences.c:155
 msgid ""
 "Enables Instant Search in the History menu.\n"
 "\n"
 "Type a word when the History menu is shown to see only the entries that "
 "contains this word."
 msgstr ""
+"Включает поиск в истории по мере ввода.\n"
+"\n"
+"Начните вводить слово и в меню будет показаны записи содержащие данное слово."
 
-#: ../src/preferences.c:154
+#: ../src/preferences.c:159
 msgid "Display _non-printing characters"
 msgstr "Отображать непечатаемые символы"
 
-#: ../src/preferences.c:155
+#: ../src/preferences.c:160
 msgid ""
 "Enables displaying of non-printing characters:\n"
 "\n"
@@ -263,60 +274,72 @@ msgid ""
 "The space character: ␣ (open box).\n"
 "The new line character: ¶ (paragraph sign)."
 msgstr ""
+"Включает показ непечатаемых символов:\n"
+"\n"
+"Табуляция: → (rightwards arrow).\n"
+"Пробел: ␣ (open box).\n"
+"Начало абзаца: ¶ (paragraph sign)."
 
-#: ../src/preferences.c:163
+#: ../src/preferences.c:168
 msgid "_Limit the History menu width to {{}} characters"
-msgstr ""
+msgstr "Ограничить ширину меню до {{}} символов"
 
-#: ../src/preferences.c:169
-msgid "Omit characters in the:"
-msgstr "Исключить элементы в:"
+#: ../src/preferences.c:173
+msgid "Omit characters at the {{}} of the line"
+msgstr "Исключать символы в {{}} строки"
 
-#. *hotkeys
-#: ../src/preferences.c:175
-msgid "Men_u key combination"
-msgstr "Вызов основного меню"
+#: ../src/preferences.c:179
+msgid "<b>Hotkeys</b>"
+msgstr "<b>Горячие клавиши</b>"
 
-#: ../src/preferences.c:176
-msgid "_History key combination:"
-msgstr "Вызов истории буфера обмена"
+#: ../src/preferences.c:180
+msgid "Display the Application Men_u"
+msgstr "Отобразить меню приложения"
 
-#. Create the dialog
-#: ../src/preferences.c:763
-msgid "Preferences"
-msgstr "Настройки"
+#: ../src/preferences.c:181
+msgid "Display the _History Menu"
+msgstr "Отобразить меню истории"
 
-#: ../src/preferences.c:778
+#: ../src/preferences.c:182
+msgid "_Enable Clipboard Management"
+msgstr "Включить управление буфером обмена"
+
+#: ../src/preferences.c:183
+msgid "_Disable Clipboard Management"
+msgstr "Выключить управление буфером обмена"
+
+#: ../src/preferences.c:185
+msgid "<b>Miscellaneous</b>"
+msgstr "<b>Исключения</b>"
+
+#: ../src/preferences.c:188
+msgid "Displa_y the status icon"
+msgstr "Отображать иконку состояния"
+
+#: ../src/preferences.c:189
+msgid ""
+"Display the status icon the notification area for accessing the application"
+msgstr "Отображать иконку в области уведомлений для доступа к приложению"
+
+#: ../src/preferences.c:216
 msgid "_General"
 msgstr "_Общие"
 
-#: ../src/preferences.c:792
-msgid "_Popup"
-msgstr "Всплывающее _меню"
+#: ../src/preferences.c:222
+msgid "History _Popup"
+msgstr "Меню истории"
 
-#: ../src/preferences.c:803
-msgid "<b>Omitting</b>"
-msgstr "<b>Пропуск</b>"
-
-#: ../src/preferences.c:819
-msgid "Beginning"
-msgstr "Начале"
-
-#: ../src/preferences.c:820
-msgid "Middle"
-msgstr "Середине"
-
-#: ../src/preferences.c:821
-msgid "End"
-msgstr "Конце"
-
-#: ../src/preferences.c:832
+#: ../src/preferences.c:226
 msgid "_Hotkeys"
 msgstr "Сочетания _клавиш"
 
-#: ../src/preferences.c:840
-msgid "<b>Hotkeys</b>"
-msgstr "<b>Горячие клавиши</b>"
+#: ../src/preferences.c:230
+msgid "_Miscellaneous"
+msgstr "_Разное"
+
+#: ../src/preferences.c:896
+msgid "Preferences"
+msgstr "Настройки"
 
 #: ../src/utils.c:44 ../src/utils.c:51
 #, c-format
@@ -324,19 +347,38 @@ msgid "Couldn't create directory: %s\n"
 msgstr "Не удается создать каталог: %s\n"
 
 #: ../src/utils.c:102
-msgid "Do not use status icon (Ctrl-Alt-P for menu)"
-msgstr "Не показывать иконку в трее (Ctrl-Alt-P для меню)"
+msgid "Do not display status icon"
+msgstr "Не отображать иконку состояния"
 
 #: ../src/utils.c:109
+msgid "Display status icon"
+msgstr "Отображать иконку состояния"
+
+#: ../src/utils.c:116
 msgid "Display Version info"
 msgstr "Показать информацию о версии"
 
-#: ../src/utils.c:121
+#: ../src/utils.c:128
 msgid ""
 "Copyright (c) 2015 Vadim Ushakov.\n"
 "Copyright (c) 2007-2014 Gilberto \"Xyhthyx\" Miralla and Doug Springer.\n"
 "Report bugs to <igeekless@gmail.com>."
 msgstr ""
+
+#~ msgid "Men_u key combination"
+#~ msgstr "Вызов основного меню"
+
+#~ msgid "_History key combination:"
+#~ msgstr "Вызов истории буфера обмена"
+
+#~ msgid "_Popup"
+#~ msgstr "Всплывающее _меню"
+
+#~ msgid "<b>Omitting</b>"
+#~ msgstr "<b>Пропуск</b>"
+
+#~ msgid "Do not use status icon (Ctrl-Alt-P for menu)"
+#~ msgstr "Не показывать иконку в трее (Ctrl-Alt-P для меню)"
 
 #~ msgid "Action"
 #~ msgstr "Действие"
@@ -364,9 +406,6 @@ msgstr ""
 
 #~ msgid "<b>Items</b>"
 #~ msgstr "<b>Элементы</b>"
-
-#~ msgid "<b>Miscellaneous</b>"
-#~ msgstr "<b>Исключения</b>"
 
 #~ msgid "<b>None</b>"
 #~ msgstr "<b>Нет</b>"
@@ -434,9 +473,6 @@ msgstr ""
 
 #~ msgid "Executing action..."
 #~ msgstr "Выполнить действие..."
-
-#~ msgid "_History"
-#~ msgstr "_История"
 
 #~ msgid ""
 #~ "If checked, does a search-as-you-type. Turns red if not found. Goes to "
