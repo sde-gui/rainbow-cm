@@ -146,7 +146,7 @@ static struct pref_item myprefs[]={
 	{.section=PREF_SECTION_FILTERING,.name="ignore_whiteonly",.type=PREF_TYPE_TOGGLE,.desc=N_("Ignore whitespace strings"),.tooltip=N_("Ignore any clipboard data that contain only whitespace characters (space, tab, new line etc).")},
 
 	{.section=PREF_SECTION_POPUP,.type=PREF_TYPE_FRAME,
-	 .desc=N_("<b>Settings of the History menu</b>"),
+	 .desc=N_("<b>The History Popup Menu</b>"),
 	 .tooltip=NULL,.val=0
 	},
 	{.section=PREF_SECTION_POPUP,
@@ -177,7 +177,7 @@ static struct pref_item myprefs[]={
 	},
 
 	{.section=PREF_SECTION_HOTKEYS,.type=PREF_TYPE_FRAME,.desc=N_("<b>Hotkeys</b>")},
-	{.section=PREF_SECTION_HOTKEYS,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc=N_("Display the Main Men_u"),.tooltip=NULL},
+	{.section=PREF_SECTION_HOTKEYS,.name="menu_key",.type=PREF_TYPE_ENTRY,.desc=N_("Display the Application Men_u"),.tooltip=NULL},
 	{.section=PREF_SECTION_HOTKEYS,.name="history_key",.type=PREF_TYPE_ENTRY,.desc=N_("Display the _History Menu"),.tooltip=NULL},
 	{.section=PREF_SECTION_HOTKEYS,.name="enable_cm_key",.type=PREF_TYPE_ENTRY,.desc=N_("_Enable Clipboard Management"),.tooltip=NULL},
 	{.section=PREF_SECTION_HOTKEYS,.name="disable_cm_key",.type=PREF_TYPE_ENTRY,.desc=N_("_Disable Clipboard Management"),.tooltip=NULL},
