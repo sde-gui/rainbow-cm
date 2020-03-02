@@ -113,7 +113,7 @@ struct cmdline_opts *parse_options(int argc, char* argv[])
             "version", 'v',
             0,
             G_OPTION_ARG_NONE,
-            &opts->version, _("Display Version info"),
+            &opts->version, _("Print the version information"),
             NULL
         },
         {
@@ -125,9 +125,9 @@ struct cmdline_opts *parse_options(int argc, char* argv[])
     /*g_option_context_set_summary(context,
         _(""));*/
     g_option_context_set_description(context, _(
-            "Copyright (c) 2015 Vadim Ushakov.\n"
+            "Copyright (c) 2015-2020 Vadim Ushakov.\n"
             "Copyright (c) 2007-2014 Gilberto \"Xyhthyx\" Miralla and Doug Springer.\n"
-            "Report bugs to <igeekless@gmail.com>."
+            "Report bugs to " PACKAGE_BUGREPORT "."
     ));
     g_option_context_add_main_entries(context, main_entries, NULL);
     g_option_context_parse(context, &argc, &argv, NULL);
