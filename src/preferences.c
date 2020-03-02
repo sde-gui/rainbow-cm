@@ -774,7 +774,7 @@ static void add_section(pref_section_t sec, GtkWidget *parent)
 					myprefs[i].w = gtk_combo_box_new_text();
 					for (int i_value = 0; myprefs[i].combo_values && myprefs[i].combo_values[i_value]; i_value++)
 					{
-						gtk_combo_box_append_text((GtkComboBox*)myprefs[i].w, myprefs[i].combo_values[i_value]);
+						gtk_combo_box_append_text((GtkComboBox*)myprefs[i].w, _(myprefs[i].combo_values[i_value]));
 					}
 					gtk_box_pack_start((GtkBox*)hbox, myprefs[i].w, TRUE, TRUE, 0);
 				}
