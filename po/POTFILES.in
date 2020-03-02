@@ -2,6 +2,8 @@ data/rainbow-cm.desktop.in
 data/rainbow-cm-startup.desktop.in
 src/about.c
 src/history.c
+src/history-menu.c.h
 src/main.c
+src/main-menu.c.h
 src/preferences.c
 src/utils.c
