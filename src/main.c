@@ -429,8 +429,6 @@ out:
 
 static void application_init(void)
 {
-	int i;
-
 	/* Create clipboard */
 	selection_primary = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
 	selection_clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
