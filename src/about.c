@@ -121,6 +121,12 @@ static const char * get_website_url(void)
 
 static GtkWidget * about_dialog_ = NULL;
 
+static void about_dialog_response_handler(GtkDialog * dialog, gint response_id, gpointer data)
+{
+	about_dialog_ = NULL;
+	gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
 void show_about_dialog()
 {
 	if (about_dialog_)
@@ -149,11 +155,10 @@ void show_about_dialog()
 	gtk_about_dialog_set_license((GtkAboutDialog*)about_dialog, get_licence());
 	gtk_about_dialog_set_logo_icon_name((GtkAboutDialog*)about_dialog, APP_ICON);
 
-	about_dialog_ = about_dialog;
-	gtk_dialog_run((GtkDialog*)about_dialog);
-	about_dialog_ = NULL;
+	g_signal_connect(about_dialog, "response", G_CALLBACK (about_dialog_response_handler), NULL);
 
-	gtk_widget_destroy(about_dialog);
+	about_dialog_ = about_dialog;
+	gtk_widget_show(about_dialog);
 }
 
 #endif /* ABOUT_H */

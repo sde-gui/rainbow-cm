@@ -892,6 +892,18 @@ void add_layout(const preferences_layout_t * layout, GtkWidget * parent)
 
 static GtkWidget * preferences_dialog = NULL;
 
+static void preferences_dialog_response_handler(GtkDialog * dialog, gint response_id, gpointer data)
+{
+	if (response_id == GTK_RESPONSE_ACCEPT)
+	{
+		apply_preferences();
+		save_preferences();
+	}
+
+	preferences_dialog = NULL;
+	gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
 void show_preferences(void)
 {
 	if (preferences_dialog)
@@ -910,7 +922,7 @@ void show_preferences(void)
 	/* Create the dialog */
 	GtkWidget * dialog = gtk_dialog_new_with_buttons(
 		_("Preferences"), NULL,
-		(GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR),
+		(GTK_DIALOG_NO_SEPARATOR),
 		GTK_STOCK_CANCEL,
 		GTK_RESPONSE_REJECT,
 		GTK_STOCK_OK,
@@ -925,18 +937,10 @@ void show_preferences(void)
 
 	update_pref_widgets();
 
+	g_signal_connect(dialog, "response", G_CALLBACK (preferences_dialog_response_handler), NULL);
+
 	preferences_dialog = dialog;
 
 	gtk_widget_show_all(dialog);
-	//gtk_notebook_set_current_page((GtkNotebook*)notebook, tab);
-	if (gtk_dialog_run((GtkDialog*)dialog) == GTK_RESPONSE_ACCEPT)
-	{
-		/* Apply and save preferences */
-		apply_preferences();
-		save_preferences();
-	}
 
-	preferences_dialog = NULL;
-
-	gtk_widget_destroy(dialog);
 }
