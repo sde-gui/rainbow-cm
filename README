@@ -1,6 +1,10 @@
 Rainbow Clipboard Manager
 -------------------------------------------------------------------------------
-
-Copyright (C) 2015 Vadim Ushakov
+Copyright (C) 2015-2020 Vadim Ushakov
 Copyright (C) 2007-2008 Gilberto "Xyhthyx" Miralla <xyhthyx@gmail.com>
+-------------------------------------------------------------------------------
 
+Rainbow CM is a lightweight GTK2-based clipboard manager for X11.
+
+It was initially forked from Parcellite and substantially reworked to improve
+the code stability and robustness.
