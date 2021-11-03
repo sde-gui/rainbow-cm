@@ -494,32 +494,33 @@ static gboolean do_show_history_menu(gpointer data)
 			gchar * tooltip = NULL;
 			/* Ellipsize text */
 			if (len > item_length) {
-				if (len > item_length * 4) {
-					tooltip = g_strndup(string->str,
-						g_utf8_offset_to_pointer(string->str, len - item_length * 4) - string->str);
+				/* Prepare tooltip */
+				int max_tooltip_length = item_length * 20;
+				if (len > max_tooltip_length) {
+					char * tmp_tooltip = g_strndup(string->str,
+						g_utf8_offset_to_pointer(string->str, max_tooltip_length) - string->str);
+					tooltip = g_strconcat(tmp_tooltip, "...", NULL);
+					g_free(tmp_tooltip);
 				} else {
 					tooltip = g_strdup(string->str);
 				}
+				/* Prepare menu item text */
 				switch (ellipsize) {
 					case PANGO_ELLIPSIZE_START:
 						string = g_string_erase(string, 0, g_utf8_offset_to_pointer(string->str, len - item_length) - string->str);
-						/*string = g_string_erase(string, 0, string->len-(get_pref_int32("item_length"))); */
 						string = g_string_prepend(string, "...");
 						break;
 					case PANGO_ELLIPSIZE_MIDDLE:
 					{
 						gchar* p1 = g_utf8_offset_to_pointer(string->str, item_length / 2);
 						gchar* p2 = g_utf8_offset_to_pointer(string->str, len - item_length / 2);
-						string = g_string_erase(string, p1 - string->str, p2 - p1);
-						string = g_string_insert(string, p1 - string->str, "...");
-						/** string = g_string_erase(string, (get_pref_int32("item_length")/2), string->len-(get_pref_int32("item_length")));
-						string = g_string_insert(string, (string->len/2), "...");*/	
+						g_string_erase(string, p1 - string->str, p2 - p1);
+						g_string_insert(string, p1 - string->str, "...");
 						break;
 					}
 					case PANGO_ELLIPSIZE_END:
-						string = g_string_truncate(string, g_utf8_offset_to_pointer(string->str, item_length) - string->str);
-						/*string = g_string_truncate(string, get_pref_int32("item_length")); */
-						string = g_string_append(string, "...");
+						g_string_truncate(string, g_utf8_offset_to_pointer(string->str, item_length) - string->str);
+						g_string_append(string, "...");
 						break;
 				}
 			}
