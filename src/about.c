@@ -65,7 +65,7 @@ static const char * get_copyright(void)
 {
 	static const char * copyright = NULL;
 	copyright = _(
-		"Copyright (C) 2015-2020 Vadim Ushakov\n"
+		"Copyright (C) 2015-2023 Vadim Ushakov\n"
 		"Copyright (C) 2010-2013 Doug Springer\n"
 		"Copyright (C) 2007, 2008 Gilberto \"Xyhthyx\" Miralla"
 	);
