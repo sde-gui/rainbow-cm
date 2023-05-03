@@ -83,7 +83,7 @@ static struct pref2int pref2int_map[]={
 	{.val=&track_clipboard_selection,.name="track_clipboard_selection"},
 	{.val=&restore_empty,.name="restore_empty"},
 	{.val=&synchronize,.name="synchronize"},
-	{.val=NULL,.name=NULL},		
+	{.val=NULL,.name=NULL},
 };
 
 /******************************************************************************/
